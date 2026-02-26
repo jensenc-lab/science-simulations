@@ -1,0 +1,1226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mendelian Genetics: Inheritance Patterns</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:#e8ecf1;color:#1a2a3a;overflow-x:hidden}
+.header{background:linear-gradient(135deg,#1a5276,#1a3c5e);padding:12px 20px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;border-bottom:3px solid #2ecc71}
+.header h1{font-size:1.15em;color:#fff;flex:1;min-width:200px}
+.std-badge{background:rgba(46,204,113,0.2);border:1px solid #2ecc7188;border-radius:12px;padding:4px 12px;font-size:0.72em;color:#a8f0cb;cursor:pointer;transition:0.3s}
+.std-badge:hover{background:rgba(46,204,113,0.45);color:#fff}
+.info-popup{display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:440px;max-width:92vw;background:#fff;border:2px solid #2ecc71;border-radius:14px;padding:24px;z-index:200;box-shadow:0 12px 40px rgba(0,0,0,0.3);color:#1a2a3a;font-size:0.85em;line-height:1.6}
+.info-popup.show{display:block}
+.info-popup h3{color:#1a5276;margin-bottom:10px}
+.info-popup .close-btn{position:absolute;top:10px;right:14px;cursor:pointer;font-size:1.3em;color:#999}
+.overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.4);z-index:190}
+.overlay.show{display:block}
+
+.main{display:flex;gap:0;min-height:calc(100vh - 55px)}
+.panel{padding:20px;display:flex;flex-direction:column;align-items:center}
+.parent-panel{flex:0 0 22%;min-width:200px;background:#f5f7fa;border-right:1px solid #d0d8e0}
+.parent-panel:last-of-type{border-right:none;border-left:1px solid #d0d8e0}
+.center-panel{flex:1;background:#e8ecf1;display:flex;flex-direction:column;align-items:center;padding:16px 20px;overflow-y:auto}
+
+.panel-title{font-size:0.85em;font-weight:700;color:#1a5276;margin-bottom:12px;text-transform:uppercase;letter-spacing:0.5px}
+.geno-buttons{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;justify-content:center}
+.geno-btn{padding:8px 18px;border:2px solid #b0bec5;border-radius:8px;background:#fff;font-size:1em;font-family:'Courier New',monospace;font-weight:700;cursor:pointer;transition:0.2s;color:#1a2a3a}
+.geno-btn:hover{border-color:#2ecc71;background:#eafaf1}
+.geno-btn.active{border-color:#2ecc71;background:#2ecc71;color:#fff}
+.dog-display{width:140px;height:130px;display:flex;align-items:center;justify-content:center;margin:8px 0}
+.geno-label{font-family:'Courier New',monospace;font-size:1.4em;font-weight:700;margin:6px 0 2px}
+.pheno-label{font-size:0.85em;color:#5a7a8a;margin-bottom:8px}
+.allele-display{display:flex;gap:10px;align-items:center;margin-top:6px}
+.allele-circle{width:28px;height:28px;border-radius:50%;border:2px solid #b0bec5;display:flex;align-items:center;justify-content:center;font-family:'Courier New',monospace;font-weight:700;font-size:0.85em}
+.allele-B{background:#2a2a2a;color:#fff;border-color:#111}
+.allele-b{background:#c8915a;color:#fff;border-color:#8B4513}
+.allele-R{background:#e74c3c;color:#fff;border-color:#c0392b}
+.allele-W{background:#fafafa;color:#666;border-color:#aaa}
+/* Sex-linked allele circles */
+.allele-XB{background:#2a2a2a;color:#fff;border-color:#111}
+.allele-XO{background:#e67e22;color:#fff;border-color:#c0602a}
+.allele-Y{background:#9b9b9b;color:#fff;border-color:#777}
+
+/* Mode toggle */
+.mode-toggle{display:flex;gap:0;margin-bottom:14px;border-radius:10px;overflow:hidden;border:2px solid #b0bec5;background:#fff}
+.mode-btn{padding:8px 16px;border:none;background:transparent;font-size:0.82em;font-weight:700;cursor:pointer;transition:0.2s;color:#5a7a8a;white-space:nowrap}
+.mode-btn:not(:last-child){border-right:1px solid #b0bec5}
+.mode-btn.active{background:#1a5276;color:#fff}
+.mode-btn:hover:not(.active){background:#eef2f5}
+
+/* Punnett Square */
+.cross-btn{padding:10px 32px;border:none;border-radius:10px;background:#2ecc71;color:#fff;font-size:1em;font-weight:700;cursor:pointer;margin:4px 0 16px;transition:0.2s;box-shadow:0 3px 10px rgba(46,204,113,0.3)}
+.cross-btn:hover{background:#27ae60;box-shadow:0 4px 14px rgba(46,204,113,0.4)}
+.punnett-container{margin:10px 0}
+.punnett-table{border-collapse:collapse;margin:0 auto}
+.punnett-table td,.punnett-table th{width:90px;height:72px;text-align:center;vertical-align:middle;border:2px solid #b0bec5;font-family:'Courier New',monospace;font-weight:700;font-size:1.1em}
+.punnett-table th{background:#dce4ec;color:#1a5276;border:2px solid #b0bec5}
+.punnett-table .corner{background:transparent;border:2px solid transparent}
+.punnett-cell{background:#fff;transition:all 0.4s;position:relative}
+.punnett-cell.filled{transform:scale(1);opacity:1}
+.punnett-cell.empty{color:transparent}
+.punnett-cell .cell-geno{font-size:0.95em;display:block}
+.punnett-cell .cell-dot{width:16px;height:16px;border-radius:50%;margin:4px auto 0;border:1px solid #999}
+.punnett-cell .cell-sex{font-size:1.1em;font-weight:700;display:block;margin-top:2px}
+.sex-f{color:#e91e90;font-weight:700}
+.sex-m{color:#3498db;font-weight:700}
+.kitten-item{display:inline-flex;flex-direction:column;align-items:center;gap:2px;margin:2px}
+.kitten-item .kitten-sex{font-size:0.75em;font-weight:700;line-height:1}
+.dot-black{background:#2a2a2a}
+.dot-brown{background:#8B4513}
+.dot-red{background:#e74c3c;border-color:#c0392b}
+.dot-pink{background:#f1948a;border-color:#e74c3c}
+.dot-roan{background:linear-gradient(135deg,#c0392b 50%,#f0f0f0 50%);border-color:#c0392b}
+.dot-white{background:#f0f0f0;border-color:#aaa}
+/* Sex-linked dot classes */
+.dot-orange{background:#e67e22;border-color:#c0602a}
+.dot-tortoiseshell{background:linear-gradient(135deg,#2a2a2a 50%,#e67e22 50%);border-color:#555}
+
+.results-box{background:#fff;border-radius:12px;padding:16px 20px;margin:14px 0;border:1px solid #d0d8e0;width:100%;max-width:500px;box-shadow:0 2px 8px rgba(0,0,0,0.06)}
+.results-box h3{font-size:0.82em;color:#1a5276;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px}
+.ratio-row{display:flex;justify-content:space-between;padding:5px 0;font-size:0.88em;border-bottom:1px solid #eee}
+.ratio-row:last-child{border-bottom:none}
+.ratio-label{color:#5a7a8a}
+.ratio-val{font-weight:700;color:#1a2a3a}
+
+/* Litter */
+.litter-section{width:100%;max-width:600px;margin-top:10px}
+.litter-controls{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+.litter-controls label{font-size:0.82em;color:#5a7a8a;font-weight:600}
+.litter-size-btns{display:flex;gap:6px}
+.size-btn{padding:5px 12px;border:2px solid #b0bec5;border-radius:6px;background:#fff;cursor:pointer;font-size:0.82em;font-weight:600;transition:0.2s}
+.size-btn:hover{border-color:#3498db}
+.size-btn.active{border-color:#3498db;background:#3498db;color:#fff}
+.breed-btn{padding:8px 20px;border:none;border-radius:8px;background:#3498db;color:#fff;font-weight:700;cursor:pointer;font-size:0.85em;transition:0.2s}
+.breed-btn:hover{background:#2980b9}
+.breed-btn.green{background:#2ecc71}
+.breed-btn.green:hover{background:#27ae60}
+.puppy-grid{display:flex;flex-wrap:wrap;gap:5px;padding:10px;background:#fff;border-radius:10px;border:1px solid #d0d8e0;min-height:50px;margin-bottom:12px}
+.puppy{width:22px;height:22px;border-radius:50%;border:2px solid #ccc;transition:all 0.3s;opacity:0;transform:scale(0)}
+.puppy.show{opacity:1;transform:scale(1)}
+.puppy.black{background:#2a2a2a;border-color:#111}
+.puppy.brown{background:#8B4513;border-color:#6b3410}
+.puppy.red{background:#e74c3c;border-color:#c0392b}
+.puppy.pink{background:#f1948a;border-color:#e74c3c}
+.puppy.roan{background:linear-gradient(135deg,#c0392b 50%,#f0f0f0 50%);border-color:#c0392b}
+.puppy.white{background:#f0f0f0;border-color:#aaa}
+/* Sex-linked kitten dots */
+.puppy.orange{background:#e67e22;border-color:#c0602a}
+.puppy.tortoiseshell{background:linear-gradient(135deg,#2a2a2a 50%,#e67e22 50%);border-color:#555}
+
+.chart-container{background:#fff;border-radius:10px;padding:14px;border:1px solid #d0d8e0;margin-bottom:12px}
+.chart-row{display:flex;align-items:center;gap:10px;margin:6px 0}
+.chart-label{width:84px;font-size:0.78em;font-weight:600;text-align:right;color:#5a7a8a;line-height:1.3}
+.chart-bar-bg{flex:1;height:24px;background:#eef2f5;border-radius:6px;overflow:hidden}
+.chart-bar{height:100%;border-radius:6px;transition:width 0.6s ease;display:flex;align-items:center;padding-left:8px;font-size:0.72em;font-weight:700;color:#fff;min-width:0}
+.chart-bar.predicted{opacity:0.45}
+.chart-bar.actual{opacity:1}
+.bar-black{background:#2a2a2a}
+.bar-brown{background:#8B4513}
+.bar-red{background:#e74c3c}
+.bar-pink{background:#d4607a}
+.bar-roan{background:repeating-linear-gradient(90deg,#c0392b 0,#c0392b 5px,#d0d0d0 5px,#d0d0d0 10px)}
+.bar-white{background:#999}
+/* Sex-linked chart bars */
+.bar-orange{background:#d4600a}
+.bar-tortoiseshell{background:repeating-linear-gradient(90deg,#2a2a2a 0,#2a2a2a 5px,#e67e22 5px,#e67e22 10px)}
+.chart-legend{display:flex;gap:16px;justify-content:center;margin-top:10px;font-size:0.72em;color:#5a7a8a}
+.legend-swatch{display:inline-block;width:14px;height:10px;border-radius:3px;margin-right:4px;vertical-align:middle}
+
+.totals-bar{background:#1a5276;color:#fff;border-radius:10px;padding:12px 16px;font-size:0.82em;display:flex;gap:16px;flex-wrap:wrap;justify-content:center}
+.totals-bar b{color:#a8f0cb}
+
+/* Guide & Vocab */
+.edu-section{width:100%;max-width:600px;margin-top:14px}
+.collapsible{background:#fff;border:1px solid #d0d8e0;border-radius:10px;margin-bottom:8px;overflow:hidden}
+.collapsible-header{padding:12px 16px;cursor:pointer;font-weight:700;font-size:0.85em;color:#1a5276;display:flex;justify-content:space-between;align-items:center;transition:0.2s}
+.collapsible-header:hover{background:#f0f4f8}
+.collapsible-body{padding:0 16px;max-height:0;overflow:hidden;transition:max-height 0.35s ease,padding 0.35s ease;font-size:0.82em;line-height:1.7;color:#3a5a6a}
+.collapsible.open .collapsible-body{max-height:1200px;padding:0 16px 14px}
+.collapsible .arrow{transition:transform 0.3s}
+.collapsible.open .arrow{transform:rotate(180deg)}
+.vocab-term{font-weight:700;color:#1a5276}
+.guide-q{margin:8px 0;padding-left:8px;border-left:3px solid #2ecc71}
+
+/* Tail wag — shared keyframe for dog, cow, and cat */
+@keyframes wagTail {
+  0%,100% { transform: rotate(0deg); }
+  25%     { transform: rotate(22deg); }
+  75%     { transform: rotate(-22deg); }
+}
+.dog-tail { transform-box:fill-box; transform-origin:100% 100%; }
+.cow-tail { transform-box:fill-box; transform-origin:100% 100%; }
+.cat-tail { transform-box:fill-box; transform-origin:100% 100%; }
+.dog-wag .dog-tail { animation: wagTail 0.35s ease-in-out 3; }
+.cow-wag .cow-tail { animation: wagTail 0.35s ease-in-out 3; }
+.cat-wag .cat-tail { animation: wagTail 0.35s ease-in-out 3; }
+
+/* Flower bloom */
+@keyframes bloomFlower {
+  0%   { transform: scale(0.75); opacity: 0.5; }
+  60%  { transform: scale(1.08); }
+  100% { transform: scale(1); opacity: 1; }
+}
+.flower-bloom svg { animation: bloomFlower 0.45s ease-out; }
+
+@media(max-width:920px){
+  .main{flex-direction:column}
+  .parent-panel{flex:none;border-right:none;border-bottom:1px solid #d0d8e0}
+  .parent-panel:last-of-type{border-left:none;border-top:1px solid #d0d8e0}
+  .punnett-table td,.punnett-table th{width:70px;height:58px;font-size:0.95em}
+  .mode-btn{padding:7px 10px;font-size:0.76em}
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Mendelian Genetics: Inheritance Patterns</h1>
+  <div class="std-badge" id="stdBadge">BIO.3.2 — Inheritance Patterns</div>
+</div>
+
+<div class="overlay" id="overlay"></div>
+<div class="info-popup" id="infoPopup">
+  <span class="close-btn" id="closePopup">✕</span>
+  <h3>Utah SEEd Standard BIO.3.2</h3>
+  <p>Use computational thinking and patterns to make predictions about the expression of specific traits that are passed in genes on chromosomes from parents to offspring.</p>
+  <p style="margin-top:8px">Emphasize that various inheritance patterns can be predicted by observing the way genes are expressed using tools like Punnett squares.</p>
+  <p style="margin-top:10px"><b>Simple Dominance:</b> Dog fur color — B (black) masks b (brown). Bb and BB look identical.</p>
+  <p style="margin-top:6px"><b>Incomplete Dominance:</b> Flower color — R (red) and W (white) <em>blend</em> in RW, producing pink. Neither fully masks the other.</p>
+  <p style="margin-top:6px"><b>Codominance:</b> Cattle coat color — R (red) and W (white) are <em>both fully expressed</em> in RW, producing a roan (patchy red + white) coat. No blending occurs.</p>
+  <p style="margin-top:6px"><b>Sex-Linked:</b> Cat coat color — Xᴼ (orange) and Xᴮ (black) are carried on the X chromosome. Males (XY) can only be orange or black; females (XX) can also be tortoiseshell — both colors expressed simultaneously.</p>
+</div>
+
+<div class="main">
+  <!-- Parent 1 -->
+  <div class="panel parent-panel">
+    <div class="panel-title" id="p1title">🐕 Parent 1 (Mother)</div>
+    <div class="geno-buttons" id="p1btns"></div>
+    <div class="dog-display" id="dog1"></div>
+    <div class="geno-label" id="geno1"></div>
+    <div class="pheno-label" id="pheno1"></div>
+    <div class="allele-display" id="alleles1"></div>
+  </div>
+
+  <!-- Center -->
+  <div class="panel center-panel">
+    <div class="mode-toggle">
+      <button class="mode-btn active" id="btnSimple"      onclick="switchMode('simple')">Simple Dominance</button>
+      <button class="mode-btn"        id="btnIncomplete"  onclick="switchMode('incomplete')">Incomplete Dominance</button>
+      <button class="mode-btn"        id="btnCodominance" onclick="switchMode('codominance')">Codominance</button>
+      <button class="mode-btn"        id="btnSexLinked"   onclick="switchMode('sexlinked')">Sex-Linked</button>
+    </div>
+
+    <button class="cross-btn" id="crossBtn">✕ Cross Parents</button>
+
+    <div class="punnett-container">
+      <table class="punnett-table">
+        <tr>
+          <td class="corner"></td>
+          <th id="col1">-</th>
+          <th id="col2">-</th>
+        </tr>
+        <tr>
+          <th id="row1">-</th>
+          <td class="punnett-cell empty" id="cell00"><span class="cell-geno"></span><div class="cell-dot"></div><span class="cell-sex"></span></td>
+          <td class="punnett-cell empty" id="cell01"><span class="cell-geno"></span><div class="cell-dot"></div><span class="cell-sex"></span></td>
+        </tr>
+        <tr>
+          <th id="row2">-</th>
+          <td class="punnett-cell empty" id="cell10"><span class="cell-geno"></span><div class="cell-dot"></div><span class="cell-sex"></span></td>
+          <td class="punnett-cell empty" id="cell11"><span class="cell-geno"></span><div class="cell-dot"></div><span class="cell-sex"></span></td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="results-box" id="resultsBox" style="display:none">
+      <h3>Predicted Offspring Ratios</h3>
+      <div id="genoRatio"></div>
+      <div id="phenoRatio" style="margin-top:6px"></div>
+    </div>
+
+    <!-- Litter/Offspring Sim -->
+    <div class="litter-section" id="litterSection" style="display:none">
+      <div class="results-box">
+        <h3 id="litterTitle">🧪 Test the Prediction — Breed a Litter!</h3>
+        <div class="litter-controls">
+          <label id="sizeLabel">Litter size:</label>
+          <div class="litter-size-btns" id="sizeBtns">
+            <button class="size-btn active" data-n="4">4</button>
+            <button class="size-btn" data-n="10">10</button>
+            <button class="size-btn" data-n="20">20</button>
+            <button class="size-btn" data-n="50">50</button>
+            <button class="size-btn" data-n="100">100</button>
+          </div>
+        </div>
+        <div class="litter-controls">
+          <button class="breed-btn green" id="breedBtn">🐾 Breed Litter</button>
+          <button class="breed-btn" id="breedManyBtn">Breed 10 Litters</button>
+          <button class="breed-btn" id="resetLitterBtn" style="background:#e74c3c">Reset</button>
+        </div>
+      </div>
+
+      <div class="puppy-grid" id="puppyGrid"></div>
+      <div class="chart-container" id="chartContainer" style="display:none"></div>
+      <div class="totals-bar" id="totalsBar" style="display:none"></div>
+    </div>
+
+    <!-- Educational -->
+    <div class="edu-section">
+      <div class="collapsible" id="vocabSection">
+        <div class="collapsible-header" onclick="toggleCollapsible('vocabSection')">📖 Key Vocabulary <span class="arrow">▼</span></div>
+        <div class="collapsible-body" id="vocabBody"></div>
+      </div>
+      <div class="collapsible" id="guideSection">
+        <div class="collapsible-header" onclick="toggleCollapsible('guideSection')">💡 Guide Questions <span class="arrow">▼</span></div>
+        <div class="collapsible-body" id="guideBody"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Parent 2 -->
+  <div class="panel parent-panel">
+    <div class="panel-title" id="p2title">🐕 Parent 2 (Father)</div>
+    <div class="geno-buttons" id="p2btns"></div>
+    <div class="dog-display" id="dog2"></div>
+    <div class="geno-label" id="geno2"></div>
+    <div class="pheno-label" id="pheno2"></div>
+    <div class="allele-display" id="alleles2"></div>
+  </div>
+</div>
+
+<script>
+// === STATE ===
+let mode = 'simple';
+let p1 = 'Bb', p2 = 'Bb';
+let litterSize = 4;
+let totalPups = 0;
+let totals = { black:0, brown:0, red:0, pink:0, roan:0, white:0 };
+let punnettData = null;
+
+// === SVG: DOG ===
+function dogSVG(color) {
+  const fill = color==='black' ? '#2a2a2a' : '#8B4513';
+  const nose = color==='black' ? '#111'    : '#5a2a0a';
+  const hi   = color==='black' ? '#3a3a3a' : '#a06830';
+  return `<svg width="120" height="120" viewBox="0 0 120 110" xmlns="http://www.w3.org/2000/svg">
+    <ellipse cx="58" cy="68" rx="38" ry="26" fill="${fill}"/>
+    <circle cx="88" cy="42" r="22" fill="${fill}"/>
+    <circle cx="92" cy="37" r="10" fill="${hi}" opacity="0.3"/>
+    <ellipse cx="74" cy="20" rx="8" ry="14" fill="${fill}" transform="rotate(-15,74,20)"/>
+    <ellipse cx="100" cy="22" rx="7" ry="13" fill="${fill}" transform="rotate(10,100,22)"/>
+    <ellipse cx="105" cy="48" rx="12" ry="8" fill="${hi}"/>
+    <ellipse cx="113" cy="46" rx="4" ry="3" fill="${nose}"/>
+    <circle cx="92" cy="40" r="4" fill="#fff"/>
+    <circle cx="93" cy="40" r="2.5" fill="#111"/>
+    <circle cx="94" cy="39" r="1" fill="#fff"/>
+    <path d="M105 52 Q110 56 113 52" stroke="${nose}" stroke-width="1.2" fill="none"/>
+    <rect x="32" y="85" width="8" height="18" rx="4" fill="${fill}"/>
+    <rect x="48" y="87" width="8" height="16" rx="4" fill="${fill}"/>
+    <rect x="65" y="87" width="8" height="16" rx="4" fill="${fill}"/>
+    <rect x="78" y="85" width="8" height="18" rx="4" fill="${fill}"/>
+    <path class="dog-tail" d="M20 62 Q8 40 16 30" stroke="${fill}" stroke-width="6" fill="none" stroke-linecap="round"/>
+    <path d="M70 56 Q88 68 100 55" stroke="#e74c3c" stroke-width="3" fill="none"/>
+    <circle cx="86" cy="62" r="3" fill="#f1c40f"/>
+  </svg>`;
+}
+
+// === SVG: FLOWER ===
+function flowerSVG(phenotype) {
+  const pFill   = phenotype==='red' ? '#e74c3c' : phenotype==='pink' ? '#f1948a' : '#fafafa';
+  const pStroke = phenotype==='white' ? '#bbb' : phenotype==='red' ? '#c0392b' : '#e88080';
+  return `<svg width="110" height="120" viewBox="0 0 110 120" xmlns="http://www.w3.org/2000/svg">
+    <line x1="55" y1="92" x2="55" y2="118" stroke="#27ae60" stroke-width="4" stroke-linecap="round"/>
+    <ellipse cx="46" cy="108" rx="9" ry="5" fill="#2ecc71" transform="rotate(-30,46,108)"/>
+    <g transform="rotate(0,55,60)"><ellipse cx="55" cy="36" rx="12" ry="20" fill="${pFill}" stroke="${pStroke}" stroke-width="1.2"/></g>
+    <g transform="rotate(72,55,60)"><ellipse cx="55" cy="36" rx="12" ry="20" fill="${pFill}" stroke="${pStroke}" stroke-width="1.2"/></g>
+    <g transform="rotate(144,55,60)"><ellipse cx="55" cy="36" rx="12" ry="20" fill="${pFill}" stroke="${pStroke}" stroke-width="1.2"/></g>
+    <g transform="rotate(216,55,60)"><ellipse cx="55" cy="36" rx="12" ry="20" fill="${pFill}" stroke="${pStroke}" stroke-width="1.2"/></g>
+    <g transform="rotate(288,55,60)"><ellipse cx="55" cy="36" rx="12" ry="20" fill="${pFill}" stroke="${pStroke}" stroke-width="1.2"/></g>
+    <circle cx="55" cy="60" r="15" fill="#f39c12"/>
+    <circle cx="55" cy="60" r="11" fill="#e67e22"/>
+    <circle cx="51" cy="57" r="2" fill="#f39c12" opacity="0.8"/>
+    <circle cx="58" cy="56" r="2" fill="#f39c12" opacity="0.8"/>
+    <circle cx="53" cy="63" r="2" fill="#f39c12" opacity="0.8"/>
+  </svg>`;
+}
+
+// === SVG: COW ===
+// uid keeps clipPath IDs unique per parent display (cc1 / cc2)
+function cowSVG(phenotype, uid) {
+  const isRed  = phenotype==='red';
+  const isRoan = phenotype==='roan';
+
+  const bodyFill  = isRed ? '#c0392b' : '#fafafa';
+  const sk        = isRed ? '#922b21' : '#aaa';
+  const snoutFill = isRed ? '#e57373' : '#f0c8a0';
+  const snoutSk   = isRed ? '#c0392b' : '#d4a880';
+  const nostril   = isRed ? '#7b241c' : '#b08060';
+  const hornSk    = isRed ? '#7a2020' : '#bbb';
+  const cid       = 'cc' + uid;
+
+  const clipDef = isRoan ? `<defs><clipPath id="${cid}">
+    <ellipse cx="62" cy="70" rx="44" ry="28"/>
+    <ellipse cx="98" cy="47" rx="20" ry="16"/>
+    <ellipse cx="84" cy="32" rx="8" ry="12" transform="rotate(-10,84,32)"/>
+    <ellipse cx="108" cy="31" rx="7" ry="11" transform="rotate(10,108,31)"/>
+  </clipPath></defs>` : '';
+
+  const patches = isRoan ? `
+    <ellipse cx="72" cy="64" rx="18" ry="12" fill="#c0392b" clip-path="url(#${cid})"/>
+    <ellipse cx="40" cy="74" rx="14" ry="10" fill="#c0392b" clip-path="url(#${cid})"/>
+    <ellipse cx="92" cy="44" rx="10" ry="7"  fill="#c0392b" clip-path="url(#${cid})"/>` : '';
+
+  const reoutline = isRoan ? `
+    <ellipse cx="62" cy="70" rx="44" ry="28" fill="none" stroke="#aaa" stroke-width="1.5"/>
+    <ellipse cx="98" cy="47" rx="20" ry="16" fill="none" stroke="#aaa" stroke-width="1.5"/>
+    <ellipse cx="84" cy="32" rx="8" ry="12" fill="none" stroke="#aaa" stroke-width="1" transform="rotate(-10,84,32)"/>
+    <ellipse cx="108" cy="31" rx="7" ry="11" fill="none" stroke="#aaa" stroke-width="1" transform="rotate(10,108,31)"/>` : '';
+
+  return `<svg width="135" height="120" viewBox="0 0 140 115" xmlns="http://www.w3.org/2000/svg">
+    ${clipDef}
+    <ellipse cx="62" cy="70" rx="44" ry="28" fill="${bodyFill}" stroke="${sk}" stroke-width="1.5"/>
+    <ellipse cx="98" cy="47" rx="20" ry="16" fill="${bodyFill}" stroke="${sk}" stroke-width="1.5"/>
+    <ellipse cx="84" cy="32" rx="8" ry="12" fill="${bodyFill}" stroke="${sk}" stroke-width="1" transform="rotate(-10,84,32)"/>
+    <ellipse cx="108" cy="31" rx="7" ry="11" fill="${bodyFill}" stroke="${sk}" stroke-width="1" transform="rotate(10,108,31)"/>
+    ${patches}
+    ${reoutline}
+    <path d="M90 35 Q86 22 92 17" stroke="${hornSk}" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <path d="M106 32 Q110 19 117 17" stroke="${hornSk}" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <ellipse cx="115" cy="52" rx="11" ry="8" fill="${snoutFill}" stroke="${snoutSk}" stroke-width="1"/>
+    <ellipse cx="112" cy="53" rx="2.5" ry="2" fill="${nostril}"/>
+    <ellipse cx="118" cy="53" rx="2.5" ry="2" fill="${nostril}"/>
+    <circle cx="102" cy="43" r="4" fill="#fff" stroke="${sk}" stroke-width="0.5"/>
+    <circle cx="103" cy="43" r="2.5" fill="#222"/>
+    <circle cx="104" cy="42" r="1"   fill="#fff"/>
+    <rect x="76" y="90" width="8" height="20" rx="4" fill="${bodyFill}" stroke="${sk}" stroke-width="1"/>
+    <rect x="86" y="91" width="8" height="19" rx="4" fill="${bodyFill}" stroke="${sk}" stroke-width="1"/>
+    <rect x="37" y="90" width="8" height="20" rx="4" fill="${bodyFill}" stroke="${sk}" stroke-width="1"/>
+    <rect x="48" y="91" width="8" height="19" rx="4" fill="${bodyFill}" stroke="${sk}" stroke-width="1"/>
+    <ellipse cx="63" cy="97" rx="12" ry="5" fill="#f8d0c0" stroke="#e8a090" stroke-width="1"/>
+    <line x1="59" y1="97" x2="59" y2="103" stroke="#e8a090" stroke-width="1.2" stroke-linecap="round"/>
+    <line x1="63" y1="97" x2="63" y2="103" stroke="#e8a090" stroke-width="1.2" stroke-linecap="round"/>
+    <line x1="67" y1="97" x2="67" y2="103" stroke="#e8a090" stroke-width="1.2" stroke-linecap="round"/>
+    <g class="cow-tail">
+      <path d="M18 68 Q6 48 14 36" stroke="${sk}" stroke-width="5" fill="none" stroke-linecap="round"/>
+      <ellipse cx="13" cy="33" rx="7" ry="9" fill="${bodyFill}" stroke="${sk}" stroke-width="1"/>
+    </g>
+  </svg>`;
+}
+
+// === HELPERS ===
+function getAlleles(g) { return [g[0], g[1]]; }
+
+function sortAlleles(a, b) {
+  if (mode==='simple') {
+    if ((a==='B'&&b==='b')||(a==='b'&&b==='B')) return 'Bb';
+  } else {
+    if ((a==='R'&&b==='W')||(a==='W'&&b==='R')) return 'RW';
+  }
+  return a + b;
+}
+
+function getPhenoKey(g) {
+  if (mode==='simple') return g.includes('B') ? 'black' : 'brown';
+  if (g==='RR') return 'red';
+  if (g==='WW') return 'white';
+  return mode==='codominance' ? 'roan' : 'pink';
+}
+
+function getPhenoLabel(g) {
+  if (mode==='sexlinked') return getSLPhenoLabel(g);
+  if (mode==='simple') {
+    if (g==='BB') return 'Black Fur (homozygous dominant)';
+    if (g==='Bb') return 'Black Fur (heterozygous)';
+    return 'Brown Fur (homozygous recessive)';
+  }
+  if (mode==='incomplete') {
+    if (g==='RR') return 'Red Flowers (homozygous)';
+    if (g==='RW') return 'Pink Flowers (heterozygous blend)';
+    return 'White Flowers (homozygous)';
+  }
+  if (g==='RR') return 'Red Coat (homozygous)';
+  if (g==='RW') return 'Roan Coat — both alleles expressed';
+  return 'White Coat (homozygous)';
+}
+
+function getCellBg(g) {
+  const m = {black:'#f0f4f0',brown:'#fdf5ee',red:'#fef0ee',pink:'#fef5f7',roan:'#fdf0f2',white:'#f9f9f9'};
+  return m[getPhenoKey(g)] || '#fff';
+}
+
+// === ORGANISM DISPLAY ===
+function updateOrganism(id, genotype, animate) {
+  const el  = document.getElementById(id);
+  const uid = id.replace(/\D/g,'');
+  if (mode==='simple') {
+    el.innerHTML = dogSVG(genotype.includes('B') ? 'black' : 'brown');
+    if (animate) { el.classList.remove('dog-wag'); void el.offsetWidth; el.classList.add('dog-wag'); }
+  } else if (mode==='incomplete') {
+    el.innerHTML = flowerSVG(getPhenoKey(genotype));
+    if (animate) { el.classList.remove('flower-bloom'); void el.offsetWidth; el.classList.add('flower-bloom'); }
+  } else if (mode==='codominance') {
+    el.innerHTML = cowSVG(getPhenoKey(genotype), uid);
+    if (animate) { el.classList.remove('cow-wag'); void el.offsetWidth; el.classList.add('cow-wag'); }
+  } else if (mode==='sexlinked') {
+    updateSLOrganism(id, genotype, animate);
+  }
+}
+
+function updateAlleles(id, g) {
+  if (mode==='sexlinked') { updateSLAlleles(id, g); return; }
+  const [a, b] = getAlleles(g);
+  document.getElementById(id).innerHTML =
+    `<div class="allele-circle allele-${a}">${a}</div><div class="allele-circle allele-${b}">${b}</div>`;
+}
+
+function updateParentDisplay(n, g, animate) {
+  document.getElementById('geno'+n).textContent = g;
+  document.getElementById('pheno'+n).textContent = getPhenoLabel(g);
+  updateOrganism('dog'+n, g, animate);
+  updateAlleles('alleles'+n, g);
+}
+
+// === PARENT BUTTONS ===
+function rebuildButtons(cid, pNum) {
+  if (mode==='sexlinked') { rebuildSLButtons(cid, pNum); return; }
+  const genos  = mode==='simple' ? ['BB','Bb','bb'] : ['RR','RW','WW'];
+  const active = pNum===1 ? p1 : p2;
+  const container = document.getElementById(cid);
+  container.innerHTML = genos.map(g =>
+    `<button class="geno-btn${g===active?' active':''}" data-g="${g}">${g}</button>`
+  ).join('');
+  container.querySelectorAll('.geno-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      container.querySelectorAll('.geno-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const g = btn.dataset.g;
+      if (pNum===1) p1=g; else p2=g;
+      updateParentDisplay(pNum, g, true);
+      clearPunnett();
+    });
+  });
+}
+
+// === PUNNETT SQUARE ===
+function clearPunnett() {
+  punnettData = null;
+  ['cell00','cell01','cell10','cell11'].forEach(id => {
+    const el = document.getElementById(id);
+    el.className = 'punnett-cell empty';
+    el.querySelector('.cell-geno').textContent = '';
+    el.querySelector('.cell-dot').className = 'cell-dot';
+    el.querySelector('.cell-sex').textContent = '';
+    el.style.background = '';
+  });
+  ['col1','col2','row1','row2'].forEach(id => document.getElementById(id).textContent = '-');
+  document.getElementById('resultsBox').style.display = 'none';
+  document.getElementById('litterSection').style.display = 'none';
+  resetLitter();
+}
+
+function doCross() {
+  if (mode==='sexlinked') { slDoCross(); return; }
+
+  const [a0,a1] = getAlleles(p1);
+  const [b0,b1] = getAlleles(p2);
+  document.getElementById('row1').textContent = a0;
+  document.getElementById('row2').textContent = a1;
+  document.getElementById('col1').textContent = b0;
+  document.getElementById('col2').textContent = b1;
+
+  const cells = [
+    {id:'cell00', g:sortAlleles(a0,b0)},
+    {id:'cell01', g:sortAlleles(a0,b1)},
+    {id:'cell10', g:sortAlleles(a1,b0)},
+    {id:'cell11', g:sortAlleles(a1,b1)}
+  ];
+  punnettData = cells.map(c => c.g);
+
+  cells.forEach((c,i) => {
+    setTimeout(() => {
+      const el = document.getElementById(c.id);
+      const pk = getPhenoKey(c.g);
+      el.querySelector('.cell-geno').textContent = c.g;
+      el.querySelector('.cell-dot').className = 'cell-dot dot-' + pk;
+      el.className = 'punnett-cell filled';
+      el.style.background = getCellBg(c.g);
+      if (i===3) showResults();
+    }, 200 + i*300);
+  });
+}
+
+function showResults() {
+  const gCounts = {};
+  punnettData.forEach(g => gCounts[g] = (gCounts[g]||0)+1);
+  const genoStr = Object.entries(gCounts).map(([g,n]) => `${n} ${g}`).join(' : ');
+
+  const pCounts = {};
+  punnettData.forEach(g => {
+    const lbl = getPhenoKey(g).charAt(0).toUpperCase() + getPhenoKey(g).slice(1);
+    pCounts[lbl] = (pCounts[lbl]||0)+1;
+  });
+  const phenoStr = Object.entries(pCounts).map(([p,n]) => `${n} ${p}`).join(' : ');
+
+  window.predictedPcts = {};
+  Object.entries(pCounts).forEach(([p,n]) => {
+    window.predictedPcts[p.toLowerCase()] = Math.round(n/4*100);
+  });
+  const pctStr = Object.entries(window.predictedPcts)
+    .map(([k,v]) => `${v}% ${k.charAt(0).toUpperCase()+k.slice(1)}`).join(', ');
+
+  document.getElementById('genoRatio').innerHTML =
+    `<div class="ratio-row"><span class="ratio-label">Genotype Ratio:</span><span class="ratio-val">${genoStr}</span></div>`;
+  document.getElementById('phenoRatio').innerHTML =
+    `<div class="ratio-row"><span class="ratio-label">Phenotype Ratio:</span><span class="ratio-val">${phenoStr}</span></div>
+     <div class="ratio-row"><span class="ratio-label">Predicted %:</span><span class="ratio-val">${pctStr}</span></div>`;
+
+  document.getElementById('resultsBox').style.display = 'block';
+  document.getElementById('litterSection').style.display = 'block';
+
+  const lbls = {
+    simple:      ['🧪 Test the Prediction — Breed a Litter!', '🐾 Breed Litter',    'Breed 10 Litters',    'Litter size:'],
+    incomplete:  ['🌱 Grow Offspring — Test the Prediction!', '🌱 Grow Offspring',   'Grow 10 Generations', 'Offspring count:'],
+    codominance: ['🐄 Test the Prediction — Breed a Herd!',   '🐄 Breed Herd',       'Breed 10 Herds',      'Herd size:']
+  };
+  const [lt,bb,bmb,sl] = lbls[mode];
+  document.getElementById('litterTitle').textContent  = lt;
+  document.getElementById('breedBtn').textContent     = bb;
+  document.getElementById('breedManyBtn').textContent = bmb;
+  document.getElementById('sizeLabel').textContent    = sl;
+}
+
+// === LITTER SIM ===
+function resetLitter() {
+  totalPups = 0;
+  totals = {black:0, brown:0, red:0, pink:0, roan:0, white:0};
+  slTotals = {'black-f':0, 'tortie-f':0, 'orange-f':0, 'black-m':0, 'orange-m':0};
+  window.slPredictedByKey = {};
+  document.getElementById('puppyGrid').innerHTML = '';
+  document.getElementById('chartContainer').style.display = 'none';
+  document.getElementById('totalsBar').style.display = 'none';
+}
+
+function randomOffspring() {
+  if (mode==='sexlinked') return slRandomOffspring();
+  return getPhenoKey(punnettData[Math.floor(Math.random()*4)]);
+}
+
+function breedLitter(n) {
+  if (mode==='sexlinked') { slBreedLitter(n); return; }
+  if (!punnettData) return;
+  const grid = document.getElementById('puppyGrid');
+  grid.innerHTML = '';
+  for (let i=0; i<n; i++) {
+    const pk = randomOffspring();
+    totals[pk]++; totalPups++;
+    const pup = document.createElement('div');
+    pup.className = 'puppy ' + pk;
+    grid.appendChild(pup);
+    setTimeout(() => pup.classList.add('show'), 20 + i*15);
+  }
+  updateChart();
+}
+
+function breedMany(times) {
+  if (mode==='sexlinked') { slBreedMany(times); return; }
+  if (!punnettData) return;
+  const n = times * litterSize;
+  for (let i=0; i<n; i++) { totals[randomOffspring()]++; totalPups++; }
+
+  const grid = document.getElementById('puppyGrid');
+  const showMax = Math.min(totalPups, 200);
+  grid.innerHTML = '';
+  const keys = Object.keys(window.predictedPcts||{});
+  let filled = 0;
+  keys.forEach(k => {
+    const count = Math.round(showMax * (totals[k]/totalPups));
+    for (let i=0; i<count && filled<showMax; i++, filled++) {
+      const pup = document.createElement('div');
+      pup.className = 'puppy show ' + k;
+      grid.appendChild(pup);
+    }
+  });
+  if (totalPups > 200) {
+    const note = document.createElement('div');
+    note.style.cssText = 'font-size:0.72em;color:#5a7a8a;width:100%;text-align:center;margin-top:6px';
+    note.textContent = `Showing 200 of ${totalPups} total`;
+    grid.appendChild(note);
+  }
+  updateChart();
+}
+
+function updateChart() {
+  if (mode==='sexlinked') { slUpdateChart(); return; }
+
+  const chart = document.getElementById('chartContainer');
+  chart.style.display = 'block';
+  document.getElementById('totalsBar').style.display = 'flex';
+
+  const cats =
+    mode==='simple'
+      ? [{key:'black',label:'Black',cls:'bar-black'},{key:'brown',label:'Brown',cls:'bar-brown'}]
+    : mode==='incomplete'
+      ? [{key:'red',label:'Red',cls:'bar-red'},{key:'pink',label:'Pink',cls:'bar-pink'},{key:'white',label:'White',cls:'bar-white'}]
+    :   [{key:'red',label:'Red',cls:'bar-red'},{key:'roan',label:'Roan',cls:'bar-roan'},{key:'white',label:'White',cls:'bar-white'}];
+
+  let html = '<h3 style="font-size:0.82em;color:#1a5276;margin-bottom:6px">Predicted vs. Actual Results</h3>';
+  cats.forEach((cat,i) => {
+    const pred = (window.predictedPcts||{})[cat.key]||0;
+    const act  = totalPups>0 ? (totals[cat.key]/totalPups*100) : 0;
+    if (i>0) html += '<div style="height:4px"></div>';
+    html += `
+      <div class="chart-row">
+        <div class="chart-label">${cat.label}<br><span style="font-weight:400;color:#8a9aaa">(predicted)</span></div>
+        <div class="chart-bar-bg"><div class="chart-bar ${cat.cls} predicted" style="width:${pred}%">${pred>8?pred+'%':''}</div></div>
+      </div>
+      <div class="chart-row">
+        <div class="chart-label">${cat.label}<br><span style="font-weight:400;color:#8a9aaa">(actual)</span></div>
+        <div class="chart-bar-bg"><div class="chart-bar ${cat.cls} actual" style="width:${act.toFixed(1)}%">${act>8?act.toFixed(1)+'%':''}</div></div>
+      </div>`;
+  });
+  html += `<div class="chart-legend">
+    <span><span class="legend-swatch" style="background:rgba(0,0,0,0.3)"></span>Predicted</span>
+    <span><span class="legend-swatch" style="background:rgba(0,0,0,0.8)"></span>Actual</span>
+  </div>`;
+  chart.innerHTML = html;
+
+  const tb = document.getElementById('totalsBar');
+  if (mode==='simple') {
+    const bPct  = totalPups>0?(totals.black/totalPups*100).toFixed(1):0;
+    const brPct = totalPups>0?(totals.brown/totalPups*100).toFixed(1):0;
+    tb.innerHTML = `Total: <b>${totalPups}</b> &nbsp;|&nbsp; Black: <b>${totals.black}</b> (<b>${bPct}</b>%) &nbsp;|&nbsp; Brown: <b>${totals.brown}</b> (<b>${brPct}</b>%)`;
+  } else if (mode==='incomplete') {
+    const rPct = totalPups>0?(totals.red/totalPups*100).toFixed(1):0;
+    const pPct = totalPups>0?(totals.pink/totalPups*100).toFixed(1):0;
+    const wPct = totalPups>0?(totals.white/totalPups*100).toFixed(1):0;
+    tb.innerHTML = `Total: <b>${totalPups}</b> &nbsp;|&nbsp; Red: <b>${totals.red}</b> (<b>${rPct}</b>%) &nbsp;|&nbsp; Pink: <b>${totals.pink}</b> (<b>${pPct}</b>%) &nbsp;|&nbsp; White: <b>${totals.white}</b> (<b>${wPct}</b>%)`;
+  } else {
+    const rPct  = totalPups>0?(totals.red/totalPups*100).toFixed(1):0;
+    const roPct = totalPups>0?(totals.roan/totalPups*100).toFixed(1):0;
+    const wPct  = totalPups>0?(totals.white/totalPups*100).toFixed(1):0;
+    tb.innerHTML = `Total: <b>${totalPups}</b> &nbsp;|&nbsp; Red: <b>${totals.red}</b> (<b>${rPct}</b>%) &nbsp;|&nbsp; Roan: <b>${totals.roan}</b> (<b>${roPct}</b>%) &nbsp;|&nbsp; White: <b>${totals.white}</b> (<b>${wPct}</b>%)`;
+  }
+}
+
+// === MODE SWITCH ===
+function switchMode(m) {
+  if (mode===m) return;
+  mode = m;
+  document.getElementById('btnSimple').classList.toggle('active',      m==='simple');
+  document.getElementById('btnIncomplete').classList.toggle('active',  m==='incomplete');
+  document.getElementById('btnCodominance').classList.toggle('active', m==='codominance');
+  document.getElementById('btnSexLinked').classList.toggle('active',   m==='sexlinked');
+
+  if      (m==='simple')    { p1='Bb';    p2='Bb'; }
+  else if (m==='sexlinked') { p1='X\u1D2EX\u1D3C'; p2='X\u1D3CY'; }
+  else                      { p1='RW';    p2='RW'; }
+
+  const titles = {
+    simple:      ['🐕 Parent 1 (Mother)',    '🐕 Parent 2 (Father)'],
+    incomplete:  ['🌸 Parent 1 (Plant)',     '🌸 Parent 2 (Plant)'],
+    codominance: ['🐄 Parent 1 (Cow)',       '🐄 Parent 2 (Cow)'],
+    sexlinked:   ['🐱 Parent 1 (Mother ♀)', '🐱 Parent 2 (Father ♂)']
+  };
+  document.getElementById('p1title').textContent = titles[m][0];
+  document.getElementById('p2title').textContent = titles[m][1];
+
+  rebuildButtons('p1btns', 1);
+  rebuildButtons('p2btns', 2);
+  updateParentDisplay(1, p1, false);
+  updateParentDisplay(2, p2, false);
+
+  clearPunnett();
+  updateVocab();
+  updateGuide();
+}
+
+// === VOCABULARY ===
+function updateVocab() {
+  const shared = `
+    <p><span class="vocab-term">Allele:</span> A version of a gene. Organisms have two alleles for each trait — one from each parent.</p>
+    <p><span class="vocab-term">Genotype:</span> The combination of alleles an organism has (e.g., BB, Bb, RR, RW, WW).</p>
+    <p><span class="vocab-term">Phenotype:</span> The observable trait — what the organism actually looks like.</p>
+    <p><span class="vocab-term">Homozygous:</span> Two identical alleles (BB, bb, RR, WW).</p>
+    <p><span class="vocab-term">Heterozygous:</span> Two different alleles (Bb, RW). The phenotype of RW differs by inheritance pattern!</p>
+    <p><span class="vocab-term">Punnett Square:</span> A grid used to predict the probability of offspring genotypes from a genetic cross.</p>`;
+  const simpleExtra = `
+    <p><span class="vocab-term">Dominant:</span> An allele that masks the other. B (black) is dominant — one copy is enough for black fur.</p>
+    <p><span class="vocab-term">Recessive:</span> An allele only expressed when two copies are present. b (brown) requires bb genotype.</p>`;
+  const incompleteExtra = `
+    <p><span class="vocab-term">Incomplete Dominance:</span> Neither allele fully masks the other. The heterozygous (RW) phenotype is a <em>blend</em> — pink — rather than red or white. Both alleles contribute partially.</p>
+    <p><span class="vocab-term">Comparison tip:</span> In simple dominance, Bb = BB (dominant hides recessive). In incomplete dominance, RW = something new (a blend).</p>`;
+  const codominanceExtra = `
+    <p><span class="vocab-term">Codominance:</span> Both alleles are <em>fully and simultaneously expressed</em> in the heterozygous organism. In roan cattle (RW), individual hairs are either red OR white — both colors are visible as distinct patches, not blended.</p>
+    <p><span class="vocab-term">Key distinction — Codominance vs. Incomplete Dominance:</span><br>
+    Incomplete dominance: RW = <em>pink flower</em> (alleles blend into a new color)<br>
+    Codominance: RW = <em>roan cow</em> (both red and white appear separately, no blending)</p>`;
+  const sexlinkedExtra = `
+    <p><span class="vocab-term">Sex-Linked Trait:</span> A trait controlled by a gene located on the X chromosome. Because males have only one X chromosome (XY), they express whatever single coat-color allele they inherit — there is no second allele to interact with.</p>
+    <p><span class="vocab-term">Y Chromosome:</span> Does not carry the coat color gene. This is why males can only be orange (Xᴼ Y) or black (Xᴮ Y) — they have no second X allele to interact with.</p>
+    <p><span class="vocab-term">Carrier (not applicable here):</span> In many sex-linked traits, a heterozygous female who doesn't show the trait is called a "carrier." But in cat coat color, the heterozygous female (Xᴮ Xᴼ) visibly expresses <em>both</em> alleles as a tortoiseshell pattern — she is not a silent carrier. This makes cat coat color behave more like codominance on the X chromosome.</p>
+    <p><span class="vocab-term">Why males cannot be tortoiseshell:</span> Tortoiseshell requires two different coat-color alleles (Xᴮ and Xᴼ). Males have only one X chromosome, so they can only carry one coat-color allele. This is why tortoiseshell cats are almost always female.</p>`;
+
+  const extra = mode==='simple' ? simpleExtra
+              : mode==='incomplete' ? incompleteExtra
+              : mode==='codominance' ? codominanceExtra
+              : sexlinkedExtra;
+  document.getElementById('vocabBody').innerHTML = shared + extra;
+}
+
+// === GUIDE QUESTIONS ===
+function updateGuide() {
+  const qSets = {
+    simple: [
+      'Cross two heterozygous parents (Bb × Bb). What genotype and phenotype ratios does the Punnett square predict?',
+      'Can two black-furred dogs produce a brown puppy? Set up the cross and find out. What must be true about the parents\' genotypes?',
+      'Breed a litter of 4 puppies, then breed a litter of 100. Which result is closer to the predicted ratio? Why does sample size matter?',
+      'If all puppies in a litter are black, can you be 100% certain about both parents\' genotypes? Why or why not?'
+    ],
+    incomplete: [
+      'Cross two pink flowers (RW × RW). What ratio do you predict? How is this different from a simple dominance cross of two heterozygous parents?',
+      'In simple dominance, Bb looks the same as BB. In incomplete dominance, what does RW look like compared to RR? Why is this a key difference?',
+      'Can you identify a heterozygous organism just by looking at it in incomplete dominance? What about in simple dominance?',
+      'If you see a pink flower, what MUST its genotype be? Is the same true in simple dominance — can you always determine genotype from phenotype alone?'
+    ],
+    codominance: [
+      'Cross two roan cows (RW × RW). How does the predicted ratio compare to the same cross in incomplete dominance (RW × RW)? Are the numbers the same or different? Why?',
+      'How is a roan cow (RW) different from a pink flower (RW)? Both are heterozygous with the same allele letters — so why do they look completely different?',
+      'In codominance, can you always determine the genotype just by looking at the phenotype? How does this compare to simple dominance, where Bb looks identical to BB?',
+      'A farmer has only roan cows (RW). Can the farmer ever produce a solid red calf? What cross is needed, and what is the probability of a red offspring?'
+    ],
+    sexlinked: [
+      'Cross a tortoiseshell female (XᴮXᴼ) with an orange male (XᴼY). Can any male kittens be tortoiseshell? Use the Punnett square to explain why or why not.',
+      'Why are orange cats more often male than female? Set up different crosses to figure out what parents would be needed to produce an orange female kitten.',
+      'A black female cat gives birth to an orange kitten. What must be true about the father\'s genotype? Use the Punnett square to support your answer.',
+      'In simple dominance, does the sex of the organism affect which trait appears? Why is sex-linked inheritance fundamentally different from autosomal inheritance?'
+    ]
+  };
+  document.getElementById('guideBody').innerHTML =
+    qSets[mode].map((q,i) => `<div class="guide-q">${i+1}. ${q}</div>`).join('');
+}
+
+// === COLLAPSIBLES ===
+function toggleCollapsible(id) {
+  document.getElementById(id).classList.toggle('open');
+}
+
+// === SIZE BUTTONS ===
+document.getElementById('sizeBtns').querySelectorAll('.size-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.getElementById('sizeBtns').querySelectorAll('.size-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    litterSize = parseInt(btn.dataset.n);
+  });
+});
+
+// === EVENT LISTENERS ===
+document.getElementById('crossBtn').addEventListener('click', () => { clearPunnett(); setTimeout(doCross, 100); });
+document.getElementById('breedBtn').addEventListener('click', () => breedLitter(litterSize));
+document.getElementById('breedManyBtn').addEventListener('click', () => breedMany(10));
+document.getElementById('resetLitterBtn').addEventListener('click', resetLitter);
+document.getElementById('stdBadge').addEventListener('click', () => {
+  document.getElementById('infoPopup').classList.add('show');
+  document.getElementById('overlay').classList.add('show');
+});
+document.getElementById('closePopup').addEventListener('click', () => {
+  document.getElementById('infoPopup').classList.remove('show');
+  document.getElementById('overlay').classList.remove('show');
+});
+document.getElementById('overlay').addEventListener('click', () => {
+  document.getElementById('infoPopup').classList.remove('show');
+  document.getElementById('overlay').classList.remove('show');
+});
+
+// === INIT ===
+rebuildButtons('p1btns', 1);
+rebuildButtons('p2btns', 2);
+updateParentDisplay(1, p1, false);
+updateParentDisplay(2, p2, false);
+updateVocab();
+updateGuide();
+
+
+// ================================================================
+// === SEX-LINKED INHERITANCE                                     ===
+// === Step 1: parent panels (SVGs, buttons, alleles, labels)    ===
+// === Step 2: Punnett square, litter simulation, chart          ===
+// ================================================================
+
+// --- Constants ---
+const SL_SUPER_B = '\u1D2E'; // ᴮ
+const SL_SUPER_O = '\u1D3C'; // ᴼ
+const SL_XB = 'X' + SL_SUPER_B;  // Xᴮ
+const SL_XO = 'X' + SL_SUPER_O;  // Xᴼ
+const SL_F_GENOS = [SL_XB + SL_XB, SL_XB + SL_XO, SL_XO + SL_XO]; // female genotypes
+const SL_M_GENOS = [SL_XB + 'Y',   SL_XO + 'Y'];                    // male genotypes
+
+// All possible sex+phenotype categories, in display order
+const SL_CATS = [
+  {key:'black-f',  label:'Black ♀',  cls:'bar-black',        color:'black'},
+  {key:'tortie-f', label:'Tortie ♀', cls:'bar-tortoiseshell', color:'tortoiseshell'},
+  {key:'orange-f', label:'Orange ♀', cls:'bar-orange',        color:'orange'},
+  {key:'black-m',  label:'Black ♂',  cls:'bar-black',        color:'black'},
+  {key:'orange-m', label:'Orange ♂', cls:'bar-orange',        color:'orange'}
+];
+
+// --- Step 2 state ---
+let slTotals = {'black-f':0, 'tortie-f':0, 'orange-f':0, 'black-m':0, 'orange-m':0};
+
+// --- Step 1: SVG: CAT ---
+// uid keeps clipPath IDs unique per parent display (ct1 / ct2)
+function catSVG(phenotype, uid) {
+  const isBlack  = phenotype === 'black';
+  const isOrange = phenotype === 'orange';
+  const isTortie = phenotype === 'tortoiseshell';
+
+  const bodyFill = isBlack ? '#2a2a2a' : isOrange ? '#d4600a' : '#e8d8b8';
+  const sk       = isBlack ? '#111'    : isOrange ? '#a04808' : '#b09060';
+  const earInner = isBlack ? '#4a2030' : isOrange ? '#f09050' : '#f0c0a0';
+  const eyeIris  = isOrange ? '#d4830a' : '#2e8b57';
+  const muzzle   = isBlack ? '#444'    : isOrange ? '#f0a060' : '#f0c8a0';
+  const cid      = 'ct' + uid;
+
+  const clipDef = isTortie ? `<defs><clipPath id="${cid}">
+    <ellipse cx="65" cy="76" rx="38" ry="22"/>
+    <circle cx="92" cy="52" r="20"/>
+    <polygon points="77,27 73,46 87,46"/>
+    <polygon points="97,27 93,46 107,46"/>
+  </clipPath></defs>` : '';
+
+  const patches = isTortie ? `
+    <ellipse cx="78" cy="72" rx="18" ry="12" fill="#2a2a2a" clip-path="url(#${cid})"/>
+    <ellipse cx="50" cy="80" rx="15" ry="10" fill="#2a2a2a" clip-path="url(#${cid})"/>
+    <ellipse cx="87" cy="45" rx="11" ry="9"  fill="#2a2a2a" clip-path="url(#${cid})"/>
+    <ellipse cx="60" cy="70" rx="14" ry="9"  fill="#d4600a" clip-path="url(#${cid})"/>
+    <ellipse cx="94" cy="58" rx="10" ry="7"  fill="#d4600a" clip-path="url(#${cid})"/>` : '';
+
+  const reoutline = isTortie ? `
+    <ellipse cx="65" cy="76" rx="38" ry="22" fill="none" stroke="${sk}" stroke-width="1.5"/>
+    <circle  cx="92" cy="52" r="20"          fill="none" stroke="${sk}" stroke-width="1.5"/>
+    <polygon points="77,27 73,46 87,46"       fill="none" stroke="${sk}" stroke-width="1.5"/>
+    <polygon points="97,27 93,46 107,46"      fill="none" stroke="${sk}" stroke-width="1.5"/>` : '';
+
+  return `<svg width="130" height="115" viewBox="0 0 130 115" xmlns="http://www.w3.org/2000/svg">
+    ${clipDef}
+    <g class="cat-tail">
+      <path d="M22 76 Q5 60 8 40" stroke="${sk}" stroke-width="5" fill="none" stroke-linecap="round"/>
+    </g>
+    <ellipse cx="65" cy="76" rx="38" ry="22" fill="${bodyFill}" stroke="${sk}" stroke-width="1.5"/>
+    <circle cx="92" cy="52" r="20" fill="${bodyFill}" stroke="${sk}" stroke-width="1.5"/>
+    <polygon points="77,27 73,46 87,46"  fill="${bodyFill}" stroke="${sk}" stroke-width="1.5"/>
+    <polygon points="97,27 93,46 107,46" fill="${bodyFill}" stroke="${sk}" stroke-width="1.5"/>
+    <polygon points="78,31 75,44 85,44"  fill="${earInner}" opacity="0.7"/>
+    <polygon points="98,31 95,44 105,44" fill="${earInner}" opacity="0.7"/>
+    ${patches}
+    ${reoutline}
+    <ellipse cx="106" cy="56" rx="10" ry="8" fill="${muzzle}" stroke="${sk}" stroke-width="0.8"/>
+    <ellipse cx="106" cy="53" rx="3" ry="2" fill="${isBlack ? '#8b3a3a' : '#d05050'}"/>
+    <path d="M103 58 Q106 62 109 58" stroke="${sk}" stroke-width="1" fill="none"/>
+    <circle cx="91" cy="48" r="5" fill="#fff" stroke="${sk}" stroke-width="0.5"/>
+    <circle cx="91" cy="48" r="4" fill="${eyeIris}"/>
+    <ellipse cx="91" cy="48" rx="1.5" ry="3.5" fill="#111"/>
+    <circle cx="90" cy="47" r="1" fill="#fff"/>
+    <line x1="116" y1="53" x2="129" y2="49" stroke="${sk}" stroke-width="0.8" opacity="0.6"/>
+    <line x1="116" y1="56" x2="130" y2="56" stroke="${sk}" stroke-width="0.8" opacity="0.6"/>
+    <line x1="116" y1="59" x2="128" y2="63" stroke="${sk}" stroke-width="0.8" opacity="0.6"/>
+    <rect x="42" y="91" width="8" height="18" rx="4" fill="${bodyFill}" stroke="${sk}" stroke-width="1"/>
+    <rect x="56" y="92" width="8" height="17" rx="4" fill="${bodyFill}" stroke="${sk}" stroke-width="1"/>
+    <rect x="70" y="92" width="8" height="17" rx="4" fill="${bodyFill}" stroke="${sk}" stroke-width="1"/>
+    <rect x="81" y="91" width="8" height="18" rx="4" fill="${bodyFill}" stroke="${sk}" stroke-width="1"/>
+  </svg>`;
+}
+
+// --- Step 1: phenotype helpers ---
+function getSLPhenoKey(g) {
+  if (g === SL_XB + SL_XB || g === SL_XB + 'Y') return 'black';
+  if (g === SL_XO + SL_XO || g === SL_XO + 'Y') return 'orange';
+  return 'tortoiseshell'; // XᴮXᴼ
+}
+
+function getSLPhenoLabel(g) {
+  if (g === SL_XB + SL_XB) return 'Black Fur (female)';
+  if (g === SL_XB + SL_XO) return 'Tortoiseshell (female)';
+  if (g === SL_XO + SL_XO) return 'Orange Fur (female)';
+  if (g === SL_XB + 'Y')   return 'Black Fur (male)';
+  if (g === SL_XO + 'Y')   return 'Orange Fur (male)';
+  return '';
+}
+
+function getSLAlleleParts(g) {
+  if (g === SL_XB + SL_XB) return [{letter:SL_XB, cls:'XB'}, {letter:SL_XB, cls:'XB'}];
+  if (g === SL_XB + SL_XO) return [{letter:SL_XB, cls:'XB'}, {letter:SL_XO, cls:'XO'}];
+  if (g === SL_XO + SL_XO) return [{letter:SL_XO, cls:'XO'}, {letter:SL_XO, cls:'XO'}];
+  if (g === SL_XB + 'Y')   return [{letter:SL_XB, cls:'XB'}, {letter:'Y',   cls:'Y'}];
+  if (g === SL_XO + 'Y')   return [{letter:SL_XO, cls:'XO'}, {letter:'Y',   cls:'Y'}];
+  return [];
+}
+
+// --- Step 1: parent panel display ---
+function updateSLOrganism(id, genotype, animate) {
+  const el  = document.getElementById(id);
+  const uid = id.replace(/\D/g, '');
+  el.innerHTML = catSVG(getSLPhenoKey(genotype), uid);
+  if (animate) {
+    el.classList.remove('cat-wag');
+    void el.offsetWidth;
+    el.classList.add('cat-wag');
+  }
+}
+
+function updateSLAlleles(id, g) {
+  const parts = getSLAlleleParts(g);
+  document.getElementById(id).innerHTML = parts
+    .map(p => `<div class="allele-circle allele-${p.cls}">${p.letter}</div>`)
+    .join('');
+}
+
+function rebuildSLButtons(cid, pNum) {
+  const genos  = pNum === 1 ? SL_F_GENOS : SL_M_GENOS;
+  const active = pNum === 1 ? p1 : p2;
+  const container = document.getElementById(cid);
+  container.innerHTML = genos
+    .map(g => `<button class="geno-btn${g === active ? ' active' : ''}" data-g="${g}">${g}</button>`)
+    .join('');
+  container.querySelectorAll('.geno-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      container.querySelectorAll('.geno-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const g = btn.dataset.g;
+      if (pNum === 1) p1 = g; else p2 = g;
+      updateParentDisplay(pNum, g, true);
+      clearPunnett();
+    });
+  });
+}
+
+// --- Step 2: Punnett square helpers ---
+
+// Split a genotype string into its two gamete alleles.
+// Female (XX): first allele = chars 0-1, second = chars 2-3
+// Male (XY):   X allele = chars 0-(len-2), Y = last char
+function getSLGametes(g) {
+  if (g[g.length - 1] === 'Y') return [g.slice(0, g.length - 1), 'Y'];
+  return [g.slice(0, 2), g.slice(2, 4)];
+}
+
+// Combine one allele from each parent into the offspring genotype.
+// X + Y   → male,   e.g. XᴮY
+// X + X   → female, canonical order XᴮXᴼ (not XᴼXᴮ)
+function makeSLOffspringGeno(motherAllele, fatherAllele) {
+  if (fatherAllele === 'Y') return motherAllele + 'Y';
+  if (motherAllele === SL_XO && fatherAllele === SL_XB) return SL_XB + SL_XO;
+  return motherAllele + fatherAllele;
+}
+
+// Returns a combined color-sex key: 'black-f', 'tortie-f', 'orange-f', 'black-m', 'orange-m'
+function getSLPhenoSexKey(g) {
+  const pk     = getSLPhenoKey(g);
+  const isMale = g[g.length - 1] === 'Y';
+  const color  = pk === 'tortoiseshell' ? 'tortie' : pk;
+  return color + (isMale ? '-m' : '-f');
+}
+
+function getCellBgSL(g) {
+  const bgs = {black:'#f0f4f0', orange:'#fff5ee', tortoiseshell:'#f5f0ec'};
+  return bgs[getSLPhenoKey(g)] || '#fff';
+}
+
+// --- Step 2: Punnett square ---
+function slDoCross() {
+  const [ma0, ma1] = getSLGametes(p1); // mother's alleles → rows
+  const [fa0, fa1] = getSLGametes(p2); // father's alleles → cols
+
+  document.getElementById('row1').textContent = ma0;
+  document.getElementById('row2').textContent = ma1;
+  document.getElementById('col1').textContent = fa0;
+  document.getElementById('col2').textContent = fa1;
+
+  const cells = [
+    {id:'cell00', g: makeSLOffspringGeno(ma0, fa0)},
+    {id:'cell01', g: makeSLOffspringGeno(ma0, fa1)},
+    {id:'cell10', g: makeSLOffspringGeno(ma1, fa0)},
+    {id:'cell11', g: makeSLOffspringGeno(ma1, fa1)}
+  ];
+  punnettData = cells.map(c => c.g); // keep in sync so !punnettData guard works
+
+  cells.forEach((c, i) => {
+    setTimeout(() => {
+      const el   = document.getElementById(c.id);
+      const pk      = getSLPhenoKey(c.g);
+      const isMale  = c.g[c.g.length - 1] === 'Y';
+      const sex     = isMale ? '♂' : '♀';
+      const sexCls  = isMale ? 'sex-m' : 'sex-f';
+      el.querySelector('.cell-geno').textContent = c.g;
+      el.querySelector('.cell-dot').className    = 'cell-dot dot-' + pk;
+      const sexEl = el.querySelector('.cell-sex');
+      sexEl.textContent = sex;
+      sexEl.className   = 'cell-sex ' + sexCls;
+      el.className     = 'punnett-cell filled';
+      el.style.background = getCellBgSL(c.g);
+      if (i === 3) slShowResults();
+    }, 200 + i * 300);
+  });
+}
+
+function slSexSpan(lbl) {
+  return lbl.replace('♀', '<span class="sex-f">♀</span>')
+            .replace('♂', '<span class="sex-m">♂</span>');
+}
+
+function slShowResults() {
+  // Genotype ratio
+  const gCounts = {};
+  punnettData.forEach(g => gCounts[g] = (gCounts[g] || 0) + 1);
+  const genoStr = Object.entries(gCounts).map(([g, n]) => `${n} ${g}`).join(' : ');
+
+  // Phenotype+sex ratio, e.g. "1 Tortoiseshell ♀ : 1 Black ♂ : ..."
+  const psCounts = {};
+  punnettData.forEach(g => {
+    const pk  = getSLPhenoKey(g);
+    const sex = g[g.length - 1] === 'Y' ? '♂' : '♀';
+    const lbl = pk.charAt(0).toUpperCase() + pk.slice(1) + ' ' + sex;
+    psCounts[lbl] = (psCounts[lbl] || 0) + 1;
+  });
+  const phenoStr = Object.entries(psCounts).map(([p, n]) => `${n} ${slSexSpan(p)}`).join(' : ');
+
+  // Build predicted % by sex+color key for chart
+  window.slPredictedByKey = {};
+  punnettData.forEach(g => {
+    const key = getSLPhenoSexKey(g);
+    window.slPredictedByKey[key] = (window.slPredictedByKey[key] || 0) + 25;
+  });
+
+  const pctStr = Object.entries(psCounts)
+    .map(([lbl, n]) => `${Math.round(n / 4 * 100)}% ${slSexSpan(lbl)}`)
+    .join(', ');
+
+  document.getElementById('genoRatio').innerHTML =
+    `<div class="ratio-row"><span class="ratio-label">Genotype Ratio:</span><span class="ratio-val">${genoStr}</span></div>`;
+  document.getElementById('phenoRatio').innerHTML =
+    `<div class="ratio-row"><span class="ratio-label">Phenotype Ratio:</span><span class="ratio-val">${phenoStr}</span></div>
+     <div class="ratio-row"><span class="ratio-label">Predicted %:</span><span class="ratio-val">${pctStr}</span></div>`;
+
+  document.getElementById('resultsBox').style.display  = 'block';
+  document.getElementById('litterSection').style.display = 'block';
+  document.getElementById('litterTitle').textContent   = '🐱 Breed Kittens — Test the Prediction!';
+  document.getElementById('breedBtn').textContent      = '🐱 Breed Kittens';
+  document.getElementById('breedManyBtn').textContent  = 'Breed 10 Litters';
+  document.getElementById('sizeLabel').textContent     = 'Litter size:';
+}
+
+// --- Step 2: litter simulation ---
+function slRandomOffspring() {
+  return getSLPhenoSexKey(punnettData[Math.floor(Math.random() * 4)]);
+}
+
+function slBreedLitter(n) {
+  if (!punnettData) return;
+  const grid = document.getElementById('puppyGrid');
+  grid.innerHTML = '';
+  for (let i = 0; i < n; i++) {
+    const key   = slRandomOffspring();
+    slTotals[key] = (slTotals[key] || 0) + 1;
+    totalPups++;
+    const color   = SL_CATS.find(c => c.key === key)?.color || 'black';
+    const isMale  = key.endsWith('-m');
+    const item    = document.createElement('div');
+    item.className = 'kitten-item';
+    const pup   = document.createElement('div');
+    pup.className = 'puppy ' + color;
+    const lbl   = document.createElement('span');
+    lbl.className = 'kitten-sex ' + (isMale ? 'sex-m' : 'sex-f');
+    lbl.textContent = isMale ? '♂' : '♀';
+    item.appendChild(pup);
+    item.appendChild(lbl);
+    grid.appendChild(item);
+    setTimeout(() => pup.classList.add('show'), 20 + i * 15);
+  }
+  slUpdateChart();
+}
+
+function slBreedMany(times) {
+  if (!punnettData) return;
+  const n = times * litterSize;
+  for (let i = 0; i < n; i++) {
+    const key = slRandomOffspring();
+    slTotals[key] = (slTotals[key] || 0) + 1;
+    totalPups++;
+  }
+
+  const grid    = document.getElementById('puppyGrid');
+  const showMax = Math.min(totalPups, 200);
+  const preds   = window.slPredictedByKey || {};
+  const activeCats = SL_CATS.filter(c => (preds[c.key] || 0) > 0);
+  grid.innerHTML = '';
+  let filled = 0;
+  activeCats.forEach(c => {
+    const count  = Math.round(showMax * ((slTotals[c.key] || 0) / totalPups));
+    const isMale = c.key.endsWith('-m');
+    for (let i = 0; i < count && filled < showMax; i++, filled++) {
+      const item = document.createElement('div');
+      item.className = 'kitten-item';
+      const pup = document.createElement('div');
+      pup.className = 'puppy show ' + c.color;
+      const lbl = document.createElement('span');
+      lbl.className = 'kitten-sex ' + (isMale ? 'sex-m' : 'sex-f');
+      lbl.textContent = isMale ? '♂' : '♀';
+      item.appendChild(pup);
+      item.appendChild(lbl);
+      grid.appendChild(item);
+    }
+  });
+  if (totalPups > 200) {
+    const note = document.createElement('div');
+    note.style.cssText = 'font-size:0.72em;color:#5a7a8a;width:100%;text-align:center;margin-top:6px';
+    note.textContent = `Showing 200 of ${totalPups} total`;
+    grid.appendChild(note);
+  }
+  slUpdateChart();
+}
+
+function slUpdateChart() {
+  const chart = document.getElementById('chartContainer');
+  chart.style.display = 'block';
+  document.getElementById('totalsBar').style.display = 'flex';
+
+  const preds      = window.slPredictedByKey || {};
+  // Only render categories that are possible (predicted > 0) for this cross
+  const activeCats = SL_CATS.filter(c => (preds[c.key] || 0) > 0);
+
+  let html = '<h3 style="font-size:0.82em;color:#1a5276;margin-bottom:6px">Predicted vs. Actual Results</h3>';
+  activeCats.forEach((cat, i) => {
+    const pred = preds[cat.key] || 0;
+    const act  = totalPups > 0 ? ((slTotals[cat.key] || 0) / totalPups * 100) : 0;
+    if (i > 0) html += '<div style="height:4px"></div>';
+    const catLabelHtml = slSexSpan(cat.label);
+    html += `
+      <div class="chart-row">
+        <div class="chart-label">${catLabelHtml}<br><span style="font-weight:400;color:#8a9aaa">(predicted)</span></div>
+        <div class="chart-bar-bg"><div class="chart-bar ${cat.cls} predicted" style="width:${pred}%">${pred > 8 ? pred + '%' : ''}</div></div>
+      </div>
+      <div class="chart-row">
+        <div class="chart-label">${catLabelHtml}<br><span style="font-weight:400;color:#8a9aaa">(actual)</span></div>
+        <div class="chart-bar-bg"><div class="chart-bar ${cat.cls} actual" style="width:${act.toFixed(1)}%">${act > 8 ? act.toFixed(1) + '%' : ''}</div></div>
+      </div>`;
+  });
+  html += `<div class="chart-legend">
+    <span><span class="legend-swatch" style="background:rgba(0,0,0,0.3)"></span>Predicted</span>
+    <span><span class="legend-swatch" style="background:rgba(0,0,0,0.8)"></span>Actual</span>
+  </div>`;
+  chart.innerHTML = html;
+
+  // Totals bar — show all active categories
+  const tb       = document.getElementById('totalsBar');
+  const tbParts  = activeCats.map(c => {
+    const cnt = slTotals[c.key] || 0;
+    const pct = totalPups > 0 ? (cnt / totalPups * 100).toFixed(1) : '0.0';
+    return `${c.label}: <b>${cnt}</b> (<b>${pct}</b>%)`;
+  });
+  tb.innerHTML = `Total: <b>${totalPups}</b> &nbsp;|&nbsp; ` + tbParts.join(' &nbsp;|&nbsp; ');
+}
+</script>
+</body>
+</html>
