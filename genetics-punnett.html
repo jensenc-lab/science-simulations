@@ -74,6 +74,22 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#e8ecf1;color:#1a2a3
 .dot-pink{background:#f1948a;border-color:#e74c3c}
 .dot-roan{background:linear-gradient(135deg,#c0392b 50%,#f0f0f0 50%);border-color:#c0392b}
 .dot-white{background:#f0f0f0;border-color:#aaa}
+/* Mini dog in Punnett cells (simple dominance only) */
+.punnett-cell .cell-dot.cell-dog{width:auto;height:auto;border-radius:0;border:none;background:none;line-height:0;margin:2px auto 0}
+/* Mini dog puppies in litter grid (simple dominance only) */
+.puppy.puppy-dog{width:auto;height:auto;border-radius:0;border:none;background:none;box-shadow:none}
+/* Mini flower in Punnett cells (incomplete dominance only) */
+.punnett-cell .cell-dot.cell-flower{width:auto;height:auto;border-radius:0;border:none;background:none;line-height:0;margin:2px auto 0}
+/* Mini flower offspring in litter grid (incomplete dominance only) */
+.puppy.puppy-flower{width:auto;height:auto;border-radius:0;border:none;background:none;box-shadow:none}
+/* Mini cow in Punnett cells (codominance only) */
+.punnett-cell .cell-dot.cell-cow{width:auto;height:auto;border-radius:0;border:none;background:none;line-height:0;margin:2px auto 0}
+/* Mini cow offspring in litter grid (codominance only) */
+.puppy.puppy-cow{width:auto;height:auto;border-radius:0;border:none;background:none;box-shadow:none}
+/* Mini cat in Punnett cells (sex-linked only) */
+.punnett-cell .cell-dot.cell-cat{width:auto;height:auto;border-radius:0;border:none;background:none;line-height:0;margin:2px auto 0}
+/* Mini cat offspring in kitten grid (sex-linked only) */
+.puppy.puppy-cat{width:auto;height:auto;border-radius:0;border:none;background:none;box-shadow:none}
 /* Sex-linked dot classes */
 .dot-orange{background:#e67e22;border-color:#c0602a}
 .dot-tortoiseshell{background:linear-gradient(135deg,#2a2a2a 50%,#e67e22 50%);border-color:#555}
@@ -327,6 +343,55 @@ function dogSVG(color) {
   </svg>`;
 }
 
+// === SVG: MINI DOG (for Punnett cells and litter grid in simple dominance) ===
+function miniDogSVG(phenoKey, size) {
+  const fill = phenoKey === 'black' ? '#2a2a2a' : '#8B4513';
+  const nose = phenoKey === 'black' ? '#111'    : '#5a2a0a';
+  const hi   = phenoKey === 'black' ? '#3a3a3a' : '#a06830';
+  const h    = Math.round(size * 110 / 120);
+  return `<svg width="${size}" height="${h}" viewBox="0 0 120 110" xmlns="http://www.w3.org/2000/svg">
+    <ellipse cx="58" cy="68" rx="38" ry="26" fill="${fill}"/>
+    <circle cx="88" cy="42" r="22" fill="${fill}"/>
+    <circle cx="92" cy="37" r="10" fill="${hi}" opacity="0.3"/>
+    <ellipse cx="74" cy="20" rx="8" ry="14" fill="${fill}" transform="rotate(-15,74,20)"/>
+    <ellipse cx="100" cy="22" rx="7" ry="13" fill="${fill}" transform="rotate(10,100,22)"/>
+    <ellipse cx="105" cy="48" rx="12" ry="8" fill="${hi}"/>
+    <ellipse cx="113" cy="46" rx="4" ry="3" fill="${nose}"/>
+    <circle cx="92" cy="40" r="4" fill="#fff"/>
+    <circle cx="93" cy="40" r="2.5" fill="#111"/>
+    <circle cx="94" cy="39" r="1" fill="#fff"/>
+    <path d="M105 52 Q110 56 113 52" stroke="${nose}" stroke-width="1.2" fill="none"/>
+    <rect x="32" y="85" width="8" height="18" rx="4" fill="${fill}"/>
+    <rect x="48" y="87" width="8" height="16" rx="4" fill="${fill}"/>
+    <rect x="65" y="87" width="8" height="16" rx="4" fill="${fill}"/>
+    <rect x="78" y="85" width="8" height="18" rx="4" fill="${fill}"/>
+    <path d="M20 62 Q8 40 16 30" stroke="${fill}" stroke-width="6" fill="none" stroke-linecap="round"/>
+    <path d="M70 56 Q88 68 100 55" stroke="#e74c3c" stroke-width="3" fill="none"/>
+    <circle cx="86" cy="62" r="3" fill="#f1c40f"/>
+  </svg>`;
+}
+
+// === SVG: MINI FLOWER (for Punnett cells and offspring grid in incomplete dominance) ===
+function miniFlowerSVG(phenoKey, size) {
+  const pFill   = phenoKey === 'red' ? '#e74c3c' : phenoKey === 'pink' ? '#f1948a' : '#fafafa';
+  const pStroke = phenoKey === 'white' ? '#bbb' : phenoKey === 'red' ? '#c0392b' : '#e88080';
+  const h = Math.round(size * 120 / 110);
+  return `<svg width="${size}" height="${h}" viewBox="0 0 110 120" xmlns="http://www.w3.org/2000/svg">
+    <line x1="55" y1="92" x2="55" y2="118" stroke="#27ae60" stroke-width="4" stroke-linecap="round"/>
+    <ellipse cx="46" cy="108" rx="9" ry="5" fill="#2ecc71" transform="rotate(-30,46,108)"/>
+    <g transform="rotate(0,55,60)"><ellipse cx="55" cy="36" rx="12" ry="20" fill="${pFill}" stroke="${pStroke}" stroke-width="1.2"/></g>
+    <g transform="rotate(72,55,60)"><ellipse cx="55" cy="36" rx="12" ry="20" fill="${pFill}" stroke="${pStroke}" stroke-width="1.2"/></g>
+    <g transform="rotate(144,55,60)"><ellipse cx="55" cy="36" rx="12" ry="20" fill="${pFill}" stroke="${pStroke}" stroke-width="1.2"/></g>
+    <g transform="rotate(216,55,60)"><ellipse cx="55" cy="36" rx="12" ry="20" fill="${pFill}" stroke="${pStroke}" stroke-width="1.2"/></g>
+    <g transform="rotate(288,55,60)"><ellipse cx="55" cy="36" rx="12" ry="20" fill="${pFill}" stroke="${pStroke}" stroke-width="1.2"/></g>
+    <circle cx="55" cy="60" r="15" fill="#f39c12"/>
+    <circle cx="55" cy="60" r="11" fill="#e67e22"/>
+    <circle cx="51" cy="57" r="2" fill="#f39c12" opacity="0.8"/>
+    <circle cx="58" cy="56" r="2" fill="#f39c12" opacity="0.8"/>
+    <circle cx="53" cy="63" r="2" fill="#f39c12" opacity="0.8"/>
+  </svg>`;
+}
+
 // === SVG: FLOWER ===
 function flowerSVG(phenotype) {
   const pFill   = phenotype==='red' ? '#e74c3c' : phenotype==='pink' ? '#f1948a' : '#fafafa';
@@ -344,6 +409,62 @@ function flowerSVG(phenotype) {
     <circle cx="51" cy="57" r="2" fill="#f39c12" opacity="0.8"/>
     <circle cx="58" cy="56" r="2" fill="#f39c12" opacity="0.8"/>
     <circle cx="53" cy="63" r="2" fill="#f39c12" opacity="0.8"/>
+  </svg>`;
+}
+
+// === SVG: MINI COW (for Punnett cells and offspring grid in codominance) ===
+// Roan cows need unique clipPath IDs — uid counter increments only for roan.
+let _miniCowUid = 0;
+
+function miniCowSVG(phenoKey, size) {
+  const isRed  = phenoKey === 'red';
+  const isRoan = phenoKey === 'roan';
+  const uid    = isRoan ? 'mc' + (++_miniCowUid) : '';
+
+  const bodyFill  = isRed ? '#c0392b' : '#fafafa';
+  const sk        = isRed ? '#922b21' : '#bbb';
+  const snoutFill = isRed ? '#e57373' : '#f0c8a0';
+  const snoutSk   = isRed ? '#c0392b' : '#d4a880';
+  const nostril   = isRed ? '#7b241c' : '#b08060';
+  const h         = Math.round(size * 58 / 80);
+
+  // ClipPath clips red patches to the cow's silhouette (roan only)
+  const clipDef = isRoan ? `<defs><clipPath id="${uid}">
+    <ellipse cx="35" cy="36" rx="25" ry="14"/>
+    <circle  cx="63" cy="26" r="12"/>
+    <ellipse cx="56" cy="15" rx="4" ry="5" transform="rotate(-20,56,15)"/>
+    <ellipse cx="70" cy="15" rx="4" ry="5" transform="rotate(10,70,15)"/>
+  </clipPath></defs>` : '';
+
+  // Red patches clipped to the cow outline
+  const patches = isRoan ? `
+    <ellipse cx="22" cy="40" rx="15" ry="10" fill="#c0392b" clip-path="url(#${uid})"/>
+    <ellipse cx="58" cy="24" rx="10" ry="8"  fill="#c0392b" clip-path="url(#${uid})"/>` : '';
+
+  // Re-draw outline on top of patches so the silhouette stays crisp
+  const reoutline = isRoan ? `
+    <ellipse cx="35" cy="36" rx="25" ry="14" fill="none" stroke="#bbb" stroke-width="1"/>
+    <circle  cx="63" cy="26" r="12"          fill="none" stroke="#bbb" stroke-width="1"/>
+    <ellipse cx="56" cy="15" rx="4" ry="5" fill="none" stroke="#bbb" stroke-width="1" transform="rotate(-20,56,15)"/>
+    <ellipse cx="70" cy="15" rx="4" ry="5" fill="none" stroke="#bbb" stroke-width="1" transform="rotate(10,70,15)"/>` : '';
+
+  return `<svg width="${size}" height="${h}" viewBox="0 0 80 58" xmlns="http://www.w3.org/2000/svg">
+    ${clipDef}
+    <ellipse cx="35" cy="36" rx="25" ry="14" fill="${bodyFill}" stroke="${sk}" stroke-width="1"/>
+    <circle  cx="63" cy="26" r="12"          fill="${bodyFill}" stroke="${sk}" stroke-width="1"/>
+    <ellipse cx="56" cy="15" rx="4" ry="5" fill="${bodyFill}" stroke="${sk}" stroke-width="1" transform="rotate(-20,56,15)"/>
+    <ellipse cx="70" cy="15" rx="4" ry="5" fill="${bodyFill}" stroke="${sk}" stroke-width="1" transform="rotate(10,70,15)"/>
+    ${patches}
+    ${reoutline}
+    <ellipse cx="74" cy="30" rx="6" ry="4" fill="${snoutFill}" stroke="${snoutSk}" stroke-width="0.8"/>
+    <ellipse cx="72" cy="31" rx="1.5" ry="1" fill="${nostril}"/>
+    <circle  cx="65" cy="23" r="2.5" fill="#fff" stroke="${sk}" stroke-width="0.5"/>
+    <circle  cx="65" cy="23" r="1.8" fill="#333"/>
+    <circle  cx="65.5" cy="22.5" r="0.6" fill="#fff"/>
+    <rect x="16" y="48" width="5" height="10" rx="2" fill="${bodyFill}" stroke="${sk}" stroke-width="0.8"/>
+    <rect x="24" y="49" width="5" height="9"  rx="2" fill="${bodyFill}" stroke="${sk}" stroke-width="0.8"/>
+    <rect x="38" y="49" width="5" height="9"  rx="2" fill="${bodyFill}" stroke="${sk}" stroke-width="0.8"/>
+    <rect x="46" y="48" width="5" height="10" rx="2" fill="${bodyFill}" stroke="${sk}" stroke-width="0.8"/>
   </svg>`;
 }
 
@@ -511,7 +632,9 @@ function clearPunnett() {
     const el = document.getElementById(id);
     el.className = 'punnett-cell empty';
     el.querySelector('.cell-geno').textContent = '';
-    el.querySelector('.cell-dot').className = 'cell-dot';
+    const dot = el.querySelector('.cell-dot');
+    dot.className = 'cell-dot';
+    dot.innerHTML = '';
     el.querySelector('.cell-sex').textContent = '';
     el.style.background = '';
   });
@@ -544,7 +667,21 @@ function doCross() {
       const el = document.getElementById(c.id);
       const pk = getPhenoKey(c.g);
       el.querySelector('.cell-geno').textContent = c.g;
-      el.querySelector('.cell-dot').className = 'cell-dot dot-' + pk;
+      if (mode === 'simple') {
+        const dot = el.querySelector('.cell-dot');
+        dot.className = 'cell-dot cell-dog';
+        dot.innerHTML = miniDogSVG(pk, 40);
+      } else if (mode === 'incomplete') {
+        const dot = el.querySelector('.cell-dot');
+        dot.className = 'cell-dot cell-flower';
+        dot.innerHTML = miniFlowerSVG(pk, 40);
+      } else if (mode === 'codominance') {
+        const dot = el.querySelector('.cell-dot');
+        dot.className = 'cell-dot cell-cow';
+        dot.innerHTML = miniCowSVG(pk, 40);
+      } else {
+        el.querySelector('.cell-dot').className = 'cell-dot dot-' + pk;
+      }
       el.className = 'punnett-cell filled';
       el.style.background = getCellBg(c.g);
       if (i===3) showResults();
@@ -617,7 +754,18 @@ function breedLitter(n) {
     const pk = randomOffspring();
     totals[pk]++; totalPups++;
     const pup = document.createElement('div');
-    pup.className = 'puppy ' + pk;
+    if (mode === 'simple') {
+      pup.className = 'puppy puppy-dog';
+      pup.innerHTML = miniDogSVG(pk, 30);
+    } else if (mode === 'incomplete') {
+      pup.className = 'puppy puppy-flower';
+      pup.innerHTML = miniFlowerSVG(pk, 30);
+    } else if (mode === 'codominance') {
+      pup.className = 'puppy puppy-cow';
+      pup.innerHTML = miniCowSVG(pk, 30);
+    } else {
+      pup.className = 'puppy ' + pk;
+    }
     grid.appendChild(pup);
     setTimeout(() => pup.classList.add('show'), 20 + i*15);
   }
@@ -639,7 +787,18 @@ function breedMany(times) {
     const count = Math.round(showMax * (totals[k]/totalPups));
     for (let i=0; i<count && filled<showMax; i++, filled++) {
       const pup = document.createElement('div');
-      pup.className = 'puppy show ' + k;
+      if (mode === 'simple') {
+        pup.className = 'puppy puppy-dog show';
+        pup.innerHTML = miniDogSVG(k, 30);
+      } else if (mode === 'incomplete') {
+        pup.className = 'puppy puppy-flower show';
+        pup.innerHTML = miniFlowerSVG(k, 30);
+      } else if (mode === 'codominance') {
+        pup.className = 'puppy puppy-cow show';
+        pup.innerHTML = miniCowSVG(k, 30);
+      } else {
+        pup.className = 'puppy show ' + k;
+      }
       grid.appendChild(pup);
     }
   });
@@ -869,6 +1028,68 @@ const SL_CATS = [
 // --- Step 2 state ---
 let slTotals = {'black-f':0, 'tortie-f':0, 'orange-f':0, 'black-m':0, 'orange-m':0};
 
+// --- Step 1: SVG: MINI CAT (for Punnett cells and kitten grid in sex-linked) ---
+// Tortoiseshell cats need unique clipPath IDs — uid counter increments only for tortie.
+let _miniCatUid = 0;
+
+function miniCatSVG(phenoKey, size) {
+  const isBlack  = phenoKey === 'black';
+  const isOrange = phenoKey === 'orange';
+  const isTortie = phenoKey === 'tortoiseshell';
+  const uid      = isTortie ? 'mct' + (++_miniCatUid) : '';
+
+  const bodyFill = isBlack  ? '#2a2a2a' : isOrange ? '#d4600a' : '#e8d8b8';
+  const sk       = isBlack  ? '#111'    : isOrange ? '#a04808' : '#b09060';
+  const earInner = isBlack  ? '#4a2030' : isOrange ? '#f09050' : '#f0c0a0';
+  const eyeIris  = isOrange ? '#d4830a' : '#2e8b57';
+  const h        = Math.round(size * 65 / 80);
+
+  // ClipPath clips patches to the cat's silhouette (tortie only)
+  const clipDef = isTortie ? `<defs><clipPath id="${uid}">
+    <ellipse cx="38" cy="44" rx="22" ry="13"/>
+    <circle  cx="58" cy="30" r="12"/>
+    <polygon points="48,16 45,29 56,29"/>
+    <polygon points="64,16 61,29 70,29"/>
+  </clipPath></defs>` : '';
+
+  // Black and orange patches clipped to the cat's outline
+  const patches = isTortie ? `
+    <ellipse cx="28" cy="47" rx="14" ry="10" fill="#2a2a2a" clip-path="url(#${uid})"/>
+    <ellipse cx="53" cy="27" rx="9"  ry="7"  fill="#2a2a2a" clip-path="url(#${uid})"/>
+    <ellipse cx="44" cy="42" rx="11" ry="8"  fill="#d4600a" clip-path="url(#${uid})"/>
+    <ellipse cx="64" cy="32" rx="7"  ry="5"  fill="#d4600a" clip-path="url(#${uid})"/>` : '';
+
+  // Re-draw silhouette outline on top so the shape stays crisp
+  const reoutline = isTortie ? `
+    <ellipse cx="38" cy="44" rx="22" ry="13" fill="none" stroke="#b09060" stroke-width="1"/>
+    <circle  cx="58" cy="30" r="12"          fill="none" stroke="#b09060" stroke-width="1"/>
+    <polygon points="48,16 45,29 56,29"       fill="none" stroke="#b09060" stroke-width="1"/>
+    <polygon points="64,16 61,29 70,29"       fill="none" stroke="#b09060" stroke-width="1"/>` : '';
+
+  return `<svg width="${size}" height="${h}" viewBox="0 0 80 65" xmlns="http://www.w3.org/2000/svg">
+    ${clipDef}
+    <path d="M14 44 Q2 34 5 22" stroke="${sk}" stroke-width="4" fill="none" stroke-linecap="round"/>
+    <ellipse cx="38" cy="44" rx="22" ry="13" fill="${bodyFill}" stroke="${sk}" stroke-width="1"/>
+    <circle  cx="58" cy="30" r="12"          fill="${bodyFill}" stroke="${sk}" stroke-width="1"/>
+    <polygon points="48,16 45,29 56,29"  fill="${bodyFill}" stroke="${sk}" stroke-width="1"/>
+    <polygon points="64,16 61,29 70,29"  fill="${bodyFill}" stroke="${sk}" stroke-width="1"/>
+    <polygon points="49,18 47,27 54,27"  fill="${earInner}" opacity="0.7"/>
+    <polygon points="65,18 63,27 69,27"  fill="${earInner}" opacity="0.7"/>
+    ${patches}
+    ${reoutline}
+    <ellipse cx="68" cy="34" rx="5" ry="4" fill="${isBlack ? '#444' : '#f0a060'}" stroke="${sk}" stroke-width="0.8"/>
+    <ellipse cx="66" cy="35" rx="1.5" ry="1" fill="${isBlack ? '#8b3a3a' : '#d05050'}"/>
+    <circle  cx="58" cy="27" r="2.5" fill="#fff" stroke="${sk}" stroke-width="0.5"/>
+    <circle  cx="58" cy="27" r="1.8" fill="${eyeIris}"/>
+    <ellipse cx="58" cy="27" rx="0.8" ry="2" fill="#111"/>
+    <circle  cx="57.5" cy="26.5" r="0.6" fill="#fff"/>
+    <rect x="20" y="55" width="4" height="10" rx="2" fill="${bodyFill}" stroke="${sk}" stroke-width="0.8"/>
+    <rect x="27" y="56" width="4" height="9"  rx="2" fill="${bodyFill}" stroke="${sk}" stroke-width="0.8"/>
+    <rect x="38" y="56" width="4" height="9"  rx="2" fill="${bodyFill}" stroke="${sk}" stroke-width="0.8"/>
+    <rect x="45" y="55" width="4" height="10" rx="2" fill="${bodyFill}" stroke="${sk}" stroke-width="0.8"/>
+  </svg>`;
+}
+
 // --- Step 1: SVG: CAT ---
 // uid keeps clipPath IDs unique per parent display (ct1 / ct2)
 function catSVG(phenotype, uid) {
@@ -1054,7 +1275,9 @@ function slDoCross() {
       const sex     = isMale ? '♂' : '♀';
       const sexCls  = isMale ? 'sex-m' : 'sex-f';
       el.querySelector('.cell-geno').textContent = c.g;
-      el.querySelector('.cell-dot').className    = 'cell-dot dot-' + pk;
+      const dot = el.querySelector('.cell-dot');
+      dot.className = 'cell-dot cell-cat';
+      dot.innerHTML = miniCatSVG(pk, 40);
       const sexEl = el.querySelector('.cell-sex');
       sexEl.textContent = sex;
       sexEl.className   = 'cell-sex ' + sexCls;
@@ -1129,7 +1352,8 @@ function slBreedLitter(n) {
     const item    = document.createElement('div');
     item.className = 'kitten-item';
     const pup   = document.createElement('div');
-    pup.className = 'puppy ' + color;
+    pup.className = 'puppy puppy-cat';
+    pup.innerHTML = miniCatSVG(color, 30);
     const lbl   = document.createElement('span');
     lbl.className = 'kitten-sex ' + (isMale ? 'sex-m' : 'sex-f');
     lbl.textContent = isMale ? '♂' : '♀';
@@ -1163,7 +1387,8 @@ function slBreedMany(times) {
       const item = document.createElement('div');
       item.className = 'kitten-item';
       const pup = document.createElement('div');
-      pup.className = 'puppy show ' + c.color;
+      pup.className = 'puppy puppy-cat show';
+      pup.innerHTML = miniCatSVG(c.color, 30);
       const lbl = document.createElement('span');
       lbl.className = 'kitten-sex ' + (isMale ? 'sex-m' : 'sex-f');
       lbl.textContent = isMale ? '♂' : '♀';

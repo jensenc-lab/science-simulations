@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Conservation of Matter: Virtual Reaction Lab</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- ===== HEADER ===== -->
+  <header class="header">
+    <h1>⚗️ Conservation of Matter: Virtual Reaction Lab</h1>
+    <button class="std-badge" id="stdBadge">8.1.6</button>
+  </header>
+
+  <!-- Standard Popup -->
+  <div class="overlay" id="overlay"></div>
+  <div class="info-popup" id="stdPopup">
+    <button class="close-btn" id="closePopup" aria-label="Close">&times;</button>
+    <h3>Utah SEEd Standard 8.1.6</h3>
+    <p>Develop a model to describe how the total number of atoms does not change in a chemical reaction, indicating that matter is conserved.</p>
+  </div>
+
+  <main>
+
+    <!-- ===== REACTION SELECTOR ===== -->
+    <section class="reaction-selector" aria-label="Choose a reaction">
+      <div class="reaction-cards">
+        <button class="reaction-card active" data-reaction="bakingSodaVinegar" aria-pressed="true">
+          <span class="reaction-icon">🧪</span>
+          <span class="reaction-name">Baking Soda + Vinegar</span>
+        </button>
+        <button class="reaction-card" data-reaction="burningCandle" aria-pressed="false">
+          <span class="reaction-icon">🔥</span>
+          <span class="reaction-name">Burning a Candle</span>
+        </button>
+        <button class="reaction-card" data-reaction="rustingIron" aria-pressed="false">
+          <span class="reaction-icon">🪨</span>
+          <span class="reaction-name">Rusting Iron</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ===== MAIN SIMULATION AREA ===== -->
+    <section class="simulation-area" aria-label="Reaction simulation">
+
+      <!-- Reactants / Arrow / Products -->
+      <div class="reaction-display">
+
+        <div class="side reactants-side">
+          <h2 class="side-label">Reactants</h2>
+          <div class="molecule-display" id="reactantsDisplay" aria-live="polite">
+            <!-- Populated by app.js -->
+          </div>
+        </div>
+
+        <div class="reaction-center">
+          <div class="reaction-arrow">
+            <button class="react-btn" id="reactBtn" style="display:none">React!</button>
+            <span class="arrow-symbol">→</span>
+            <button class="reset-btn" id="resetBtn" style="display:none">↺ Reset</button>
+          </div>
+        </div>
+
+        <div class="side products-side">
+          <h2 class="side-label">Products</h2>
+          <div class="molecule-display" id="productsDisplay" aria-live="polite">
+            <!-- Populated by app.js -->
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Atom Inventory Panel -->
+      <div class="atom-inventory">
+        <h3 class="inventory-title">⚖️ Atom Inventory</h3>
+        <p class="inventory-note">Atoms are neither created nor destroyed — they are rearranged into new molecules.</p>
+        <div class="table-wrapper">
+          <table class="inventory-table" id="inventoryTable" aria-label="Atom counts for reactants and products">
+            <thead>
+              <tr>
+                <th scope="col">Element</th>
+                <th scope="col">Symbol</th>
+                <th scope="col">Color</th>
+                <th scope="col">Reactant Count</th>
+                <th scope="col">Product Count</th>
+                <th scope="col">Match?</th>
+              </tr>
+            </thead>
+            <tbody id="inventoryBody" aria-live="polite">
+              <!-- Populated by app.js -->
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Conservation Check callout -->
+        <div class="conservation-check check-ok" id="conservationCheck">
+          <span class="check-icon" aria-hidden="true">✅</span>
+          <div><strong>MATTER IS CONSERVED</strong> — The total number of each type of atom is the same before and after the reaction. Atoms are rearranged, not created or destroyed.</div>
+        </div>
+
+        <!-- What If? toggle -->
+        <div class="whatif-wrap">
+          <button class="whatif-btn" id="whatifBtn">🔬 What if atoms COULD be created or destroyed?</button>
+          <div class="whatif-note" id="whatifNote" style="display:none">
+            This is fictional! In real chemistry, this NEVER happens. Atoms cannot appear or disappear in a reaction — only rearrange.
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- ===== BOTTOM PANELS ===== -->
+    <section class="bottom-panels">
+
+      <!-- Key Vocabulary -->
+      <details class="collapsible-panel" open>
+        <summary class="panel-summary">📚 Key Vocabulary</summary>
+        <div class="panel-content vocab-grid">
+          <div class="vocab-item">
+            <dt>Atom</dt>
+            <dd>The smallest unit of an element that keeps its chemical properties.</dd>
+          </div>
+          <div class="vocab-item">
+            <dt>Molecule</dt>
+            <dd>Two or more atoms bonded together (like H₂O or CO₂).</dd>
+          </div>
+          <div class="vocab-item">
+            <dt>Reactant</dt>
+            <dd>A substance that goes INTO a chemical reaction (the starting materials). Found on the left side of a chemical equation.</dd>
+          </div>
+          <div class="vocab-item">
+            <dt>Product</dt>
+            <dd>A substance that comes OUT of a chemical reaction (what's made). Found on the right side of a chemical equation.</dd>
+          </div>
+          <div class="vocab-item">
+            <dt>Chemical Reaction</dt>
+            <dd>A process where atoms in reactants rearrange to form new products.</dd>
+          </div>
+          <div class="vocab-item">
+            <dt>Law of Conservation of Matter</dt>
+            <dd>In a chemical reaction, matter is neither created nor destroyed. The total number of each type of atom stays the same.</dd>
+          </div>
+        </div>
+      </details>
+
+      <!-- Guide Questions (placeholder for Phase 2) -->
+      <details class="collapsible-panel">
+        <summary class="panel-summary">❓ Guide Questions</summary>
+        <div class="panel-content" id="guideQuestions">
+          <!-- Reaction-specific questions will be added in Phase 2 -->
+        </div>
+      </details>
+
+    </section>
+
+  </main>
+
+  <script src="molecules.js"></script>
+  <script src="animation.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

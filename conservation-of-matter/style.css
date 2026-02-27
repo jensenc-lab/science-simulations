@@ -1,0 +1,722 @@
+/* ============================================================
+   Conservation of Matter — style.css
+   Theme: light (#e8ecf1) background, navy (#1a5276) accents
+   ============================================================ */
+
+/* ===== RESET & BASE ===== */
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  background: #e8ecf1;
+  color: #1a2a3a;
+  min-height: 100vh;
+}
+
+/* ===== HEADER ===== */
+.header {
+  background: linear-gradient(135deg, #1a5276, #1a3c5e);
+  padding: 12px 24px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  border-bottom: 3px solid #2ecc71;
+}
+
+.header h1 {
+  font-size: 1.15em;
+  color: #fff;
+  flex: 1;
+  min-width: 200px;
+}
+
+.std-badge {
+  background: rgba(46, 204, 113, 0.2);
+  border: 1px solid rgba(46, 204, 113, 0.53);
+  border-radius: 12px;
+  padding: 4px 12px;
+  font-size: 0.72em;
+  color: #a8f0cb;
+  cursor: pointer;
+  transition: background 0.25s, color 0.25s;
+  font-family: inherit;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+.std-badge:hover {
+  background: rgba(46, 204, 113, 0.45);
+  color: #fff;
+}
+
+/* ===== POPUP ===== */
+.overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 190;
+}
+
+.overlay.show { display: block; }
+
+.info-popup {
+  display: none;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 440px;
+  max-width: 92vw;
+  background: #fff;
+  border: 2px solid #2ecc71;
+  border-radius: 14px;
+  padding: 24px;
+  z-index: 200;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+  color: #1a2a3a;
+  font-size: 0.9em;
+  line-height: 1.7;
+}
+
+.info-popup.show { display: block; }
+
+.info-popup h3 {
+  color: #1a5276;
+  margin-bottom: 10px;
+  font-size: 1em;
+}
+
+.close-btn {
+  position: absolute;
+  top: 10px;
+  right: 14px;
+  cursor: pointer;
+  font-size: 1.4em;
+  color: #999;
+  background: none;
+  border: none;
+  font-family: inherit;
+  line-height: 1;
+}
+
+.close-btn:hover { color: #333; }
+
+/* ===== MAIN LAYOUT ===== */
+main {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 20px 16px 48px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* ===== REACTION SELECTOR ===== */
+.reaction-selector {
+  background: #fff;
+  border-radius: 14px;
+  padding: 16px 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
+}
+
+.reaction-cards {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.reaction-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 14px 20px;
+  border: 2px solid #d0d8e0;
+  border-radius: 12px;
+  background: #f5f7fa;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+  font-family: inherit;
+  color: #1a2a3a;
+  flex: 1;
+  min-width: 150px;
+  max-width: 300px;
+}
+
+.reaction-card:hover {
+  border-color: #1a5276;
+  background: #eef2f8;
+}
+
+.reaction-card.active {
+  border-color: #1a5276;
+  background: #eef2f8;
+  box-shadow: 0 0 0 3px rgba(26, 82, 118, 0.15);
+}
+
+.reaction-icon {
+  font-size: 1.8em;
+  line-height: 1;
+}
+
+.reaction-name {
+  font-size: 0.85em;
+  font-weight: 600;
+  text-align: center;
+}
+
+/* ===== SIMULATION AREA ===== */
+.simulation-area {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* ---- Reaction Display (Reactants / Arrow / Products) ---- */
+.reaction-display {
+  background: #fff;
+  border-radius: 14px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
+  display: flex;
+  align-items: stretch;
+  min-height: 220px;
+}
+
+.side {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 4px 20px;
+}
+
+.reactants-side {
+  border-right: 1px solid #e0e6ed;
+}
+
+.products-side {
+  border-left: 1px solid #e0e6ed;
+}
+
+.side-label {
+  font-size: 0.68em;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  color: #1a5276;
+  text-transform: uppercase;
+  padding: 4px 14px;
+  background: rgba(26, 82, 118, 0.08);
+  border-radius: 20px;
+  white-space: nowrap;
+}
+
+.molecule-display {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  justify-content: center;
+  width: 100%;
+}
+
+.molecule-item {
+  text-align: center;
+}
+
+.molecule-formula {
+  font-size: 1.35em;
+  font-weight: 700;
+  color: #1a2a3a;
+  line-height: 1.2;
+}
+
+.mol-coefficient {
+  color: #1a5276;
+  font-size: 0.9em;
+  vertical-align: baseline;
+  margin-right: 1px;
+}
+
+.molecule-name {
+  font-size: 0.76em;
+  color: #6c7f8f;
+  margin-top: 3px;
+  font-style: italic;
+}
+
+.molecule-separator {
+  font-size: 1.2em;
+  font-weight: 700;
+  color: #1a5276;
+  line-height: 1;
+}
+
+/* ---- Center Arrow ---- */
+.reaction-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 10px;
+  flex-shrink: 0;
+}
+
+.reaction-arrow {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.arrow-label {
+  font-size: 0.65em;
+  font-weight: 700;
+  color: #1a5276;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  background: rgba(26, 82, 118, 0.08);
+  padding: 3px 10px;
+  border-radius: 10px;
+  white-space: nowrap;
+}
+
+.arrow-symbol {
+  font-size: 2.8em;
+  color: #1a5276;
+  line-height: 1;
+}
+
+/* ===== ATOM INVENTORY ===== */
+.atom-inventory {
+  background: #fff;
+  border-radius: 14px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
+}
+
+.inventory-title {
+  font-size: 1em;
+  font-weight: 700;
+  color: #1a5276;
+  margin-bottom: 5px;
+}
+
+.inventory-note {
+  font-size: 0.8em;
+  color: #6c7f8f;
+  font-style: italic;
+  margin-bottom: 14px;
+}
+
+.table-wrapper {
+  overflow-x: auto;
+}
+
+.inventory-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88em;
+  min-width: 400px;
+}
+
+.inventory-table th {
+  background: #1a5276;
+  color: #fff;
+  padding: 10px 14px;
+  text-align: left;
+  font-weight: 600;
+  font-size: 0.83em;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+}
+
+.inventory-table th:first-child { border-radius: 8px 0 0 0; }
+.inventory-table th:last-child  { border-radius: 0 8px 0 0; }
+
+.inventory-table td {
+  padding: 10px 14px;
+  border-bottom: 1px solid #e8ecf1;
+  vertical-align: middle;
+}
+
+.inventory-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.inventory-table tbody tr:nth-child(even) td {
+  background: #f8fafc;
+}
+
+.atom-swatch {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid rgba(0, 0, 0, 0.18);
+  vertical-align: middle;
+}
+
+/* H swatch needs a visible border since it's near-white */
+.atom-swatch.swatch-light {
+  border-color: rgba(0, 0, 0, 0.35);
+}
+
+.count-cell {
+  font-weight: 700;
+  font-size: 1.05em;
+  text-align: center;
+}
+
+.match-cell {
+  text-align: center;
+  font-size: 1.1em;
+  font-weight: 700;
+}
+
+.match-yes { color: #27ae60; }
+.match-no  { color: #e74c3c; }
+
+/* ===== BOTTOM PANELS ===== */
+.bottom-panels {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.collapsible-panel {
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
+  overflow: hidden;
+}
+
+.panel-summary {
+  padding: 14px 20px;
+  font-weight: 700;
+  font-size: 0.95em;
+  color: #1a5276;
+  cursor: pointer;
+  user-select: none;
+  list-style: none;
+  display: flex;
+  align-items: center;
+}
+
+.panel-summary::-webkit-details-marker { display: none; }
+
+.panel-summary::after {
+  content: '▸';
+  margin-left: auto;
+  transition: transform 0.2s;
+  font-size: 0.85em;
+}
+
+details[open] .panel-summary::after {
+  transform: rotate(90deg);
+}
+
+.panel-content {
+  padding: 0 20px 18px;
+}
+
+/* Vocabulary Grid */
+.vocab-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 12px;
+}
+
+.vocab-item {
+  background: #f5f7fa;
+  border-radius: 10px;
+  padding: 12px 14px;
+  border-left: 3px solid #1a5276;
+}
+
+.vocab-item dt {
+  font-weight: 700;
+  color: #1a5276;
+  font-size: 0.88em;
+  margin-bottom: 4px;
+}
+
+.vocab-item dd {
+  font-size: 0.81em;
+  color: #4a5a6a;
+  line-height: 1.55;
+  margin: 0;
+}
+
+/* ===== MOLECULE VISUALS (Phase 2) ===== */
+
+/* React / Reset buttons */
+.react-btn,
+.reset-btn {
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 0.8em;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+  white-space: nowrap;
+  padding: 7px 16px;
+}
+
+.react-btn {
+  background: #1a5276;
+  color: #fff;
+  border: none;
+  letter-spacing: 0.05em;
+}
+
+.react-btn:hover:not(:disabled) { background: #1a6ea0; }
+.react-btn:active:not(:disabled) { transform: scale(0.95); }
+.react-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.reset-btn {
+  background: transparent;
+  color: #1a5276;
+  border: 1.5px solid #1a5276;
+}
+
+.reset-btn:hover { background: rgba(26, 82, 118, 0.08); }
+
+/* Molecule visual row — horizontal arrangement of groups with "+" between them */
+.mol-visual-row {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+}
+
+/* Single molecule card: formula above, SVG(s) in middle, name below */
+.mol-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+}
+
+/* Container for stacked SVGs (when coefficient > 1) */
+.mol-svgs {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+/* "+" separator between molecule groups */
+.mol-separator {
+  font-size: 1.4em;
+  font-weight: 700;
+  color: #1a5276;
+  line-height: 1;
+  flex-shrink: 0;
+  user-select: none;
+}
+
+/* Placeholder text shown in products before React is clicked */
+.mol-placeholder {
+  color: #8a9aaa;
+  font-style: italic;
+  font-size: 0.85em;
+  text-align: center;
+  padding: 24px 10px;
+}
+
+/* Shake animation — applied to each .mol-group on React click */
+@keyframes mol-shake {
+  0%,  100% { transform: translateX(0)    rotate(0deg);   }
+  15%        { transform: translateX(-5px) rotate(-2deg);  }
+  30%        { transform: translateX( 5px) rotate( 2deg);  }
+  45%        { transform: translateX(-4px) rotate(-1deg);  }
+  60%        { transform: translateX( 4px) rotate( 1deg);  }
+  75%        { transform: translateX(-2px) rotate(-0.5deg);}
+  90%        { transform: translateX( 2px) rotate( 0.5deg);}
+}
+
+.mol-shake {
+  animation: mol-shake 0.8s ease-in-out;
+}
+
+/* Inventory row flash — green highlight staggered across rows */
+@keyframes inventory-flash {
+  0%   { background-color: rgba(39, 174, 96, 0);    }
+  35%  { background-color: rgba(39, 174, 96, 0.28); }
+  65%  { background-color: rgba(39, 174, 96, 0.28); }
+  100% { background-color: rgba(39, 174, 96, 0);    }
+}
+
+.inventory-flash > td {
+  animation: inventory-flash 0.8s ease-in-out;
+}
+
+/* ===== CONSERVATION CHECK CALLOUT ===== */
+.conservation-check {
+  margin-top: 14px;
+  padding: 12px 16px;
+  border-radius: 10px;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 0.86em;
+  line-height: 1.55;
+  transition: background 0.3s, border-color 0.3s;
+}
+
+.check-ok {
+  background: rgba(39, 174, 96, 0.1);
+  border: 1.5px solid rgba(39, 174, 96, 0.4);
+  color: #1a5c2a;
+}
+
+.check-violation {
+  background: rgba(231, 76, 60, 0.1);
+  border: 1.5px solid rgba(231, 76, 60, 0.45);
+  color: #8b2620;
+}
+
+.check-icon {
+  font-size: 1.15em;
+  flex-shrink: 0;
+  line-height: 1.4;
+}
+
+/* ===== WHAT IF? TOGGLE ===== */
+.whatif-wrap {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.whatif-btn {
+  font-family: inherit;
+  font-size: 0.78em;
+  padding: 5px 13px;
+  border: 1.5px dashed #1a5276;
+  border-radius: 8px;
+  background: transparent;
+  color: #1a5276;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s, color 0.2s;
+}
+
+.whatif-btn:hover {
+  background: rgba(26, 82, 118, 0.07);
+}
+
+.whatif-btn.active {
+  background: rgba(231, 76, 60, 0.07);
+  border-style: solid;
+  border-color: #e74c3c;
+  color: #c0392b;
+}
+
+.whatif-note {
+  font-size: 0.8em;
+  color: #c0392b;
+  font-style: italic;
+  padding: 6px 12px;
+  background: rgba(231, 76, 60, 0.07);
+  border-left: 3px solid #e74c3c;
+  border-radius: 0 6px 6px 0;
+  line-height: 1.5;
+}
+
+/* ===== GUIDE QUESTIONS ===== */
+.guide-questions-list {
+  padding-left: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  counter-reset: question-counter;
+}
+
+.guide-questions-list li {
+  font-size: 0.88em;
+  color: #1a2a3a;
+  line-height: 1.55;
+  padding: 10px 14px 10px 42px;
+  background: #f5f7fa;
+  border-radius: 8px;
+  border-left: 3px solid #1a5276;
+  position: relative;
+  counter-increment: question-counter;
+}
+
+.guide-questions-list li::before {
+  content: counter(question-counter);
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 20px;
+  height: 20px;
+  background: #1a5276;
+  color: #fff;
+  border-radius: 50%;
+  font-size: 0.75em;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 620px) {
+  .header h1 { font-size: 1em; }
+
+  .reaction-display {
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+  }
+
+  .side {
+    width: 100%;
+    padding: 14px 10px;
+  }
+
+  .reactants-side {
+    border-right: none;
+    border-bottom: 1px solid #e0e6ed;
+  }
+
+  .products-side {
+    border-left: none;
+    border-top: 1px solid #e0e6ed;
+  }
+
+  .reaction-center {
+    padding: 8px 0;
+  }
+
+  .arrow-symbol {
+    font-size: 1.8em;
+    transform: rotate(90deg);
+    display: inline-block;
+  }
+
+  .reaction-card {
+    min-width: 120px;
+  }
+
+  .molecule-formula {
+    font-size: 1.15em;
+  }
+}
