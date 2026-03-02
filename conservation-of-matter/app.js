@@ -385,9 +385,13 @@ document.addEventListener('keydown', e => {
 
 reactBtn.addEventListener('click', () => {
   reactBtn.disabled = true;
-  // burningCandle uses the atom-travel animation; all others use MolViz fade
+  // All three reactions use atom-travel animations from MolAnim
   if (currentReactionKey === 'burningCandle') {
     MolAnim.runReaction(reactantsDisplay, productsDisplay, inventoryBody);
+  } else if (currentReactionKey === 'rustingIron') {
+    MolAnim.runRustingIron(reactantsDisplay, productsDisplay, inventoryBody);
+  } else if (currentReactionKey === 'bakingSodaVinegar') {
+    MolAnim.runBakingSodaVinegar(reactantsDisplay, productsDisplay, inventoryBody);
   } else {
     MolViz.runReaction(reactantsDisplay, productsDisplay, inventoryBody);
   }
