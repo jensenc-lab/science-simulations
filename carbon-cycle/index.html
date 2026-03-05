@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Carbon Cycle Ecosystem Simulation</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- ===== HEADER ===== -->
+  <header class="header">
+    <span class="header-title">🌿 Carbon Cycle Ecosystem Simulation</span>
+    <div class="header-badges">
+      <button class="std-badge" data-std="8.3.1">8.3.1 Photosynthesis</button>
+      <button class="std-badge" data-std="8.3.2">8.3.2 Respiration</button>
+      <button class="std-badge" data-std="8.3.3">8.3.3 Carbon Cycle</button>
+    </div>
+  </header>
+
+  <!-- ===== STANDARD POPUP MODAL ===== -->
+  <div id="modal-overlay" class="modal-overlay">
+    <div class="modal">
+      <h3 id="modal-title"></h3>
+      <p id="modal-desc"></p>
+      <button id="modal-close" class="modal-close-btn">Close</button>
+    </div>
+  </div>
+
+  <!-- ===== MAIN LAYOUT ===== -->
+  <div class="layout">
+
+    <!-- ── Sidebar Controls ── -->
+    <aside class="sidebar">
+
+      <div class="ctrl-section">
+        <div class="ctrl-header">
+          <span>☀️ Sunlight Intensity</span>
+          <span class="ctrl-val" id="sun-val">70%</span>
+        </div>
+        <input class="slider" type="range" id="sun" min="0" max="100" value="70">
+      </div>
+
+      <div class="ctrl-section">
+        <div class="ctrl-header">
+          <span>🌱 Producers</span>
+          <span class="ctrl-val" id="prod-val">6</span>
+        </div>
+        <input class="slider" type="range" id="producers" min="1" max="15" value="6">
+      </div>
+
+      <div class="ctrl-section">
+        <div class="ctrl-header">
+          <span>🐛 Consumers</span>
+          <span class="ctrl-val" id="cons-val">3</span>
+        </div>
+        <input class="slider" type="range" id="consumers" min="0" max="10" value="3">
+      </div>
+
+      <div class="ctrl-section">
+        <div class="ctrl-header">
+          <span>🍄 Decomposer Activity</span>
+          <span class="ctrl-val" id="decomp-val">50%</span>
+        </div>
+        <input class="slider" type="range" id="decomposers" min="0" max="100" value="50">
+      </div>
+
+      <div class="ctrl-section">
+        <div class="ctrl-header">
+          <span>🏭 Human Activity</span>
+          <span class="ctrl-val" id="human-val">10%</span>
+        </div>
+        <input class="slider" type="range" id="human" min="0" max="100" value="10">
+        <p class="ctrl-hint">Burning fossil fuels adds CO₂</p>
+      </div>
+
+      <div class="ctrl-section">
+        <div class="ctrl-header"><span>⏱️ Simulation</span></div>
+        <div class="sim-btns">
+          <button class="sim-btn" id="play-pause">⏸ Pause</button>
+          <button class="sim-btn sim-btn--secondary" id="reset">↺ Reset</button>
+        </div>
+        <div class="ctrl-header" style="margin-top:12px">
+          <span>Speed</span>
+          <span class="ctrl-val" id="speed-val">1×</span>
+        </div>
+        <input class="slider" type="range" id="speed" min="1" max="4" step="1" value="1">
+      </div>
+
+      <div class="ctrl-section try-this">
+        <div class="ctrl-header"><span>💡 Try This</span></div>
+        <ul class="try-list">
+          <li>Set sunlight to 0% — what happens to plant carbon?</li>
+          <li>Max out decomposers and watch dead matter shrink.</li>
+          <li>Raise factories and remove producers — CO₂ soars!</li>
+        </ul>
+      </div>
+
+    </aside>
+
+    <!-- ── Main Canvas ── -->
+    <main class="canvas-wrap">
+      <canvas id="scene"></canvas>
+    </main>
+
+  </div>
+
+  <!-- ===== DATA BAR ===== -->
+  <div class="data-bar">
+    <div class="data-stats">
+      <div class="stat-item">
+        <span class="stat-dot" style="background:#e74c3c"></span>
+        <span class="stat-label">Atm. CO₂</span>
+        <span class="stat-val" id="stat-co2">280</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-dot" style="background:#2ecc71"></span>
+        <span class="stat-label">Plant Carbon</span>
+        <span class="stat-val" id="stat-plant">300</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-dot" style="background:#f39c12"></span>
+        <span class="stat-label">Consumer Carbon</span>
+        <span class="stat-val" id="stat-cons">90</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-dot" style="background:#8e6b3e"></span>
+        <span class="stat-label">Dead Matter</span>
+        <span class="stat-val" id="stat-dead">60</span>
+      </div>
+      <div class="stat-item stat-item--total">
+        <span class="stat-label">Total Carbon</span>
+        <span class="stat-val" id="stat-total">730</span>
+      </div>
+    </div>
+    <canvas id="graph" width="240" height="70"></canvas>
+  </div>
+
+  <script src="scene.js"></script>
+  <script src="particles.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

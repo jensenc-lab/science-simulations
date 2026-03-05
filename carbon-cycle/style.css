@@ -1,0 +1,352 @@
+/* ============================================================
+   Carbon Cycle Ecosystem Simulation — style.css
+   ============================================================ */
+
+:root {
+  --navy:       #0a1628;
+  --sidebar-bg: rgba(26, 42, 58, 0.97);
+  --green:      #2ecc71;
+  --green-dk:   #27ae60;
+  --accent:     #1a5276;
+  --text:       #dce8f5;
+  --text-muted: #7a9ab8;
+  --radius:     10px;
+  --header-h:   52px;
+  --databar-h:  96px;
+}
+
+/* ---- Reset / Base ---- */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  height: 100%;
+  overflow: hidden;
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  background: var(--navy);
+  color: var(--text);
+}
+
+/* ============================================================
+   HEADER
+   ============================================================ */
+.header {
+  height: var(--header-h);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  background: linear-gradient(135deg, #1a5276, #1a3c5e);
+  border-bottom: 3px solid var(--green);
+  flex-shrink: 0;
+  position: relative;
+  z-index: 20;
+}
+
+.header-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+}
+
+.header-badges {
+  display: flex;
+  gap: 8px;
+}
+
+.std-badge {
+  background: rgba(46, 204, 113, 0.15);
+  border: 1px solid rgba(46, 204, 113, 0.4);
+  color: #a8f0cb;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  padding: 5px 13px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: background 0.18s, transform 0.1s;
+  font-family: inherit;
+  white-space: nowrap;
+}
+
+.std-badge:hover {
+  background: rgba(46, 204, 113, 0.28);
+  transform: translateY(-1px);
+}
+
+/* ============================================================
+   LAYOUT — sidebar + canvas
+   ============================================================ */
+.layout {
+  display: flex;
+  height: calc(100vh - var(--header-h) - var(--databar-h));
+}
+
+/* ============================================================
+   SIDEBAR
+   ============================================================ */
+.sidebar {
+  width: 260px;
+  flex-shrink: 0;
+  background: var(--sidebar-bg);
+  overflow-y: auto;
+  padding: 14px 16px;
+  border-right: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.sidebar::-webkit-scrollbar { width: 4px; }
+.sidebar::-webkit-scrollbar-track { background: transparent; }
+.sidebar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.14);
+  border-radius: 4px;
+}
+
+/* ── Control sections ── */
+.ctrl-section {
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.ctrl-section:last-child { border-bottom: none; }
+
+.ctrl-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.81rem;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 9px;
+}
+
+.ctrl-val {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--green);
+  font-variant-numeric: tabular-nums;
+}
+
+.ctrl-hint {
+  font-size: 0.69rem;
+  color: var(--text-muted);
+  margin-top: 6px;
+  line-height: 1.4;
+}
+
+/* ── Sliders ── */
+.slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 4px;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.14);
+  outline: none;
+  cursor: pointer;
+}
+
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--green);
+  cursor: pointer;
+  box-shadow: 0 0 6px rgba(46, 204, 113, 0.5);
+  transition: box-shadow 0.15s;
+}
+
+.slider::-webkit-slider-thumb:hover {
+  box-shadow: 0 0 12px rgba(46, 204, 113, 0.8);
+}
+
+/* ── Simulation buttons ── */
+.sim-btns {
+  display: flex;
+  gap: 8px;
+}
+
+.sim-btn {
+  flex: 1;
+  padding: 8px 0;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  background: var(--green);
+  color: #fff;
+  transition: background 0.18s, transform 0.1s;
+  font-family: inherit;
+}
+
+.sim-btn:hover { background: var(--green-dk); transform: translateY(-1px); }
+
+.sim-btn--secondary { background: rgba(255, 255, 255, 0.12); }
+.sim-btn--secondary:hover { background: rgba(255, 255, 255, 0.2); }
+
+/* ── Try This ── */
+.try-this .ctrl-header { color: #f1c40f; }
+
+.try-list {
+  list-style: none;
+  padding: 0;
+}
+
+.try-list li {
+  font-size: 0.71rem;
+  color: var(--text-muted);
+  line-height: 1.55;
+  padding: 4px 0 4px 16px;
+  position: relative;
+}
+
+.try-list li::before {
+  content: '→';
+  position: absolute;
+  left: 0;
+  color: var(--green);
+  font-size: 0.7rem;
+}
+
+/* ============================================================
+   CANVAS
+   ============================================================ */
+.canvas-wrap {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  background: #1b3d6e; /* fallback while scene.js loads */
+}
+
+#scene {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* ============================================================
+   DATA BAR
+   ============================================================ */
+.data-bar {
+  height: var(--databar-h);
+  background: rgba(8, 18, 32, 0.98);
+  border-top: 2px solid rgba(46, 204, 113, 0.22);
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  gap: 20px;
+  flex-shrink: 0;
+}
+
+.data-stats {
+  display: flex;
+  gap: 28px;
+  flex: 1;
+  align-items: center;
+}
+
+.stat-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.stat-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.stat-label {
+  font-size: 0.67rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+
+.stat-val {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+  margin-left: 2px;
+}
+
+.stat-item--total .stat-label { color: rgba(46, 204, 113, 0.7); }
+.stat-item--total .stat-val   { color: var(--green); }
+
+#graph {
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  flex-shrink: 0;
+}
+
+/* ============================================================
+   MODAL
+   ============================================================ */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.72);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s;
+}
+
+.modal-overlay.active {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.modal {
+  background: #0e1f33;
+  border: 1px solid rgba(46, 204, 113, 0.3);
+  border-radius: 14px;
+  padding: 32px;
+  max-width: 500px;
+  width: 90%;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.65);
+  transform: translateY(-8px);
+  transition: transform 0.2s;
+}
+
+.modal-overlay.active .modal {
+  transform: translateY(0);
+}
+
+.modal h3 {
+  font-size: 1.1rem;
+  color: var(--green);
+  margin-bottom: 14px;
+}
+
+.modal p {
+  font-size: 0.9rem;
+  color: var(--text);
+  line-height: 1.75;
+  margin-bottom: 22px;
+}
+
+.modal-close-btn {
+  background: var(--green);
+  color: #fff;
+  border: none;
+  padding: 9px 26px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.18s;
+}
+
+.modal-close-btn:hover { background: var(--green-dk); }
