@@ -3,11 +3,6 @@
    Phase 2: Carbon transfer math, in-canvas graph overlay
    ============================================================ */
 
-// ── Carbon pool state (total = 730) ───────────────────────────
-const TOTAL_CARBON = 730;
-const INITIAL = { atmCO2: 400, plantCarbon: 200, consumerCarbon: 80, deadMatter: 50 };
-const state = { ...INITIAL };
-
 // ── Control values (read by scene.js each frame) ───────────────
 const controls = {
   sunlight:    70,   // 0–100 %
@@ -15,8 +10,13 @@ const controls = {
   consumers:    3,   // 0–10 animals
   decomposers: 50,   // 0–100 %
   human:       10,   // 0–100 %
-  speed:        1,   // 1–3 ×
+  speed:        1,   // 1–4 ×
 };
+
+// ── Carbon pool state (total = 730) ───────────────────────────
+const TOTAL_CARBON = 730;
+const INITIAL = { atmCO2: 400, plantCarbon: 200, consumerCarbon: 80, deadMatter: 50 };
+const state = { ...INITIAL, actualProducers: controls.producers, actualConsumers: controls.consumers };
 
 let isPlaying = true;
 
@@ -74,8 +74,11 @@ function initSimButtons() {
 
   document.getElementById('reset').addEventListener('click', () => {
     Object.assign(state, INITIAL);
+    state.actualProducers = controls.producers;
+    state.actualConsumers = controls.consumers;
     HISTORY_KEYS.forEach(k => { history[k].length = 0; });
     updateDataBar();
+    updateAlerts();
     drawGraph();
     if (typeof Scene !== 'undefined') Scene.reset();
   });
@@ -113,6 +116,48 @@ function updateDataBar() {
   document.getElementById('stat-cons').textContent  = Math.round(state.consumerCarbon);
   document.getElementById('stat-dead').textContent  = Math.round(state.deadMatter);
   document.getElementById('stat-total').textContent = Math.round(total);
+}
+
+// ── Ecosystem alerts ──────────────────────────────────────────
+// Injected dynamically into the sidebar above the "Try This" section.
+function initAlerts() {
+  const sec = document.createElement('div');
+  sec.id        = 'eco-alerts';
+  sec.className = 'ctrl-section';
+  sec.style.display = 'none';
+  sec.innerHTML =
+    '<div class="ctrl-header" style="color:#e74c3c;font-size:0.78rem">⚠ Ecosystem Alerts</div>' +
+    '<div id="eco-alert-list"></div>';
+  const tryThis = document.querySelector('.try-this');
+  if (tryThis) tryThis.before(sec);
+}
+
+function updateAlerts() {
+  const sec  = document.getElementById('eco-alerts');
+  const list = document.getElementById('eco-alert-list');
+  if (!sec || !list) return;
+
+  const msgs = [];
+
+  if (state.actualProducers < controls.producers - 0.5) {
+    msgs.push(controls.sunlight < 20
+      ? '⚠ Plants dying — not enough sunlight'
+      : '⚠ Plants dying — not enough CO₂ absorbed');
+  }
+  if (controls.consumers > 0 && state.actualConsumers < controls.consumers - 0.5) {
+    msgs.push('⚠ Consumers dying — not enough food from producers');
+  }
+  if (state.atmCO2 > 600) {
+    msgs.push('⚠ High atmospheric CO₂');
+  }
+  if (state.deadMatter > 300 && controls.decomposers < 30) {
+    msgs.push('⚠ Dead matter accumulating — decomposers can\'t keep up');
+  }
+
+  sec.style.display = msgs.length ? '' : 'none';
+  list.innerHTML = msgs.map(m =>
+    `<p style="font-size:0.69rem;color:#e74c3c;padding:2px 0;line-height:1.45">${m}</p>`
+  ).join('');
 }
 
 // ── Mini graph ────────────────────────────────────────────────
@@ -157,13 +202,16 @@ function pushHistory() {
 // At default settings (10% human) CO₂ rises noticeably over time.
 function tickCarbon() {
   const sun  = controls.sunlight  / 100;
-  const prod = controls.producers;
-  const cons = controls.consumers;
+  const prod = state.actualProducers;           // actual (may be reduced by die-off)
+  const cons = state.actualConsumers;           // actual (may be reduced by die-off)
   const dec  = controls.decomposers / 100;
   const hum  = controls.human     / 100;
 
+  // CO₂ fertilization: slight photosynthesis boost when atmospheric CO₂ > 600
+  const co2Boost = state.atmCO2 > 600 ? 1 + Math.min((state.atmCO2 - 600) / 600, 1) * 0.12 : 1;
+
   // ── Transfer amounts per tick (BASE_TICK_MS interval) ──────
-  const photo      = sun * prod * 0.04;                             // atm   → plants
+  const photo      = sun * prod * 0.04 * co2Boost;                 // atm   → plants
   const plantResp  = prod * 0.012;                                  // plants → atm
   const consume    = (cons > 0 && state.plantCarbon > 5)            // plants → consumers
                      ? cons * 0.025 : 0;
@@ -189,6 +237,29 @@ function tickCarbon() {
   const tot = state.atmCO2 + state.plantCarbon + state.consumerCarbon + state.deadMatter;
   const s   = TOTAL_CARBON / tot;
   state.atmCO2 *= s; state.plantCarbon *= s; state.consumerCarbon *= s; state.deadMatter *= s;
+}
+
+// ── Population die-off / recovery ────────────────────────────
+const DIE_RATE  = 0.04;  // population units lost per tick when critical
+const GROW_RATE = 0.01;  // slow regrowth when conditions improve
+
+function tickPopulations() {
+  // Producers: die when plantCarbon critically low; recover slowly when healthy
+  if (state.plantCarbon < 30 && state.actualProducers > 0) {
+    state.actualProducers = Math.max(0, state.actualProducers - DIE_RATE);
+  } else if (state.actualProducers < controls.producers && state.plantCarbon > 60) {
+    state.actualProducers = Math.min(controls.producers, state.actualProducers + GROW_RATE);
+  }
+  state.actualProducers = Math.min(state.actualProducers, controls.producers);
+
+  // Consumers: die when consumerCarbon critically low; recover when food is available
+  if (state.consumerCarbon < 15 && state.actualConsumers > 0) {
+    state.actualConsumers = Math.max(0, state.actualConsumers - DIE_RATE);
+  } else if (state.actualConsumers < controls.consumers
+             && state.consumerCarbon > 25 && state.actualProducers > 1) {
+    state.actualConsumers = Math.min(controls.consumers, state.actualConsumers + GROW_RATE);
+  }
+  state.actualConsumers = Math.min(state.actualConsumers, controls.consumers);
 }
 
 // ── In-canvas overlay graph (drawn on scene canvas each frame) ──
@@ -257,8 +328,10 @@ function loop(ts) {
   if (isPlaying && ts - lastTick > BASE_TICK_MS / controls.speed) {
     lastTick = ts;
     tickCarbon();
+    tickPopulations();
     pushHistory();
     updateDataBar();
+    updateAlerts();
     drawGraph();
   }
 
@@ -273,6 +346,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initSliders();
   initSimButtons();
   initBadges();
+  initAlerts();
   resizeCanvas();
   window.addEventListener('resize', resizeCanvas);
 

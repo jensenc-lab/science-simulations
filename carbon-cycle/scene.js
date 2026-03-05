@@ -152,7 +152,7 @@ const Scene = (() => {
   }
 
   function drawTrees() {
-    const n = _ctrl.producers, sun = _ctrl.sunlight;
+    const n = Math.round(_state.actualProducers ?? _ctrl.producers), sun = _ctrl.sunlight;
     // Canopy color: pale yellow-green (low sun) → rich green (high sun)
     const rr = Math.round(lerp(160, 45,  sun/100));
     const rg = Math.round(lerp(176, 138, sun/100));
@@ -188,7 +188,7 @@ const Scene = (() => {
   }
 
   function drawAnimals() {
-    const n = _ctrl.consumers;
+    const n = Math.round(_state.actualConsumers ?? _ctrl.consumers);
     // Grow array when slider increases
     while (animals.length < n) {
       const i = animals.length;
@@ -270,7 +270,7 @@ const Scene = (() => {
   }
 
   function drawRoots() {
-    const n = _ctrl.producers;
+    const n = Math.round(_state.actualProducers ?? _ctrl.producers);
     ctx.strokeStyle = '#6b4a25'; ctx.lineWidth = 1;
     for (let i = 0; i < n; i++) {
       const sf  = 0.78 + srand(i*137.5)*0.44;
