@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Interactive Science Simulations — Ogden School District</title>
+  <link rel="stylesheet" href="landing-style.css">
+</head>
+<body>
+
+  <!-- ===== HERO ===== -->
+  <header class="hero">
+    <div class="hero-particles" aria-hidden="true">
+      <div class="particle"></div>
+      <div class="particle"></div>
+      <div class="particle"></div>
+      <div class="particle"></div>
+      <div class="particle"></div>
+      <div class="particle"></div>
+      <div class="particle"></div>
+      <div class="particle"></div>
+    </div>
+    <div class="hero-content">
+      <p class="hero-district">Ogden School District</p>
+      <h1 class="hero-title">Interactive Science<br>Simulations</h1>
+      <p class="hero-sub">Aligned to Utah Science with Engineering Education (SEEd) Standards</p>
+    </div>
+  </header>
+
+  <!-- ===== SIMULATIONS ===== -->
+  <main class="main">
+    <div class="container">
+
+      <!-- ── 8th Grade Science ── -->
+      <section class="sim-section">
+        <h2 class="section-title">
+          <span class="section-grade">8th Grade</span>
+          Science
+        </h2>
+        <div class="card-grid">
+
+          <!-- Carbon Cycle -->
+          <div class="card">
+            <div class="card-icon">🌿</div>
+            <div class="card-badges">
+              <span class="std-badge">8.3.1</span>
+              <span class="std-badge">8.3.2</span>
+              <span class="std-badge">8.3.3</span>
+            </div>
+            <h3 class="card-title">Carbon Cycle Ecosystem Simulation</h3>
+            <p class="card-desc">Explore how carbon cycles between the atmosphere, producers, consumers, and decomposers. Control sunlight, organisms, and decomposer activity to see how ecosystems stay in balance.</p>
+            <a href="carbon-cycle-sim.html" class="launch-btn">Launch Simulation</a>
+          </div>
+
+          <!-- Conservation of Matter -->
+          <div class="card">
+            <div class="card-icon">⚗️</div>
+            <div class="card-badges">
+              <span class="std-badge">8.1.6</span>
+            </div>
+            <h3 class="card-title">Conservation of Matter — Virtual Reaction Lab</h3>
+            <p class="card-desc">Watch atoms rearrange during chemical reactions and verify that matter is never created or destroyed. Explore three real-world reactions with animated molecule models.</p>
+            <a href="conservation-of-matter/" class="launch-btn">Launch Simulation</a>
+          </div>
+
+          <!-- Conservation of Energy — Coming Soon -->
+          <div class="card card--coming-soon" aria-disabled="true">
+            <span class="coming-soon-badge">Coming Soon</span>
+            <div class="card-icon">⚡</div>
+            <div class="card-badges">
+              <span class="std-badge">8.2.1</span>
+            </div>
+            <h3 class="card-title">Conservation of Energy</h3>
+            <p class="card-desc">Explore how energy is stored and transferred in physical systems, and track energy changes through real-world scenarios.</p>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ── Biology ── -->
+      <section class="sim-section">
+        <h2 class="section-title">Biology</h2>
+        <div class="card-grid">
+
+          <!-- Genetics -->
+          <div class="card">
+            <div class="card-icon">🧬</div>
+            <div class="card-badges">
+              <span class="std-badge">BIO.3.2</span>
+            </div>
+            <h3 class="card-title">Mendelian Genetics — Punnett Square Lab</h3>
+            <p class="card-desc">Predict inheritance patterns using Punnett squares. Explore simple dominance, incomplete dominance, codominance, and sex-linked traits with interactive breeding experiments.</p>
+            <a href="genetics-punnett.html" class="launch-btn">Launch Simulation</a>
+          </div>
+
+          <!-- Evolution — Coming Soon -->
+          <div class="card card--coming-soon" aria-disabled="true">
+            <span class="coming-soon-badge">Coming Soon</span>
+            <div class="card-icon">🦎</div>
+            <div class="card-badges">
+              <span class="std-badge">BIO.4.2</span>
+            </div>
+            <h3 class="card-title">Evolution by Natural Selection</h3>
+            <p class="card-desc">Simulate how natural selection drives changes in populations over time, and explore how traits spread or disappear across generations.</p>
+          </div>
+
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="footer">
+    <p>Built for Ogden School District &nbsp;|&nbsp; Aligned to Utah Science with Engineering Education (SEEd) Standards</p>
+    <p class="footer-year" id="year"></p>
+  </footer>
+
+  <script>
+    document.getElementById('year').textContent = '\u00a9 ' + new Date().getFullYear();
+  </script>
+
+</body>
+</html>
