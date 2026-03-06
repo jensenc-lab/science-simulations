@@ -202,8 +202,8 @@ function pushHistory() {
 // At default settings (10% human) CO₂ rises noticeably over time.
 function tickCarbon() {
   const sun  = controls.sunlight  / 100;
-  const prod = state.actualProducers;           // actual (may be reduced by die-off)
-  const cons = state.actualConsumers;           // actual (may be reduced by die-off)
+  const prod = Math.round(state.actualProducers); // matches visual count; 0 stops all plant flows
+  const cons = Math.round(state.actualConsumers); // matches visual count; 0 stops all animal flows
   const dec  = controls.decomposers / 100;
   const hum  = controls.human     / 100;
 

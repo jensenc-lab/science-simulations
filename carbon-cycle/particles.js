@@ -10,6 +10,7 @@ const Particles = (() => {
   const MAX = 80;
   let parts = [];
   let W = 800, H = 500;
+  let _actualProd = 6, _actualCons = 3; // updated each frame from state
 
   const rnd = () => Math.random();
   const rng = (a, b) => a + rnd() * (b - a);
@@ -41,7 +42,8 @@ const Particles = (() => {
 
   // Photosynthesis — CO₂ descends from sky into a tree canopy
   function spawnPhoto(ctrl) {
-    const n  = ctrl.producers;
+    const n  = _actualProd;
+    if (n === 0) return;
     const i  = Math.floor(rnd() * n);
     const tx = treeX(i, n);
     const ty = hillY(tx) - H * 0.08;
@@ -55,9 +57,9 @@ const Particles = (() => {
 
   // Respiration — CO₂ rises from a tree or animal to sky
   function spawnResp(ctrl) {
-    const n = ctrl.producers;
+    const n = _actualProd;
     let sx, sy;
-    if (ctrl.consumers > 0 && rnd() < 0.4) {
+    if (_actualCons > 0 && rnd() < 0.4) {
       sx = rng(W * 0.06, W * 0.78);
       sy = hillY(sx) - rng(6, 18);
     } else {
@@ -74,8 +76,8 @@ const Particles = (() => {
 
   // Consumption — plant carbon moves to a nearby animal
   function spawnConsume(ctrl) {
-    if (ctrl.consumers === 0) return;
-    const n  = ctrl.producers;
+    if (_actualCons === 0 || _actualProd === 0) return;
+    const n  = _actualProd;
     const i  = Math.floor(rnd() * n);
     const tx = treeX(i, n);
     const ty = hillY(tx) - H * 0.04;
@@ -113,8 +115,8 @@ const Particles = (() => {
   // ── Per-frame spawn probabilities ─────────────────────────
   function trySpawn(ctrl) {
     const sun  = ctrl.sunlight   / 100;
-    const prod = ctrl.producers;
-    const cons = ctrl.consumers;
+    const prod = _actualProd;      // actual visible count, not slider
+    const cons = _actualCons;      // actual visible count, not slider
     const dec  = ctrl.decomposers / 100;
     const hum  = ctrl.human       / 100;
 
@@ -132,6 +134,9 @@ const Particles = (() => {
     W = canvas.width;
     H = canvas.height;
     const ctx = canvas.getContext('2d');
+
+    _actualProd = Math.round(state.actualProducers ?? ctrl.producers);
+    _actualCons = Math.round(state.actualConsumers ?? ctrl.consumers);
 
     if (isPlaying) trySpawn(ctrl);
 
