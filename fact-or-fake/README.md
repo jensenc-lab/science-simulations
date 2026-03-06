@@ -1,52 +1,71 @@
 # Fact or Fake
 
-An educational browser game for middle school students (grades 6–8) that builds critical thinking and media literacy skills by challenging students to identify false claims.
+An educational browser game for middle school students (grades 6–8) that builds media literacy and critical thinking skills. Each round shows two claims — one true, one false — and students must identify the fake one.
 
-## How It Works
+## Features
 
-Each game generates 10 fresh question pairs using the Anthropic AI API. Students are shown two claims side by side and must choose the one that is **false**. After each answer, the game reveals an explanation and the source of the true fact.
-
-### Scoring
-
-| Score | Message |
-|-------|---------|
-| 9–10  | Amazing! You're a fact-checking pro! |
-| 7–8   | Great job! You've got sharp eyes! |
-| 5–6   | Not bad! Keep practicing your fact-checking skills. |
-| 0–4   | Keep learning! Spotting fake info takes practice. |
-
-## Topics Covered
-
-Questions are AI-generated each session and cover a diverse mix of:
-- Science & Health
-- History & Geography
-- Animals & Nature
-- Technology & Space
+- **30 hardcoded questions** across 10 topic areas: space, animals, geography, health, history, weather, technology, oceans, food, and landmarks
+- Each game randomly selects 10 questions, so replaying gives fresh content
+- Instant feedback with explanations and real-world sources after every answer
+- Expandable review section at the end showing all 10 rounds
+- Fully responsive — side-by-side cards on desktop, stacked on mobile
+- Zero dependencies — single HTML file, no API calls, works offline
 
 ## Embedding in Google Sites
 
-This page is designed to be embedded as an iframe in Google Sites.
-
-1. In Google Sites, insert an **Embed** block (Insert → Embed)
+1. In Google Sites, click **Insert → Embed**
 2. Paste the GitHub Pages URL:
    ```
    https://<username>.github.io/<repo-name>/fact-or-fake/
    ```
-3. Resize the embed block to at least **820 × 700 px** for the best experience on desktop.
+3. Recommended iframe size: **760 × 700 px** or larger on desktop
 
-GitHub Pages does not set `X-Frame-Options`, so the page embeds cleanly in Google Sites and other iframes.
+GitHub Pages does not set `X-Frame-Options`, so the page embeds cleanly in Google Sites iframes with no extra configuration needed.
 
-## API Note
+## Adding More Questions
 
-Questions are fetched from the Anthropic API (`claude-sonnet-4-20250514`). The API key is **not** embedded in this file — it must be supplied via a reverse proxy or server-side handler that injects the `x-api-key` header before the request reaches Anthropic's servers. Without this, the game will display a "Couldn't load questions" error.
+Open `fact-or-fake/index.html` and find the `questionBank` array near the top of the `<script>` section. Each question is an object with four fields:
 
-## Tech Stack
+```javascript
+{
+  trueClaim:   'A true factual statement (1–2 sentences).',
+  trueSource:  'Source Name (e.g., NASA, National Geographic, CDC)',
+  falseClaim:  'A false but plausible statement on a related topic.',
+  explanation: '1–2 sentences explaining why the false claim is wrong.',
+},
+```
 
-- Single `index.html` file — HTML, CSS, and JavaScript all inline
-- No frameworks, no build tools, no external dependencies
-- Deployed via GitHub Pages
-- Anthropic API for dynamic content generation
+**Tips for writing good false claims:**
+- Base them on real-but-wrong common beliefs (myths, misconceptions)
+- Keep them specific and believable — vague fakes are too easy to spot
+- Make the true and false claims feel like they belong to the same topic
+
+The game automatically picks 10 random questions from the bank per session, so the more questions you add, the more variety students get on replay.
+
+## Deploying on GitHub Pages
+
+1. Create a new GitHub repository (or use an existing one)
+2. Make sure `fact-or-fake/index.html` is committed to the repository
+3. Go to **Settings → Pages** in the repository
+4. Set the source to **Deploy from branch: main / (root)**
+5. The game will be live at:
+   ```
+   https://<username>.github.io/<repo-name>/fact-or-fake/
+   ```
 
 ## Standards Alignment
 
-Supports Utah SEEd and NGSS cross-cutting concepts around **patterns**, **cause and effect**, and **obtaining/evaluating information** — core practices in science and information literacy.
+Supports media literacy and information evaluation skills aligned to:
+- **ISTE Standards** — 1.3 Knowledge Constructor (evaluating digital content)
+- **Common Core ELA** — Reading Informational Text, evaluating evidence and sources
+- **Utah SEEd cross-cutting concepts** — Obtaining, evaluating, and communicating information
+
+## Tech Stack
+
+| Item | Details |
+|------|---------|
+| File | Single `index.html` — all HTML, CSS, JS inline |
+| Dependencies | None — no frameworks, libraries, or CDNs |
+| API calls | None — all content is hardcoded |
+| Hosting | GitHub Pages |
+| Compatibility | All modern browsers; works on Chromebooks and iPads |

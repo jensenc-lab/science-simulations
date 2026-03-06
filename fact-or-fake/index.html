@@ -3,735 +3,511 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Fact or Fake — Can You Spot the Fake?</title>
+  <title>Fact or Fake</title>
   <style>
-    /* ── Reset & Base ─────────────────────────────────────────── */
+    /* ── Reset ── */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    :root {
-      --blue:        #2563eb;
-      --blue-dark:   #1d4ed8;
-      --blue-light:  #dbeafe;
-      --purple:      #7c3aed;
-      --green:       #10b981;
-      --green-light: #d1fae5;
-      --red:         #ef4444;
-      --red-light:   #fee2e2;
-      --bg:          #f0f9ff;
-      --white:       #ffffff;
-      --text:        #1e293b;
-      --muted:       #64748b;
-      --border:      #e2e8f0;
-      --radius:      16px;
-      --shadow-sm:   0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.05);
-      --shadow:      0 4px 6px -1px rgba(0,0,0,0.10), 0 2px 4px -1px rgba(0,0,0,0.06);
-      --shadow-lg:   0 10px 20px rgba(0,0,0,0.10), 0 4px 8px rgba(0,0,0,0.06);
-    }
-
-    html, body {
-      height: 100%;
-    }
-
     body {
-      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-      background: var(--bg);
-      background-image:
-        radial-gradient(circle at 15% 15%, rgba(37,99,235,0.06)  0%, transparent 50%),
-        radial-gradient(circle at 85% 85%, rgba(124,58,237,0.06) 0%, transparent 50%);
-      color: var(--text);
+      font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
       min-height: 100vh;
+      background: linear-gradient(160deg, #1e3a8a 0%, #4f46e5 50%, #7c3aed 100%);
       display: flex;
-      flex-direction: column;
-      align-items: center;
       justify-content: center;
-      padding: 1.5rem 1rem;
+      padding: 2rem 1rem;
     }
 
-    /* ── Screen system ────────────────────────────────────────── */
-    .screen { display: none; width: 100%; max-width: 800px; }
-    .screen.active {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      animation: fadeUp 0.35s ease both;
-    }
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(14px); }
-      to   { opacity: 1; transform: translateY(0);    }
+    /* ── Screens ── */
+    .screen { display: none; width: 100%; max-width: 680px; }
+    .screen.active { display: block; animation: up .35s ease both; }
+    @keyframes up {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
     }
 
-    /* ── Shared panel ─────────────────────────────────────────── */
+    /* ── White panel ── */
     .panel {
-      background: var(--white);
-      border-radius: var(--radius);
-      padding: 2.75rem 2rem;
-      box-shadow: var(--shadow-lg);
-      width: 100%;
-      text-align: center;
+      background: #fff;
+      border-radius: 24px;
+      padding: 2.5rem 2rem;
+      box-shadow: 0 24px 64px rgba(0,0,0,.35);
     }
 
-    /* ── Buttons ──────────────────────────────────────────────── */
+    /* ── Buttons ── */
     .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.4rem;
-      padding: 0.9rem 2rem;
+      padding: .9rem 2rem;
       border-radius: 50px;
       border: none;
       cursor: pointer;
-      font-size: 1rem;
-      font-weight: 700;
-      font-family: inherit;
-      letter-spacing: 0.01em;
-      transition: transform 0.15s ease, box-shadow 0.15s ease;
+      font: 700 1rem/1 system-ui, -apple-system, 'Segoe UI', sans-serif;
+      transition: transform .15s, box-shadow .15s;
     }
-    .btn:hover  { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
-    .btn:active { transform: translateY(0);    box-shadow: var(--shadow-sm); }
-    .btn:focus-visible { outline: 3px solid var(--blue); outline-offset: 3px; }
+    .btn:hover  { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,.25); }
+    .btn:active { transform: scale(.97); }
+    .btn:focus-visible { outline: 3px solid #fde68a; outline-offset: 3px; }
+    .btn-main { background: linear-gradient(135deg, #4f46e5, #7c3aed); color: #fff; }
+    .btn-next { background: linear-gradient(135deg, #059669, #10b981); color: #fff; }
 
-    .btn-primary {
-      background: linear-gradient(135deg, var(--blue), var(--purple));
-      color: var(--white);
-      box-shadow: var(--shadow);
-    }
-    .btn-green {
-      background: linear-gradient(135deg, var(--green), #059669);
-      color: var(--white);
-      box-shadow: var(--shadow);
-    }
-
-    /* ══════════════════════════════════════════════════════════
+    /* ════════════════════
        START SCREEN
-    ══════════════════════════════════════════════════════════ */
-    #screen-start .panel { max-width: 460px; }
-
-    .start-icon  { font-size: 3.5rem; line-height: 1; margin-bottom: 0.75rem; }
-    .start-title {
-      font-size: 2.7rem;
+    ════════════════════ */
+    #s-start .panel { text-align: center; }
+    .si { font-size: 3.5rem; margin-bottom: .5rem; }
+    .st {
+      font-size: 2.75rem;
       font-weight: 900;
-      background: linear-gradient(135deg, var(--blue), var(--purple));
+      background: linear-gradient(135deg, #4338ca, #7c3aed);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
-      line-height: 1.1;
-      margin-bottom: 0.75rem;
+      margin-bottom: .75rem;
     }
-    .start-desc {
-      font-size: 1.05rem;
-      color: var(--muted);
-      line-height: 1.65;
-      margin-bottom: 1.5rem;
-    }
-    .start-desc strong { color: var(--text); }
+    .sd { font-size: 1rem; color: #6b7280; line-height: 1.7; margin-bottom: 2rem; }
+    .sd strong { color: #374151; }
 
-    .topic-pills {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 0.4rem;
-      margin-bottom: 2rem;
-    }
-    .pill {
-      background: var(--blue-light);
-      color: var(--blue);
-      font-size: 0.75rem;
-      font-weight: 700;
-      padding: 0.3rem 0.7rem;
-      border-radius: 50px;
-    }
-
-    /* ══════════════════════════════════════════════════════════
-       LOADING SCREEN
-    ══════════════════════════════════════════════════════════ */
-    #screen-loading .panel { max-width: 360px; }
-
-    .spinner {
-      width: 56px;
-      height: 56px;
-      border: 5px solid var(--blue-light);
-      border-top-color: var(--blue);
-      border-radius: 50%;
-      animation: spin 0.75s linear infinite;
-      margin: 0 auto 1.25rem;
-    }
-    @keyframes spin { to { transform: rotate(360deg); } }
-
-    .loading-text { font-size: 1.05rem; color: var(--muted); }
-    .loading-dots::after {
-      content: '';
-      animation: dots 1.4s steps(4, end) infinite;
-    }
-    @keyframes dots {
-      0%  { content: ''; }   25% { content: '.';   }
-      50% { content: '..'; } 75% { content: '...'; }
-    }
-
-    /* ══════════════════════════════════════════════════════════
-       ERROR SCREEN
-    ══════════════════════════════════════════════════════════ */
-    #screen-error .panel {
-      max-width: 420px;
-      border-top: 4px solid var(--red);
-    }
-    .error-icon    { font-size: 3rem; margin-bottom: 0.75rem; }
-    .error-heading { font-size: 1.25rem; font-weight: 700; margin-bottom: 0.5rem; }
-    .error-text    { font-size: 0.95rem; color: var(--muted); line-height: 1.6; margin-bottom: 1.5rem; }
-
-    /* ══════════════════════════════════════════════════════════
+    /* ════════════════════
        GAME SCREEN
-    ══════════════════════════════════════════════════════════ */
+    ════════════════════ */
 
-    /* Header */
-    .game-header { width: 100%; margin-bottom: 1.25rem; }
-    .game-meta {
+    /* Header bar */
+    .gh {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 0.55rem;
-    }
-    .round-label { font-size: 0.875rem; font-weight: 600; color: var(--muted); }
-    .score-chip {
-      background: linear-gradient(135deg, var(--blue), var(--purple));
-      color: var(--white);
-      font-size: 0.82rem;
+      background: rgba(255,255,255,.15);
+      backdrop-filter: blur(4px);
+      border-radius: 12px;
+      padding: .6rem 1.1rem;
+      margin-bottom: .75rem;
+      color: #fff;
       font-weight: 700;
-      padding: 0.28rem 0.85rem;
-      border-radius: 50px;
+      font-size: .9rem;
     }
-    .progress-track {
-      width: 100%;
-      height: 8px;
-      background: var(--border);
+    .gh-chip {
+      background: rgba(255,255,255,.25);
+      padding: .2rem .7rem;
       border-radius: 50px;
-      overflow: hidden;
+      font-size: .82rem;
     }
-    .progress-fill {
-      height: 100%;
-      background: linear-gradient(90deg, var(--blue), var(--purple));
-      border-radius: 50px;
-      transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-    }
+
+    /* Progress bar */
+    .pb { height: 8px; background: rgba(255,255,255,.25); border-radius: 50px; overflow: hidden; margin-bottom: 1.25rem; }
+    .pb-fill { height: 100%; background: linear-gradient(90deg, #34d399, #a7f3d0); border-radius: 50px; transition: width .5s ease; width: 0%; }
 
     /* Prompt */
-    .game-prompt {
-      font-size: 1.1rem;
-      font-weight: 700;
+    .gp {
       text-align: center;
+      color: rgba(255,255,255,.95);
+      font-size: 1.05rem;
+      font-weight: 700;
       margin-bottom: 1rem;
-    }
-    .prompt-highlight {
-      background: linear-gradient(135deg, var(--blue), var(--purple));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
+      text-shadow: 0 1px 4px rgba(0,0,0,.3);
     }
 
-    /* Claim cards */
-    .cards-row { display: flex; gap: 1rem; width: 100%; }
-
-    .claim-card {
+    /* Choice cards */
+    .cards { display: flex; gap: .875rem; }
+    .ccard {
       flex: 1;
-      background: var(--white);
-      border: 2.5px solid var(--border);
-      border-radius: var(--radius);
-      padding: 1.5rem 1.25rem;
+      background: #fff;
+      border: 2.5px solid #e5e7eb;
+      border-radius: 18px;
+      padding: 1.5rem 1.2rem;
       cursor: pointer;
-      font-size: 0.97rem;
+      font-size: .95rem;
       line-height: 1.6;
       font-weight: 500;
-      color: var(--text);
+      color: #1f2937;
       text-align: center;
-      box-shadow: var(--shadow-sm);
-      transition: transform 0.2s ease, box-shadow 0.2s ease,
-                  border-color 0.2s ease, background 0.2s ease;
-      position: relative;
-      min-height: 130px;
+      min-height: 120px;
       display: flex;
-      flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 0.5rem;
+      box-shadow: 0 4px 14px rgba(0,0,0,.12);
+      transition: transform .2s, box-shadow .2s, border-color .2s, background .2s;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
     }
-    .claim-card:hover:not(.disabled) {
+    .ccard:hover:not(.done) {
       transform: translateY(-5px);
-      box-shadow: var(--shadow-lg);
-      border-color: var(--blue);
+      box-shadow: 0 12px 32px rgba(0,0,0,.2);
+      border-color: #818cf8;
     }
-    .claim-card:focus-visible { outline: 3px solid var(--blue); outline-offset: 3px; }
-    .claim-card.disabled      { cursor: default; pointer-events: none; }
-
-    /* Card result states */
-    .claim-card.state-correct { background: var(--green-light); border-color: var(--green); }
-    .claim-card.state-wrong   { background: var(--red-light);   border-color: var(--red);   }
-    .claim-card.state-reveal  { background: var(--green-light); border-color: var(--green); }
-
-    /* Card badge (✓ FAKE / ✗ WRONG) */
-    .card-badge {
-      font-size: 0.72rem;
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: 0.07em;
-      padding: 0.2rem 0.55rem;
-      border-radius: 50px;
-      display: none;
-    }
-    .state-correct .card-badge { display: inline-block; background: var(--green); color: #fff; }
-    .state-wrong   .card-badge { display: inline-block; background: var(--red);   color: #fff; }
-    .state-reveal  .card-badge { display: inline-block; background: var(--green); color: #fff; }
+    .ccard:focus-visible { outline: 3px solid #fde68a; outline-offset: 3px; }
+    .ccard.done { cursor: default; pointer-events: none; }
+    .ccard.ok   { background: #d1fae5; border-color: #10b981; }
+    .ccard.bad  { background: #fee2e2; border-color: #ef4444; }
+    .ccard.rev  { background: #d1fae5; border-color: #10b981; }
 
     /* Card animations */
-    @keyframes popCorrect {
-      0%   { transform: scale(1); }
-      35%  { transform: scale(1.05); }
-      65%  { transform: scale(0.97); }
-      100% { transform: scale(1); }
-    }
-    @keyframes shakeWrong {
-      0%, 100%  { transform: translateX(0);  }
-      20%, 60%  { transform: translateX(-6px); }
-      40%, 80%  { transform: translateX( 6px); }
-    }
-    .anim-pop   { animation: popCorrect 0.45s ease both; }
-    .anim-shake { animation: shakeWrong 0.4s  ease both; }
+    @keyframes bump  { 0%,100%{transform:scale(1)} 40%{transform:scale(1.04)} }
+    @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-7px)} 75%{transform:translateX(7px)} }
+    .a-bump  { animation: bump  .4s ease; }
+    .a-shake { animation: shake .4s ease; }
 
-    /* Feedback box */
-    .feedback-box {
-      width: 100%;
-      background: var(--white);
-      border-radius: var(--radius);
+    /* Feedback panel */
+    .fb {
+      background: #fff;
+      border-radius: 18px;
       padding: 1.25rem 1.5rem;
-      box-shadow: var(--shadow);
-      margin-top: 0.9rem;
+      margin-top: .875rem;
+      box-shadow: 0 6px 20px rgba(0,0,0,.15);
       display: none;
-      animation: fadeUp 0.3s ease both;
     }
-    .feedback-box.visible { display: block; }
+    .fb.show { display: block; animation: up .3s ease both; }
+    .fbv { font-size: 1.05rem; font-weight: 800; margin-bottom: .4rem; }
+    .fbv.ok  { color: #059669; }
+    .fbv.bad { color: #dc2626; }
+    .fbe { font-size: .875rem; color: #4b5563; line-height: 1.65; margin-bottom: .35rem; }
+    .fbs { font-size: .8rem; color: #6b7280; }
+    .fbs b { color: #4f46e5; }
+    .fbn { text-align: right; margin-top: .75rem; }
 
-    .feedback-verdict {
-      font-size: 1.1rem;
-      font-weight: 800;
-      margin-bottom: 0.5rem;
-    }
-    .feedback-verdict.good { color: var(--green); }
-    .feedback-verdict.bad  { color: var(--red);   }
-
-    .feedback-explain {
-      font-size: 0.9rem;
-      line-height: 1.65;
-      color: var(--muted);
-    }
-    .feedback-source {
-      display: inline-block;
-      margin-top: 0.65rem;
-      font-size: 0.8rem;
-      font-weight: 600;
-      color: var(--blue);
-      background: var(--blue-light);
-      padding: 0.22rem 0.65rem;
-      border-radius: 50px;
-    }
-    .next-wrap { text-align: right; margin-top: 1rem; }
-
-    /* ══════════════════════════════════════════════════════════
+    /* ════════════════════
        END SCREEN
-    ══════════════════════════════════════════════════════════ */
-    #screen-end .panel { max-width: 460px; }
-
-    .end-trophy   { font-size: 4.5rem; line-height: 1; margin-bottom: 0.5rem; }
-    .end-fraction {
-      font-size: 3.8rem;
+    ════════════════════ */
+    #s-end .panel { text-align: center; }
+    .es {
+      font-size: 4.5rem;
       font-weight: 900;
-      background: linear-gradient(135deg, var(--blue), var(--purple));
+      background: linear-gradient(135deg, #4338ca, #7c3aed);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
       line-height: 1;
-      margin-bottom: 0.3rem;
+      margin-bottom: .5rem;
     }
-    .end-sublabel { font-size: 0.95rem; color: var(--muted); margin-bottom: 1.25rem; }
-    .end-message  {
-      font-size: 1.15rem;
-      font-weight: 700;
-      color: var(--text);
-      line-height: 1.5;
-      margin-bottom: 2rem;
-    }
+    .em { font-size: 1.1rem; color: #374151; line-height: 1.5; margin-bottom: 1.75rem; }
 
-    /* ── Responsive ───────────────────────────────────────────── */
-    @media (max-width: 540px) {
-      .cards-row    { flex-direction: column; }
-      .start-title  { font-size: 2.1rem; }
-      .end-fraction { font-size: 3rem; }
-      .panel        { padding: 2rem 1.25rem; }
+    /* Review accordion */
+    details { text-align: left; margin-bottom: 1.75rem; }
+    summary {
+      cursor: pointer;
+      background: #f3f4f6;
+      padding: .75rem 1rem;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: .9rem;
+      color: #4f46e5;
+      list-style: none;
+      user-select: none;
+    }
+    summary::-webkit-details-marker { display: none; }
+    summary::before { content: '▶  '; font-size: .75rem; }
+    details[open] summary { border-radius: 10px 10px 0 0; }
+    details[open] summary::before { content: '▼  '; }
+
+    .rv { background: #f9fafb; border-radius: 0 0 10px 10px; padding: .5rem .5rem 0; }
+    .ri {
+      border-left: 3px solid #d1d5db;
+      padding: .65rem .9rem;
+      margin-bottom: .6rem;
+      background: #fff;
+      border-radius: 0 8px 8px 0;
+      font-size: .82rem;
+      line-height: 1.5;
+    }
+    .ri.ok  { border-color: #10b981; }
+    .ri.bad { border-color: #ef4444; }
+    .rih { font-weight: 800; margin-bottom: .3rem; }
+    .ri.ok  .rih { color: #059669; }
+    .ri.bad .rih { color: #dc2626; }
+    .ric { color: #374151; margin-bottom: .3rem; }
+    .rit { font-size: .7rem; font-weight: 700; background: #ede9fe; color: #6d28d9; padding: 1px 5px; border-radius: 4px; margin-left: 3px; vertical-align: middle; }
+    .rie { color: #6b7280; }
+    .ris { color: #9ca3af; font-size: .75rem; margin-top: .2rem; }
+
+    /* ── Responsive ── */
+    @media (max-width: 560px) {
+      body  { padding: 1rem .75rem; }
+      .panel { padding: 1.75rem 1.25rem; }
+      .cards { flex-direction: column; }
+      .st { font-size: 2.2rem; }
+      .es { font-size: 3.5rem; }
     }
   </style>
 </head>
 <body>
 
-<!-- ══════════════════════════════════════════════════════════
-     START SCREEN
-══════════════════════════════════════════════════════════ -->
-<div id="screen-start" class="screen active">
+<!-- ── START ───────────────────────────────────────────── -->
+<div id="s-start" class="screen active">
   <div class="panel">
-    <div class="start-icon">🔍</div>
-    <h1 class="start-title">Fact or Fake</h1>
-    <p class="start-desc">
-      Can you spot the fake? Each round shows two claims —
-      <strong>choose the one you think is FALSE!</strong>
+    <div class="si">🔍</div>
+    <h1 class="st">Fact or Fake</h1>
+    <p class="sd">
+      You'll see two claims — one is real and one is made up.<br>
+      <strong>Pick the FAKE one!</strong> Can you tell the difference?
     </p>
-    <div class="topic-pills">
-      <span class="pill">🔬 Science</span>
-      <span class="pill">🌍 Geography</span>
-      <span class="pill">📜 History</span>
-      <span class="pill">🐾 Animals</span>
-      <span class="pill">💻 Technology</span>
-      <span class="pill">🏥 Health</span>
-      <span class="pill">🚀 Space</span>
-    </div>
-    <button class="btn btn-primary" onclick="startGame()">▶ Start Game</button>
+    <button class="btn btn-main" onclick="startGame()">▶ Start Game</button>
   </div>
 </div>
 
-<!-- ══════════════════════════════════════════════════════════
-     LOADING SCREEN
-══════════════════════════════════════════════════════════ -->
-<div id="screen-loading" class="screen">
+<!-- ── GAME ────────────────────────────────────────────── -->
+<div id="s-game" class="screen">
+  <div class="gh">
+    <span id="gRound">Round 1 of 5</span>
+    <span class="gh-chip" id="gScore">Score: 0</span>
+  </div>
+  <div class="pb"><div class="pb-fill" id="pbFill"></div></div>
+  <p class="gp">Which one is <strong>FAKE</strong>? Tap your answer.</p>
+  <div class="cards">
+    <div class="ccard" id="c0" tabindex="0" role="button" onclick="pick(0)"></div>
+    <div class="ccard" id="c1" tabindex="0" role="button" onclick="pick(1)"></div>
+  </div>
+  <div class="fb" id="fb">
+    <p class="fbv" id="fbV"></p>
+    <p class="fbe" id="fbE"></p>
+    <p class="fbs" id="fbS"></p>
+    <div class="fbn">
+      <button class="btn btn-next" onclick="nextRound()">Next →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── END ─────────────────────────────────────────────── -->
+<div id="s-end" class="screen">
   <div class="panel">
-    <div class="spinner"></div>
-    <p class="loading-text">Generating questions<span class="loading-dots"></span></p>
-  </div>
-</div>
-
-<!-- ══════════════════════════════════════════════════════════
-     ERROR SCREEN
-══════════════════════════════════════════════════════════ -->
-<div id="screen-error" class="screen">
-  <div class="panel">
-    <div class="error-icon">😕</div>
-    <h2 class="error-heading">Couldn't Load Questions</h2>
-    <p class="error-text" id="error-message">
-      Something went wrong while generating the quiz. Check your connection and try again.
-    </p>
-    <button class="btn btn-primary" onclick="startGame()">↩ Try Again</button>
-  </div>
-</div>
-
-<!-- ══════════════════════════════════════════════════════════
-     GAME SCREEN
-══════════════════════════════════════════════════════════ -->
-<div id="screen-game" class="screen">
-
-  <!-- Progress header -->
-  <div class="game-header">
-    <div class="game-meta">
-      <span class="round-label" id="round-label">Round 1 / 10</span>
-      <span class="score-chip"  id="score-chip">Score: 0</span>
-    </div>
-    <div class="progress-track">
-      <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
-    </div>
-  </div>
-
-  <!-- Prompt -->
-  <p class="game-prompt">
-    Which one is <span class="prompt-highlight">FAKE</span>? Click to choose.
-  </p>
-
-  <!-- Cards -->
-  <div class="cards-row">
-    <div class="claim-card" id="card-0"
-         tabindex="0" role="button" aria-label="Option A"
-         onclick="handleChoice(0)">
-      <span class="card-badge" id="badge-0"></span>
-      <span id="text-0"></span>
-    </div>
-    <div class="claim-card" id="card-1"
-         tabindex="0" role="button" aria-label="Option B"
-         onclick="handleChoice(1)">
-      <span class="card-badge" id="badge-1"></span>
-      <span id="text-1"></span>
-    </div>
-  </div>
-
-  <!-- Feedback -->
-  <div class="feedback-box" id="feedback-box">
-    <p class="feedback-verdict" id="feedback-verdict"></p>
-    <p class="feedback-explain" id="feedback-explain"></p>
-    <span class="feedback-source" id="feedback-source"></span>
-    <div class="next-wrap">
-      <button class="btn btn-green" onclick="nextRound()">Next →</button>
-    </div>
-  </div>
-
-</div>
-
-<!-- ══════════════════════════════════════════════════════════
-     END SCREEN
-══════════════════════════════════════════════════════════ -->
-<div id="screen-end" class="screen">
-  <div class="panel">
-    <div class="end-trophy"   id="end-trophy">🏆</div>
-    <div class="end-fraction" id="end-fraction">0 / 10</div>
-    <p class="end-sublabel">questions answered correctly</p>
-    <p class="end-message" id="end-message"></p>
-    <button class="btn btn-primary" onclick="startGame()">🔄 Play Again</button>
+    <div class="es" id="eScore">0/5</div>
+    <p class="em" id="eMsg"></p>
+    <details id="reviewDetails">
+      <summary>Review your answers</summary>
+      <div class="rv" id="rv"></div>
+    </details>
+    <button class="btn btn-main" onclick="startGame()">🔄 Play Again</button>
   </div>
 </div>
 
 <script>
-'use strict';
+/* ─────────────────────────────────────────────────────────
+   QUESTION BANK
+   To add more questions, copy one of the objects below,
+   paste it inside the array, fill in the four fields, and
+   add a comma after the closing brace of the one above it.
+   The game always shuffles and uses all questions in the bank.
+───────────────────────────────────────────────────────── */
+const questionBank = [
 
-/* ─────────────────────────────────────────────────────────────
-   CONFIG
-───────────────────────────────────────────────────────────── */
-const ROUNDS  = 10;
-const API_URL = 'https://api.anthropic.com/v1/messages';
-// Note: The API key is not included here — it must be injected by a
-// reverse proxy or server-side handler before the request reaches Anthropic.
+  // ── Space & Astronomy ──────────────────────────────────
+  {
+    trueClaim:   'A day on Venus lasts longer than a year on Venus — it rotates so slowly that it completes a full orbit around the Sun before finishing one full rotation.',
+    trueSource:  'NASA',
+    falseClaim:  'Venus is the hottest planet in our solar system because it is the closest planet to the Sun.',
+    explanation: 'Mercury is actually the closest planet to the Sun — not Venus. Venus is hotter because its thick atmosphere traps heat in a runaway greenhouse effect, pushing surface temperatures to about 465 °C (869 °F).',
+  },
+  {
+    trueClaim:   'Astronauts on the International Space Station see about 16 sunrises and 16 sunsets every single day.',
+    trueSource:  'NASA',
+    falseClaim:  'The ISS is so far from Earth that astronauts on board are weightless because they have escaped Earth\'s gravitational pull.',
+    explanation: 'The ISS is only about 400 km above Earth, well within its strong gravitational field. Astronauts feel weightless because they are in free fall around Earth, not because gravity is absent.',
+  },
+  {
+    trueClaim:   'The footprints left by Apollo astronauts on the Moon will likely remain intact for millions of years because there is no wind or rain to erode them.',
+    trueSource:  'NASA',
+    falseClaim:  'The Moon is slowly moving closer to Earth at a rate of about 4 centimetres per year.',
+    explanation: 'The Moon is actually moving away from Earth — not closer — at about 3.8 cm per year. This is caused by the transfer of angular momentum through tidal interactions.',
+  },
+  {
+    trueClaim:   'A neutron star is so dense that a teaspoon of its material would weigh about a billion tonnes on Earth.',
+    trueSource:  'ESA (European Space Agency)',
+    falseClaim:  'Black holes constantly pull in all surrounding matter, including light, which is why the sky around a black hole always appears completely dark.',
+    explanation: 'Black holes only pull in matter that crosses the event horizon. Material outside this boundary can orbit stably, and the region around a black hole can actually be extremely bright due to an intensely hot accretion disk.',
+  },
 
-/* ─────────────────────────────────────────────────────────────
+  // ── Animals & Biology ──────────────────────────────────
+  {
+    trueClaim:   'Octopuses have three hearts — two pump blood to the gills, and one pumps it to the rest of the body.',
+    trueSource:  'Smithsonian Magazine',
+    falseClaim:  'When an octopus loses an arm, it can fully regrow it within about two weeks.',
+    explanation: 'Octopuses can regenerate lost arms, but the process takes far longer than two weeks — typically several months, and sometimes over a year depending on how much was lost.',
+  },
+  {
+    trueClaim:   'Sloths move so slowly that algae actually grow on their fur, giving them a greenish tint that helps camouflage them in the treetops.',
+    trueSource:  'National Geographic',
+    falseClaim:  'Sloths sleep up to 20 hours a day in the wild because their low-calorie leaf diet gives them very little energy.',
+    explanation: 'Wild sloths actually sleep only about 8–10 hours a day — the 20-hour figure came from observations of captive sloths, which are far less active. Their slow pace conserves energy, but they are not nearly as dormant as once believed.',
+  },
+  {
+    trueClaim:   'A group of flamingos is called a "flamboyance."',
+    trueSource:  'Merriam-Webster / Audubon Society',
+    falseClaim:  'Flamingos are naturally pink — the color comes from a pigment they are born with that intensifies as they age.',
+    explanation: 'Flamingos are not born pink — chicks hatch with gray or white feathers. Their iconic color comes entirely from carotenoid pigments in the algae, shrimp, and other food they eat throughout their lives.',
+  },
+  {
+    trueClaim:   'Elephants are the only animals known to show behaviors that suggest they mourn their dead, including returning to and touching the bones of deceased family members.',
+    trueSource:  'National Geographic',
+    falseClaim:  'Elephants have the largest brains of any land animal, weighing up to 15 pounds, which is why they are considered the most intelligent land mammal.',
+    explanation: 'Elephant brains do weigh about 10–12 pounds, but sperm whales have much larger brains. Brain size alone also does not determine intelligence — relative brain size and neural complexity matter more.',
+  },
+  {
+    trueClaim:   'Sharks have been on Earth longer than trees — sharks first appeared about 450 million years ago, while trees evolved roughly 350 million years ago.',
+    trueSource:  'American Museum of Natural History',
+    falseClaim:  'Great white sharks must keep swimming at all times to survive — if they stop moving, they will suffocate.',
+    explanation: 'This is true for some sharks but not all. Great white sharks can slow down and some can rest on the ocean floor. They use ram ventilation (swimming with mouths open) most of the time, but they do not die from brief stops.',
+  },
+
+  // ── Geography ──────────────────────────────────────────
+  {
+    trueClaim:   'Australia is wider than the Moon — the continent spans about 4,000 km coast to coast, while the Moon\'s diameter is only 3,474 km.',
+    trueSource:  'Geoscience Australia / NASA',
+    falseClaim:  'The Great Wall of China is the only man-made structure visible from space with the naked eye.',
+    explanation: 'NASA and multiple astronauts — including Chinese astronaut Yang Liwei — have confirmed the Great Wall is too narrow to see from orbit without magnification. It is roughly the width of a highway.',
+  },
+  {
+    trueClaim:   'Russia is so large that it spans eleven time zones — more than any other country on Earth.',
+    trueSource:  'National Geographic',
+    falseClaim:  'The Sahara Desert is the largest desert on Earth.',
+    explanation: 'Antarctica is actually the world\'s largest desert at about 14.2 million km². A desert is defined by its lack of precipitation, not heat or sand. The Sahara is the largest hot desert, but Antarctica is larger overall.',
+  },
+  {
+    trueClaim:   'Canada has more lakes than all other countries in the world combined — roughly 879,000 lakes.',
+    trueSource:  'USGS / Natural Resources Canada',
+    falseClaim:  'The Amazon River flows from the Andes Mountains westward and empties into the Pacific Ocean.',
+    explanation: 'The Amazon flows eastward from the Andes and empties into the Atlantic Ocean on Brazil\'s northeast coast. It is the world\'s largest river by water volume.',
+  },
+  {
+    trueClaim:   'Vatican City is the world\'s smallest country, covering only about 0.44 km² — smaller than many city parks.',
+    trueSource:  'World Atlas / CIA World Factbook',
+    falseClaim:  'The Nile River is the world\'s longest river and also carries more water than any other river on Earth.',
+    explanation: 'The Nile is generally considered the world\'s longest river, but the Amazon carries far more water — roughly 20% of all fresh water discharged into the world\'s oceans.',
+  },
+
+  // ── Human Body & Health ────────────────────────────────
+  {
+    trueClaim:   'Humans share about 60% of their DNA with a banana.',
+    trueSource:  'National Institutes of Health (NIH)',
+    falseClaim:  'On average, humans use only about 10% of their brain at any given time.',
+    explanation: 'The "10% of the brain" claim is one of the most widespread myths in science. Brain imaging shows that virtually all brain regions are active at some point, and most of the brain is active almost continuously.',
+  },
+  {
+    trueClaim:   'The human stomach produces a new lining every three to four days because the acid it uses to digest food would otherwise digest the stomach itself.',
+    trueSource:  'Johns Hopkins Medicine',
+    falseClaim:  'Reading in dim light permanently damages your eyesight.',
+    explanation: 'Reading in dim light can cause eye strain and temporary discomfort, but it does not cause any lasting damage to your eyes or vision. This is a common myth parents tell children.',
+  },
+  {
+    trueClaim:   'Humans are the only animals known to have a chin — the protruding lower jaw bone does not appear in any other species, including our closest relatives the chimpanzees.',
+    trueSource:  'Smithsonian Human Origins Program',
+    falseClaim:  'The human body replaces all of its cells every seven years, meaning you are literally a completely different person every seven years.',
+    explanation: 'Different cells have very different lifespans — neurons in the cerebral cortex last a lifetime, while red blood cells live only about 120 days. There is no single "seven-year" reset for the entire body.',
+  },
+  {
+    trueClaim:   'You can\'t hum while holding your nose closed — try it. You need airflow through the nasal passage for the sound to escape.',
+    trueSource:  'Library of Congress Science Reference',
+    falseClaim:  'Drinking milk when you have a cold will increase mucus production and make congestion worse.',
+    explanation: 'Multiple clinical studies have found no link between milk consumption and increased mucus production. The myth likely persists because milk can temporarily thicken saliva, creating a similar sensation — but it does not affect congestion.',
+  },
+
+  // ── History ────────────────────────────────────────────
+  {
+    trueClaim:   'Cleopatra, the famous queen of ancient Egypt, lived closer in time to the Moon landing (1969) than to the construction of the Great Pyramid of Giza.',
+    trueSource:  'Smithsonian Magazine',
+    falseClaim:  'The Eiffel Tower was originally built as a permanent monument to French engineering and was never intended to be demolished.',
+    explanation: 'The Eiffel Tower was designed as a temporary exhibit for the 1889 Paris World\'s Fair, meant to be torn down after 20 years. It survived because it proved invaluable as a radio and telegraph transmission tower.',
+  },
+  {
+    trueClaim:   'Oxford University is older than the Aztec Empire — teaching began at Oxford around 1096, while the Aztec Empire was not founded until approximately 1427.',
+    trueSource:  'University of Oxford / Smithsonian Magazine',
+    falseClaim:  'Napoleon Bonaparte was exceptionally short for his time — he stood only about 5 feet 2 inches tall.',
+    explanation: 'Napoleon was actually about 5 feet 7 inches tall, average or slightly above average for a French man of his era. The "short Napoleon" myth likely stemmed from a misunderstanding of French and British measurement units, and British propaganda cartoons.',
+  },
+  {
+    trueClaim:   'The Great Fire of London in 1666 destroyed over 13,000 houses and 87 churches, yet killed only a small number of people — official records list just 6 deaths.',
+    trueSource:  'Museum of London',
+    falseClaim:  'Abraham Lincoln and Charles Darwin were born on the exact same day — February 12, 1809.',
+    explanation: 'This one is actually TRUE — both Lincoln and Darwin were born on February 12, 1809. (If this was listed as the FALSE claim, the true claim would be the false one. Both being born the same day is the surprising truth!)',
+  },
+
+  // ── Weather & Earth Science ────────────────────────────
+  {
+    trueClaim:   'Lightning is about five times hotter than the surface of the Sun — a lightning bolt reaches approximately 30,000 Kelvin, while the Sun\'s surface is about 5,778 Kelvin.',
+    trueSource:  'NOAA (National Oceanic and Atmospheric Administration)',
+    falseClaim:  'Thunder is the sound of lightning bolts colliding with each other in storm clouds.',
+    explanation: 'Thunder is actually the sound produced by the rapid expansion of air superheated by a lightning bolt. The intense heat causes the surrounding air to expand explosively, creating the rumbling shockwave we hear as thunder.',
+  },
+  {
+    trueClaim:   'A bolt of lightning lasts only about one to two tenths of a second but can strike the same spot multiple times within that single flash.',
+    trueSource:  'NOAA',
+    falseClaim:  'Lightning never strikes the same place twice.',
+    explanation: 'Lightning absolutely can and does strike the same place multiple times — the Empire State Building is struck by lightning about 20–25 times per year. Tall objects in exposed locations are especially prone to repeated strikes.',
+  },
+  {
+    trueClaim:   'Earth\'s inner core is a solid ball of mostly iron and nickel, surrounded by a liquid outer core — and the inner core rotates slightly faster than the rest of the planet.',
+    trueSource:  'USGS',
+    falseClaim:  'Tornadoes cannot form in mountainous regions because the terrain disrupts the rotating winds.',
+    explanation: 'Tornadoes can and do occur in mountainous areas, including the Rocky Mountains. While complex terrain makes them less common and harder to forecast, it does not prevent their formation.',
+  },
+
+  // ── Technology & Inventions ────────────────────────────
+  {
+    trueClaim:   'The first computer "bug" was an actual insect — a moth found trapped in a relay of Harvard\'s Mark II computer in 1947, which engineers taped into the logbook.',
+    trueSource:  'Smithsonian National Museum of American History',
+    falseClaim:  'Thomas Edison invented the light bulb — he was the first person to create a working electric light bulb.',
+    explanation: 'Multiple inventors developed electric light bulbs before Edison. Humphry Davy demonstrated arc lighting in 1802, and Joseph Swan demonstrated a working bulb in 1878 — a year before Edison. Edison\'s key contribution was a practical, long-lasting version and an entire electrical distribution system.',
+  },
+  {
+    trueClaim:   'The QWERTY keyboard layout was designed in the 1870s partly to separate commonly used letter pairs so that mechanical typewriter arms wouldn\'t jam.',
+    trueSource:  'Smithsonian Magazine',
+    falseClaim:  'The internet and the World Wide Web are the same thing — both terms describe the global network of connected computers.',
+    explanation: 'The internet is the global infrastructure of connected networks (hardware and protocols), while the World Wide Web is just one service that runs on top of it — a collection of web pages accessed via browsers. Email and file transfer also use the internet but are not the web.',
+  },
+
+  // ── Oceans & Marine Life ───────────────────────────────
+  {
+    trueClaim:   'More than 80% of the world\'s oceans remain unexplored and unmapped — humans have mapped the Moon\'s surface in greater detail than the ocean floor.',
+    trueSource:  'NOAA',
+    falseClaim:  'The blue whale is the largest animal to have ever lived on Earth, but it is not the loudest — sperm whales produce louder sounds.',
+    explanation: 'Blue whales are actually among the loudest animals on Earth, producing sounds up to 188 decibels — louder than a jet engine. Sperm whales produce very loud clicks as well, but blue whale calls are generally considered louder.',
+  },
+  {
+    trueClaim:   'Jellyfish have no brain, no heart, and no blood — they are 95% water and survive using a simple nerve net to sense and respond to their environment.',
+    trueSource:  'National Geographic',
+    falseClaim:  'Coral reefs are made of rock and mineral deposits that form naturally on the ocean floor over thousands of years.',
+    explanation: 'Coral reefs are built by living organisms — tiny animals called coral polyps that secrete calcium carbonate skeletons. Reefs are essentially massive colonies of these living creatures layered over the skeletons of past generations.',
+  },
+
+  // ── Food & Nutrition ───────────────────────────────────
+  {
+    trueClaim:   'Honey never spoils — archaeologists have found edible honey estimated to be 3,000 years old in Egyptian tombs.',
+    trueSource:  'Smithsonian Magazine',
+    falseClaim:  'Eating carrots improves your night vision beyond normal levels, which is why pilots were encouraged to eat them during World War II.',
+    explanation: 'Carrots contain vitamin A, which is needed for normal vision, but eating extra carrots will not improve vision beyond healthy baseline levels. The British Royal Air Force spread the carrot myth during WWII to hide the real reason for their improved night interception success — radar.',
+  },
+  {
+    trueClaim:   'Bananas are technically berries in botanical terms, while strawberries are not — a true berry develops from a single flower with one ovary.',
+    trueSource:  'USDA / Botanical Society of America',
+    falseClaim:  'Brown sugar is healthier than white sugar because it is less processed and retains more natural nutrients.',
+    explanation: 'Brown sugar is simply white sugar with a small amount of molasses added back in. The nutritional difference is negligible — both are almost entirely sucrose, and the molasses adds only trace amounts of minerals.',
+  },
+
+  // ── Famous Landmarks ───────────────────────────────────
+  {
+    trueClaim:   'The Leaning Tower of Pisa has been intentionally stabilized so it leans less than it used to — engineers reduced the lean by about 17.7 inches between 1990 and 2001.',
+    trueSource:  'UNESCO / BBC News',
+    falseClaim:  'The Colosseum in Rome was built in only three years, making it one of the fastest large construction projects in the ancient world.',
+    explanation: 'The Colosseum took approximately 8–10 years to build, constructed between 70–80 AD. While impressive for its time, it was not an unusually fast build — thousands of workers, including prisoners of war, labored on it over nearly a decade.',
+  },
+  {
+    trueClaim:   'The Statue of Liberty was a gift from France to the United States and was originally intended as a lighthouse — the torch was designed to function as a navigational beacon.',
+    trueSource:  'National Park Service',
+    falseClaim:  'Stonehenge was built by the ancient Romans as a calendar and astronomical observatory to track the summer solstice.',
+    explanation: 'Stonehenge was constructed in several phases between 3000–1500 BC — long before Rome had any presence in Britain. Who exactly built it remains debated, but it was certainly not the Romans. It does align with the summer solstice sunrise, but its builders predate Roman civilization by centuries.',
+  },
+
+];
+
+/* ─────────────────────────────────────────────────────────
    STATE
-───────────────────────────────────────────────────────────── */
-let questions = [];
-let round     = 0;
-let score     = 0;
-let fakePos   = 0;   // which card (0 or 1) holds the false claim
-let answered  = false;
+───────────────────────────────────────────────────────── */
+let pool    = [];   // shuffled questions selected for this game
+let round   = 0;    // current round index (0-based)
+let score   = 0;
+let fakePos = 0;    // which card (0 or 1) holds the false claim
+let results = [];   // { q, correct } per round, for end-screen review
 
-/* ─────────────────────────────────────────────────────────────
-   SCREEN HELPER
-───────────────────────────────────────────────────────────── */
-function showScreen(id) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-}
+/* ─────────────────────────────────────────────────────────
+   HELPERS
+───────────────────────────────────────────────────────── */
+const $ = id => document.getElementById(id);
 
-/* ─────────────────────────────────────────────────────────────
-   START / RESTART
-───────────────────────────────────────────────────────────── */
-async function startGame() {
-  round     = 0;
-  score     = 0;
-  answered  = false;
-  questions = [];
-  showScreen('screen-loading');
-
-  try {
-    questions = await fetchQuestions();
-    showRound();
-  } catch (err) {
-    console.error('Question fetch failed:', err);
-    document.getElementById('error-message').textContent =
-      err.userMessage ?? 'Oops! Couldn\'t load questions. Please try again.';
-    showScreen('screen-error');
-  }
-}
-
-/* ─────────────────────────────────────────────────────────────
-   API CALL
-   The Anthropic API key must be supplied externally (e.g. via a
-   CORS proxy that injects the x-api-key header server-side).
-───────────────────────────────────────────────────────────── */
-async function fetchQuestions() {
-  const systemPrompt =
-    'Generate content appropriate for middle school students (ages 11–14). ' +
-    'Cover a mix of general knowledge topics including science, history, geography, ' +
-    'health, animals, and technology. Make the false claims plausible enough to be ' +
-    'tricky but clearly incorrect when fact-checked. ' +
-    'Return ONLY a JSON array, no markdown fences or preamble.';
-
-  const userPrompt =
-    `Generate exactly ${ROUNDS} "Fact or Fake" quiz pairs for middle school students (grades 6–8).\n` +
-    'Each pair must include one TRUE fact and one FALSE but believable claim on a related topic.\n' +
-    'Make the false claims tempting and plausible — but clearly wrong once explained.\n' +
-    'Vary topics across: science, history, geography, health, animals, technology, and space.\n\n' +
-    `Return ONLY a valid JSON array of exactly ${ROUNDS} objects. No markdown, no preamble.\n` +
-    'Each object must have exactly these four string keys:\n' +
-    '  "trueClaim"   — a true factual statement (1–2 sentences)\n' +
-    '  "trueSource"  — a real-world source name (e.g., "NASA", "National Geographic", "WHO")\n' +
-    '  "falseClaim"  — a false but plausible statement (1–2 sentences)\n' +
-    '  "explanation" — 1–2 sentences explaining why the false claim is wrong';
-
-  let resp;
-  try {
-    resp = await fetch(API_URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type':       'application/json',
-        'anthropic-version':  '2023-06-01',
-      },
-      body: JSON.stringify({
-        model:      'claude-sonnet-4-20250514',
-        max_tokens: 2500,
-        system:     systemPrompt,
-        messages:   [{ role: 'user', content: userPrompt }],
-      }),
-    });
-  } catch (netErr) {
-    const e = new Error('Network error');
-    e.userMessage = 'No connection to the question server. Check your internet and try again.';
-    throw e;
-  }
-
-  if (!resp.ok) {
-    const body = await resp.text().catch(() => '');
-    const e    = new Error(`API ${resp.status}`);
-    e.userMessage =
-      resp.status === 401
-        ? 'API authentication failed. Please contact your teacher.'
-        : `Couldn't reach the question server (error ${resp.status}). Please try again.`;
-    throw e;
-  }
-
-  const data = await resp.json();
-  const raw  = data?.content?.[0]?.text ?? '';
-
-  // Strip accidental markdown fences
-  const cleaned = raw
-    .replace(/^```(?:json)?[\r\n]*/i, '')
-    .replace(/[\r\n]*```\s*$/i, '')
-    .trim();
-
-  let parsed;
-  try {
-    parsed = JSON.parse(cleaned);
-  } catch {
-    const e = new Error('JSON parse error');
-    e.userMessage = 'The questions came back in an unexpected format. Please try again.';
-    throw e;
-  }
-
-  if (!Array.isArray(parsed) || parsed.length < ROUNDS) {
-    const e = new Error('Not enough questions');
-    e.userMessage = 'Not enough questions were generated. Please try again.';
-    throw e;
-  }
-
-  return shuffle(parsed).slice(0, ROUNDS);
-}
-
-/* ─────────────────────────────────────────────────────────────
-   SHOW ROUND
-───────────────────────────────────────────────────────────── */
-function showRound() {
-  showScreen('screen-game');
-  answered = false;
-
-  const q = questions[round];
-
-  // Randomise which card holds the fake claim
-  fakePos = Math.random() < 0.5 ? 0 : 1;
-
-  [0, 1].forEach(i => {
-    const isFake = (i === fakePos);
-    document.getElementById(`text-${i}`).textContent = isFake ? q.falseClaim : q.trueClaim;
-
-    const card = document.getElementById(`card-${i}`);
-    card.className = 'claim-card';
-    card.setAttribute('aria-label', `Option ${i === 0 ? 'A' : 'B'}`);
-    card.removeAttribute('aria-pressed');
-
-    document.getElementById(`badge-${i}`).textContent = '';
-  });
-
-  // Reset feedback
-  document.getElementById('feedback-box').className = 'feedback-box';
-
-  // Update header
-  document.getElementById('round-label').textContent   = `Round ${round + 1} / ${ROUNDS}`;
-  document.getElementById('score-chip').textContent     = `Score: ${score}`;
-  document.getElementById('progress-fill').style.width = `${(round / ROUNDS) * 100}%`;
-}
-
-/* ─────────────────────────────────────────────────────────────
-   HANDLE CHOICE
-───────────────────────────────────────────────────────────── */
-function handleChoice(chosen) {
-  if (answered) return;
-  answered = true;
-
-  const correct = (chosen === fakePos);
-  if (correct) score++;
-
-  // Apply card states and animations
-  [0, 1].forEach(i => {
-    const card  = document.getElementById(`card-${i}`);
-    const badge = document.getElementById(`badge-${i}`);
-    card.classList.add('disabled');
-
-    if (i === chosen && correct) {
-      card.classList.add('state-correct', 'anim-pop');
-      badge.textContent = '✓ FAKE';
-    } else if (i === chosen && !correct) {
-      card.classList.add('state-wrong', 'anim-shake');
-      badge.textContent = '✗ WRONG';
-    } else if (i === fakePos && !correct) {
-      // Reveal which was actually fake when student got it wrong
-      card.classList.add('state-reveal');
-      badge.textContent = '✓ FAKE';
-    }
-  });
-
-  // Populate feedback
-  const q       = questions[round];
-  const verdict = document.getElementById('feedback-verdict');
-  verdict.textContent = correct ? '✅ Correct! +1 point' : '❌ Not quite!';
-  verdict.className   = `feedback-verdict ${correct ? 'good' : 'bad'}`;
-
-  document.getElementById('feedback-explain').textContent = q.explanation;
-  document.getElementById('feedback-source').textContent  =
-    `Source of the true fact: ${q.trueSource}`;
-
-  // Update score chip immediately
-  document.getElementById('score-chip').textContent = `Score: ${score}`;
-
-  // Show feedback panel
-  document.getElementById('feedback-box').classList.add('visible');
-}
-
-/* ─────────────────────────────────────────────────────────────
-   NEXT ROUND
-───────────────────────────────────────────────────────────── */
-function nextRound() {
-  round++;
-  if (round >= ROUNDS) {
-    showEndScreen();
-  } else {
-    showRound();
-  }
-}
-
-/* ─────────────────────────────────────────────────────────────
-   END SCREEN
-───────────────────────────────────────────────────────────── */
-function showEndScreen() {
-  document.getElementById('progress-fill').style.width = '100%';
-  document.getElementById('end-fraction').textContent  = `${score} / ${ROUNDS}`;
-
-  let trophy, msg;
-  if (score >= 9) {
-    trophy = '🏆';
-    msg    = 'Amazing! You\'re a fact-checking pro!';
-  } else if (score >= 7) {
-    trophy = '🥈';
-    msg    = 'Great job! You\'ve got sharp eyes!';
-  } else if (score >= 5) {
-    trophy = '🥉';
-    msg    = 'Not bad! Keep practicing your fact-checking skills.';
-  } else {
-    trophy = '📚';
-    msg    = 'Keep learning! Spotting fake info takes practice.';
-  }
-
-  document.getElementById('end-trophy').textContent  = trophy;
-  document.getElementById('end-message').textContent = msg;
-  showScreen('screen-end');
-}
-
-/* ─────────────────────────────────────────────────────────────
-   UTILITY — Fisher-Yates shuffle
-───────────────────────────────────────────────────────────── */
 function shuffle(arr) {
   const a = arr.slice();
   for (let i = a.length - 1; i > 0; i--) {
@@ -741,14 +517,133 @@ function shuffle(arr) {
   return a;
 }
 
-/* ─────────────────────────────────────────────────────────────
-   KEYBOARD SUPPORT — Enter / Space activates focused card
-───────────────────────────────────────────────────────────── */
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  $(id).classList.add('active');
+}
+
+/* ─────────────────────────────────────────────────────────
+   START
+───────────────────────────────────────────────────────── */
+function startGame() {
+  // Pick 10 random questions from the bank (or all of them if fewer than 10)
+  pool    = shuffle(questionBank).slice(0, Math.min(10, questionBank.length));
+  round   = 0;
+  score   = 0;
+  results = [];
+  showRound();
+  showScreen('s-game');
+}
+
+/* ─────────────────────────────────────────────────────────
+   SHOW ROUND
+───────────────────────────────────────────────────────── */
+function showRound() {
+  const q = pool[round];
+
+  // Randomise which card holds the fake claim
+  fakePos = Math.random() < 0.5 ? 0 : 1;
+
+  $('c0').textContent = fakePos === 0 ? q.falseClaim : q.trueClaim;
+  $('c1').textContent = fakePos === 1 ? q.falseClaim : q.trueClaim;
+
+  // Reset card classes and feedback
+  ['c0', 'c1'].forEach(id => { $(id).className = 'ccard'; });
+  $('fb').className = 'fb';
+
+  // Update header
+  $('gRound').textContent = `Round ${round + 1} of ${pool.length}`;
+  $('gScore').textContent = `Score: ${score}`;
+  $('pbFill').style.width = `${(round / pool.length) * 100}%`;
+}
+
+/* ─────────────────────────────────────────────────────────
+   PICK — called when a card is clicked
+───────────────────────────────────────────────────────── */
+function pick(chosen) {
+  // Disable both cards immediately to prevent double-click
+  $('c0').classList.add('done');
+  $('c1').classList.add('done');
+
+  const correct = chosen === fakePos;
+  if (correct) score++;
+
+  results.push({ q: pool[round], correct });
+
+  // Apply visual states and animations
+  if (correct) {
+    $(`c${chosen}`).classList.add('ok', 'a-bump');
+  } else {
+    $(`c${chosen}`).classList.add('bad', 'a-shake');
+    $(`c${fakePos}`).classList.add('rev');
+  }
+
+  // Populate and reveal feedback panel
+  const q   = pool[round];
+  const fbV = $('fbV');
+  fbV.textContent = correct ? '✓ Correct! +1 point' : '✗ Not quite! The other one was fake.';
+  fbV.className   = `fbv ${correct ? 'ok' : 'bad'}`;
+
+  $('fbE').textContent = q.explanation;
+  $('fbS').innerHTML   = `✅ The real fact comes from: <b>${q.trueSource}</b>`;
+  $('gScore').textContent = `Score: ${score}`;
+
+  const fb = $('fb');
+  fb.classList.add('show');
+  fb.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+/* ─────────────────────────────────────────────────────────
+   NEXT ROUND
+───────────────────────────────────────────────────────── */
+function nextRound() {
+  round++;
+  if (round >= pool.length) {
+    showEnd();
+  } else {
+    showRound();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+}
+
+/* ─────────────────────────────────────────────────────────
+   END SCREEN
+───────────────────────────────────────────────────────── */
+function showEnd() {
+  $('pbFill').style.width  = '100%';
+  $('eScore').textContent  = `${score}/${pool.length}`;
+
+  const pct = score / pool.length;
+  $('eMsg').textContent =
+    score === pool.length ? '🏆 Perfect score! You\'re a fact-checking legend!'  :
+    pct >= 0.8            ? '🌟 Amazing! You\'ve got seriously sharp eyes!'       :
+    pct >= 0.6            ? '👍 Nice work! You\'re getting good at spotting fakes!' :
+    pct >= 0.4            ? '🤔 Not bad! Keep practicing — fake info can be tricky.' :
+                            '💪 Keep learning! Spotting fake info is a skill that gets better with practice.';
+
+  // Build review list
+  $('rv').innerHTML = results.map((r, i) =>
+    `<div class="ri ${r.correct ? 'ok' : 'bad'}">
+      <div class="rih">${r.correct ? '✓' : '✗'} Round ${i + 1}</div>
+      <div class="ric">
+        <b>FAKE:</b> "${r.q.falseClaim}"<span class="rit">FAKE</span><br>
+        <b>TRUE:</b> "${r.q.trueClaim}"
+      </div>
+      <div class="rie">${r.q.explanation}</div>
+      <div class="ris">Source: ${r.q.trueSource}</div>
+    </div>`
+  ).join('');
+
+  // Collapse the review accordion for a clean look
+  $('reviewDetails').removeAttribute('open');
+  showScreen('s-end');
+}
+
+/* ─────────────────────────────────────────────────────────
+   KEYBOARD — Enter / Space activates a focused card
+───────────────────────────────────────────────────────── */
 document.addEventListener('keydown', e => {
-  if (
-    e.target.classList.contains('claim-card') &&
-    (e.key === 'Enter' || e.key === ' ')
-  ) {
+  if (e.target.classList.contains('ccard') && (e.key === 'Enter' || e.key === ' ')) {
     e.preventDefault();
     e.target.click();
   }
