@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fact or Fake — Can You Spot the Fake?</title>
+  <style>
+    /* ── Reset & Base ─────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --blue:        #2563eb;
+      --blue-dark:   #1d4ed8;
+      --blue-light:  #dbeafe;
+      --purple:      #7c3aed;
+      --green:       #10b981;
+      --green-light: #d1fae5;
+      --red:         #ef4444;
+      --red-light:   #fee2e2;
+      --bg:          #f0f9ff;
+      --white:       #ffffff;
+      --text:        #1e293b;
+      --muted:       #64748b;
+      --border:      #e2e8f0;
+      --radius:      16px;
+      --shadow-sm:   0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.05);
+      --shadow:      0 4px 6px -1px rgba(0,0,0,0.10), 0 2px 4px -1px rgba(0,0,0,0.06);
+      --shadow-lg:   0 10px 20px rgba(0,0,0,0.10), 0 4px 8px rgba(0,0,0,0.06);
+    }
+
+    html, body {
+      height: 100%;
+    }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      background-image:
+        radial-gradient(circle at 15% 15%, rgba(37,99,235,0.06)  0%, transparent 50%),
+        radial-gradient(circle at 85% 85%, rgba(124,58,237,0.06) 0%, transparent 50%);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem 1rem;
+    }
+
+    /* ── Screen system ────────────────────────────────────────── */
+    .screen { display: none; width: 100%; max-width: 800px; }
+    .screen.active {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      animation: fadeUp 0.35s ease both;
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(14px); }
+      to   { opacity: 1; transform: translateY(0);    }
+    }
+
+    /* ── Shared panel ─────────────────────────────────────────── */
+    .panel {
+      background: var(--white);
+      border-radius: var(--radius);
+      padding: 2.75rem 2rem;
+      box-shadow: var(--shadow-lg);
+      width: 100%;
+      text-align: center;
+    }
+
+    /* ── Buttons ──────────────────────────────────────────────── */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      padding: 0.9rem 2rem;
+      border-radius: 50px;
+      border: none;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: 700;
+      font-family: inherit;
+      letter-spacing: 0.01em;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+    .btn:hover  { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+    .btn:active { transform: translateY(0);    box-shadow: var(--shadow-sm); }
+    .btn:focus-visible { outline: 3px solid var(--blue); outline-offset: 3px; }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--blue), var(--purple));
+      color: var(--white);
+      box-shadow: var(--shadow);
+    }
+    .btn-green {
+      background: linear-gradient(135deg, var(--green), #059669);
+      color: var(--white);
+      box-shadow: var(--shadow);
+    }
+
+    /* ══════════════════════════════════════════════════════════
+       START SCREEN
+    ══════════════════════════════════════════════════════════ */
+    #screen-start .panel { max-width: 460px; }
+
+    .start-icon  { font-size: 3.5rem; line-height: 1; margin-bottom: 0.75rem; }
+    .start-title {
+      font-size: 2.7rem;
+      font-weight: 900;
+      background: linear-gradient(135deg, var(--blue), var(--purple));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      line-height: 1.1;
+      margin-bottom: 0.75rem;
+    }
+    .start-desc {
+      font-size: 1.05rem;
+      color: var(--muted);
+      line-height: 1.65;
+      margin-bottom: 1.5rem;
+    }
+    .start-desc strong { color: var(--text); }
+
+    .topic-pills {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.4rem;
+      margin-bottom: 2rem;
+    }
+    .pill {
+      background: var(--blue-light);
+      color: var(--blue);
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 0.3rem 0.7rem;
+      border-radius: 50px;
+    }
+
+    /* ══════════════════════════════════════════════════════════
+       LOADING SCREEN
+    ══════════════════════════════════════════════════════════ */
+    #screen-loading .panel { max-width: 360px; }
+
+    .spinner {
+      width: 56px;
+      height: 56px;
+      border: 5px solid var(--blue-light);
+      border-top-color: var(--blue);
+      border-radius: 50%;
+      animation: spin 0.75s linear infinite;
+      margin: 0 auto 1.25rem;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .loading-text { font-size: 1.05rem; color: var(--muted); }
+    .loading-dots::after {
+      content: '';
+      animation: dots 1.4s steps(4, end) infinite;
+    }
+    @keyframes dots {
+      0%  { content: ''; }   25% { content: '.';   }
+      50% { content: '..'; } 75% { content: '...'; }
+    }
+
+    /* ══════════════════════════════════════════════════════════
+       ERROR SCREEN
+    ══════════════════════════════════════════════════════════ */
+    #screen-error .panel {
+      max-width: 420px;
+      border-top: 4px solid var(--red);
+    }
+    .error-icon    { font-size: 3rem; margin-bottom: 0.75rem; }
+    .error-heading { font-size: 1.25rem; font-weight: 700; margin-bottom: 0.5rem; }
+    .error-text    { font-size: 0.95rem; color: var(--muted); line-height: 1.6; margin-bottom: 1.5rem; }
+
+    /* ══════════════════════════════════════════════════════════
+       GAME SCREEN
+    ══════════════════════════════════════════════════════════ */
+
+    /* Header */
+    .game-header { width: 100%; margin-bottom: 1.25rem; }
+    .game-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.55rem;
+    }
+    .round-label { font-size: 0.875rem; font-weight: 600; color: var(--muted); }
+    .score-chip {
+      background: linear-gradient(135deg, var(--blue), var(--purple));
+      color: var(--white);
+      font-size: 0.82rem;
+      font-weight: 700;
+      padding: 0.28rem 0.85rem;
+      border-radius: 50px;
+    }
+    .progress-track {
+      width: 100%;
+      height: 8px;
+      background: var(--border);
+      border-radius: 50px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--blue), var(--purple));
+      border-radius: 50px;
+      transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* Prompt */
+    .game-prompt {
+      font-size: 1.1rem;
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+    .prompt-highlight {
+      background: linear-gradient(135deg, var(--blue), var(--purple));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* Claim cards */
+    .cards-row { display: flex; gap: 1rem; width: 100%; }
+
+    .claim-card {
+      flex: 1;
+      background: var(--white);
+      border: 2.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.5rem 1.25rem;
+      cursor: pointer;
+      font-size: 0.97rem;
+      line-height: 1.6;
+      font-weight: 500;
+      color: var(--text);
+      text-align: center;
+      box-shadow: var(--shadow-sm);
+      transition: transform 0.2s ease, box-shadow 0.2s ease,
+                  border-color 0.2s ease, background 0.2s ease;
+      position: relative;
+      min-height: 130px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+    .claim-card:hover:not(.disabled) {
+      transform: translateY(-5px);
+      box-shadow: var(--shadow-lg);
+      border-color: var(--blue);
+    }
+    .claim-card:focus-visible { outline: 3px solid var(--blue); outline-offset: 3px; }
+    .claim-card.disabled      { cursor: default; pointer-events: none; }
+
+    /* Card result states */
+    .claim-card.state-correct { background: var(--green-light); border-color: var(--green); }
+    .claim-card.state-wrong   { background: var(--red-light);   border-color: var(--red);   }
+    .claim-card.state-reveal  { background: var(--green-light); border-color: var(--green); }
+
+    /* Card badge (✓ FAKE / ✗ WRONG) */
+    .card-badge {
+      font-size: 0.72rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      padding: 0.2rem 0.55rem;
+      border-radius: 50px;
+      display: none;
+    }
+    .state-correct .card-badge { display: inline-block; background: var(--green); color: #fff; }
+    .state-wrong   .card-badge { display: inline-block; background: var(--red);   color: #fff; }
+    .state-reveal  .card-badge { display: inline-block; background: var(--green); color: #fff; }
+
+    /* Card animations */
+    @keyframes popCorrect {
+      0%   { transform: scale(1); }
+      35%  { transform: scale(1.05); }
+      65%  { transform: scale(0.97); }
+      100% { transform: scale(1); }
+    }
+    @keyframes shakeWrong {
+      0%, 100%  { transform: translateX(0);  }
+      20%, 60%  { transform: translateX(-6px); }
+      40%, 80%  { transform: translateX( 6px); }
+    }
+    .anim-pop   { animation: popCorrect 0.45s ease both; }
+    .anim-shake { animation: shakeWrong 0.4s  ease both; }
+
+    /* Feedback box */
+    .feedback-box {
+      width: 100%;
+      background: var(--white);
+      border-radius: var(--radius);
+      padding: 1.25rem 1.5rem;
+      box-shadow: var(--shadow);
+      margin-top: 0.9rem;
+      display: none;
+      animation: fadeUp 0.3s ease both;
+    }
+    .feedback-box.visible { display: block; }
+
+    .feedback-verdict {
+      font-size: 1.1rem;
+      font-weight: 800;
+      margin-bottom: 0.5rem;
+    }
+    .feedback-verdict.good { color: var(--green); }
+    .feedback-verdict.bad  { color: var(--red);   }
+
+    .feedback-explain {
+      font-size: 0.9rem;
+      line-height: 1.65;
+      color: var(--muted);
+    }
+    .feedback-source {
+      display: inline-block;
+      margin-top: 0.65rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--blue);
+      background: var(--blue-light);
+      padding: 0.22rem 0.65rem;
+      border-radius: 50px;
+    }
+    .next-wrap { text-align: right; margin-top: 1rem; }
+
+    /* ══════════════════════════════════════════════════════════
+       END SCREEN
+    ══════════════════════════════════════════════════════════ */
+    #screen-end .panel { max-width: 460px; }
+
+    .end-trophy   { font-size: 4.5rem; line-height: 1; margin-bottom: 0.5rem; }
+    .end-fraction {
+      font-size: 3.8rem;
+      font-weight: 900;
+      background: linear-gradient(135deg, var(--blue), var(--purple));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      line-height: 1;
+      margin-bottom: 0.3rem;
+    }
+    .end-sublabel { font-size: 0.95rem; color: var(--muted); margin-bottom: 1.25rem; }
+    .end-message  {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1.5;
+      margin-bottom: 2rem;
+    }
+
+    /* ── Responsive ───────────────────────────────────────────── */
+    @media (max-width: 540px) {
+      .cards-row    { flex-direction: column; }
+      .start-title  { font-size: 2.1rem; }
+      .end-fraction { font-size: 3rem; }
+      .panel        { padding: 2rem 1.25rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════════════════
+     START SCREEN
+══════════════════════════════════════════════════════════ -->
+<div id="screen-start" class="screen active">
+  <div class="panel">
+    <div class="start-icon">🔍</div>
+    <h1 class="start-title">Fact or Fake</h1>
+    <p class="start-desc">
+      Can you spot the fake? Each round shows two claims —
+      <strong>choose the one you think is FALSE!</strong>
+    </p>
+    <div class="topic-pills">
+      <span class="pill">🔬 Science</span>
+      <span class="pill">🌍 Geography</span>
+      <span class="pill">📜 History</span>
+      <span class="pill">🐾 Animals</span>
+      <span class="pill">💻 Technology</span>
+      <span class="pill">🏥 Health</span>
+      <span class="pill">🚀 Space</span>
+    </div>
+    <button class="btn btn-primary" onclick="startGame()">▶ Start Game</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     LOADING SCREEN
+══════════════════════════════════════════════════════════ -->
+<div id="screen-loading" class="screen">
+  <div class="panel">
+    <div class="spinner"></div>
+    <p class="loading-text">Generating questions<span class="loading-dots"></span></p>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     ERROR SCREEN
+══════════════════════════════════════════════════════════ -->
+<div id="screen-error" class="screen">
+  <div class="panel">
+    <div class="error-icon">😕</div>
+    <h2 class="error-heading">Couldn't Load Questions</h2>
+    <p class="error-text" id="error-message">
+      Something went wrong while generating the quiz. Check your connection and try again.
+    </p>
+    <button class="btn btn-primary" onclick="startGame()">↩ Try Again</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     GAME SCREEN
+══════════════════════════════════════════════════════════ -->
+<div id="screen-game" class="screen">
+
+  <!-- Progress header -->
+  <div class="game-header">
+    <div class="game-meta">
+      <span class="round-label" id="round-label">Round 1 / 10</span>
+      <span class="score-chip"  id="score-chip">Score: 0</span>
+    </div>
+    <div class="progress-track">
+      <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
+    </div>
+  </div>
+
+  <!-- Prompt -->
+  <p class="game-prompt">
+    Which one is <span class="prompt-highlight">FAKE</span>? Click to choose.
+  </p>
+
+  <!-- Cards -->
+  <div class="cards-row">
+    <div class="claim-card" id="card-0"
+         tabindex="0" role="button" aria-label="Option A"
+         onclick="handleChoice(0)">
+      <span class="card-badge" id="badge-0"></span>
+      <span id="text-0"></span>
+    </div>
+    <div class="claim-card" id="card-1"
+         tabindex="0" role="button" aria-label="Option B"
+         onclick="handleChoice(1)">
+      <span class="card-badge" id="badge-1"></span>
+      <span id="text-1"></span>
+    </div>
+  </div>
+
+  <!-- Feedback -->
+  <div class="feedback-box" id="feedback-box">
+    <p class="feedback-verdict" id="feedback-verdict"></p>
+    <p class="feedback-explain" id="feedback-explain"></p>
+    <span class="feedback-source" id="feedback-source"></span>
+    <div class="next-wrap">
+      <button class="btn btn-green" onclick="nextRound()">Next →</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     END SCREEN
+══════════════════════════════════════════════════════════ -->
+<div id="screen-end" class="screen">
+  <div class="panel">
+    <div class="end-trophy"   id="end-trophy">🏆</div>
+    <div class="end-fraction" id="end-fraction">0 / 10</div>
+    <p class="end-sublabel">questions answered correctly</p>
+    <p class="end-message" id="end-message"></p>
+    <button class="btn btn-primary" onclick="startGame()">🔄 Play Again</button>
+  </div>
+</div>
+
+<script>
+'use strict';
+
+/* ─────────────────────────────────────────────────────────────
+   CONFIG
+───────────────────────────────────────────────────────────── */
+const ROUNDS  = 10;
+const API_URL = 'https://api.anthropic.com/v1/messages';
+// Note: The API key is not included here — it must be injected by a
+// reverse proxy or server-side handler before the request reaches Anthropic.
+
+/* ─────────────────────────────────────────────────────────────
+   STATE
+───────────────────────────────────────────────────────────── */
+let questions = [];
+let round     = 0;
+let score     = 0;
+let fakePos   = 0;   // which card (0 or 1) holds the false claim
+let answered  = false;
+
+/* ─────────────────────────────────────────────────────────────
+   SCREEN HELPER
+───────────────────────────────────────────────────────────── */
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+/* ─────────────────────────────────────────────────────────────
+   START / RESTART
+───────────────────────────────────────────────────────────── */
+async function startGame() {
+  round     = 0;
+  score     = 0;
+  answered  = false;
+  questions = [];
+  showScreen('screen-loading');
+
+  try {
+    questions = await fetchQuestions();
+    showRound();
+  } catch (err) {
+    console.error('Question fetch failed:', err);
+    document.getElementById('error-message').textContent =
+      err.userMessage ?? 'Oops! Couldn\'t load questions. Please try again.';
+    showScreen('screen-error');
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   API CALL
+   The Anthropic API key must be supplied externally (e.g. via a
+   CORS proxy that injects the x-api-key header server-side).
+───────────────────────────────────────────────────────────── */
+async function fetchQuestions() {
+  const systemPrompt =
+    'Generate content appropriate for middle school students (ages 11–14). ' +
+    'Cover a mix of general knowledge topics including science, history, geography, ' +
+    'health, animals, and technology. Make the false claims plausible enough to be ' +
+    'tricky but clearly incorrect when fact-checked. ' +
+    'Return ONLY a JSON array, no markdown fences or preamble.';
+
+  const userPrompt =
+    `Generate exactly ${ROUNDS} "Fact or Fake" quiz pairs for middle school students (grades 6–8).\n` +
+    'Each pair must include one TRUE fact and one FALSE but believable claim on a related topic.\n' +
+    'Make the false claims tempting and plausible — but clearly wrong once explained.\n' +
+    'Vary topics across: science, history, geography, health, animals, technology, and space.\n\n' +
+    `Return ONLY a valid JSON array of exactly ${ROUNDS} objects. No markdown, no preamble.\n` +
+    'Each object must have exactly these four string keys:\n' +
+    '  "trueClaim"   — a true factual statement (1–2 sentences)\n' +
+    '  "trueSource"  — a real-world source name (e.g., "NASA", "National Geographic", "WHO")\n' +
+    '  "falseClaim"  — a false but plausible statement (1–2 sentences)\n' +
+    '  "explanation" — 1–2 sentences explaining why the false claim is wrong';
+
+  let resp;
+  try {
+    resp = await fetch(API_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type':       'application/json',
+        'anthropic-version':  '2023-06-01',
+      },
+      body: JSON.stringify({
+        model:      'claude-sonnet-4-20250514',
+        max_tokens: 2500,
+        system:     systemPrompt,
+        messages:   [{ role: 'user', content: userPrompt }],
+      }),
+    });
+  } catch (netErr) {
+    const e = new Error('Network error');
+    e.userMessage = 'No connection to the question server. Check your internet and try again.';
+    throw e;
+  }
+
+  if (!resp.ok) {
+    const body = await resp.text().catch(() => '');
+    const e    = new Error(`API ${resp.status}`);
+    e.userMessage =
+      resp.status === 401
+        ? 'API authentication failed. Please contact your teacher.'
+        : `Couldn't reach the question server (error ${resp.status}). Please try again.`;
+    throw e;
+  }
+
+  const data = await resp.json();
+  const raw  = data?.content?.[0]?.text ?? '';
+
+  // Strip accidental markdown fences
+  const cleaned = raw
+    .replace(/^```(?:json)?[\r\n]*/i, '')
+    .replace(/[\r\n]*```\s*$/i, '')
+    .trim();
+
+  let parsed;
+  try {
+    parsed = JSON.parse(cleaned);
+  } catch {
+    const e = new Error('JSON parse error');
+    e.userMessage = 'The questions came back in an unexpected format. Please try again.';
+    throw e;
+  }
+
+  if (!Array.isArray(parsed) || parsed.length < ROUNDS) {
+    const e = new Error('Not enough questions');
+    e.userMessage = 'Not enough questions were generated. Please try again.';
+    throw e;
+  }
+
+  return shuffle(parsed).slice(0, ROUNDS);
+}
+
+/* ─────────────────────────────────────────────────────────────
+   SHOW ROUND
+───────────────────────────────────────────────────────────── */
+function showRound() {
+  showScreen('screen-game');
+  answered = false;
+
+  const q = questions[round];
+
+  // Randomise which card holds the fake claim
+  fakePos = Math.random() < 0.5 ? 0 : 1;
+
+  [0, 1].forEach(i => {
+    const isFake = (i === fakePos);
+    document.getElementById(`text-${i}`).textContent = isFake ? q.falseClaim : q.trueClaim;
+
+    const card = document.getElementById(`card-${i}`);
+    card.className = 'claim-card';
+    card.setAttribute('aria-label', `Option ${i === 0 ? 'A' : 'B'}`);
+    card.removeAttribute('aria-pressed');
+
+    document.getElementById(`badge-${i}`).textContent = '';
+  });
+
+  // Reset feedback
+  document.getElementById('feedback-box').className = 'feedback-box';
+
+  // Update header
+  document.getElementById('round-label').textContent   = `Round ${round + 1} / ${ROUNDS}`;
+  document.getElementById('score-chip').textContent     = `Score: ${score}`;
+  document.getElementById('progress-fill').style.width = `${(round / ROUNDS) * 100}%`;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   HANDLE CHOICE
+───────────────────────────────────────────────────────────── */
+function handleChoice(chosen) {
+  if (answered) return;
+  answered = true;
+
+  const correct = (chosen === fakePos);
+  if (correct) score++;
+
+  // Apply card states and animations
+  [0, 1].forEach(i => {
+    const card  = document.getElementById(`card-${i}`);
+    const badge = document.getElementById(`badge-${i}`);
+    card.classList.add('disabled');
+
+    if (i === chosen && correct) {
+      card.classList.add('state-correct', 'anim-pop');
+      badge.textContent = '✓ FAKE';
+    } else if (i === chosen && !correct) {
+      card.classList.add('state-wrong', 'anim-shake');
+      badge.textContent = '✗ WRONG';
+    } else if (i === fakePos && !correct) {
+      // Reveal which was actually fake when student got it wrong
+      card.classList.add('state-reveal');
+      badge.textContent = '✓ FAKE';
+    }
+  });
+
+  // Populate feedback
+  const q       = questions[round];
+  const verdict = document.getElementById('feedback-verdict');
+  verdict.textContent = correct ? '✅ Correct! +1 point' : '❌ Not quite!';
+  verdict.className   = `feedback-verdict ${correct ? 'good' : 'bad'}`;
+
+  document.getElementById('feedback-explain').textContent = q.explanation;
+  document.getElementById('feedback-source').textContent  =
+    `Source of the true fact: ${q.trueSource}`;
+
+  // Update score chip immediately
+  document.getElementById('score-chip').textContent = `Score: ${score}`;
+
+  // Show feedback panel
+  document.getElementById('feedback-box').classList.add('visible');
+}
+
+/* ─────────────────────────────────────────────────────────────
+   NEXT ROUND
+───────────────────────────────────────────────────────────── */
+function nextRound() {
+  round++;
+  if (round >= ROUNDS) {
+    showEndScreen();
+  } else {
+    showRound();
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   END SCREEN
+───────────────────────────────────────────────────────────── */
+function showEndScreen() {
+  document.getElementById('progress-fill').style.width = '100%';
+  document.getElementById('end-fraction').textContent  = `${score} / ${ROUNDS}`;
+
+  let trophy, msg;
+  if (score >= 9) {
+    trophy = '🏆';
+    msg    = 'Amazing! You\'re a fact-checking pro!';
+  } else if (score >= 7) {
+    trophy = '🥈';
+    msg    = 'Great job! You\'ve got sharp eyes!';
+  } else if (score >= 5) {
+    trophy = '🥉';
+    msg    = 'Not bad! Keep practicing your fact-checking skills.';
+  } else {
+    trophy = '📚';
+    msg    = 'Keep learning! Spotting fake info takes practice.';
+  }
+
+  document.getElementById('end-trophy').textContent  = trophy;
+  document.getElementById('end-message').textContent = msg;
+  showScreen('screen-end');
+}
+
+/* ─────────────────────────────────────────────────────────────
+   UTILITY — Fisher-Yates shuffle
+───────────────────────────────────────────────────────────── */
+function shuffle(arr) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   KEYBOARD SUPPORT — Enter / Space activates focused card
+───────────────────────────────────────────────────────────── */
+document.addEventListener('keydown', e => {
+  if (
+    e.target.classList.contains('claim-card') &&
+    (e.key === 'Enter' || e.key === ' ')
+  ) {
+    e.preventDefault();
+    e.target.click();
+  }
+});
+</script>
+</body>
+</html>
