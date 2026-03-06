@@ -262,53 +262,6 @@ function tickPopulations() {
   state.actualConsumers = Math.min(state.actualConsumers, controls.consumers);
 }
 
-// ── In-canvas overlay graph (drawn on scene canvas each frame) ──
-const OV_COLORS = ['#e74c3c', '#2ecc71', '#f39c12', '#a07040'];
-
-function drawOverlayGraph() {
-  const canvas = document.getElementById('scene');
-  if (!canvas || history.co2.length < 2) return;
-  const ctx = canvas.getContext('2d');
-  const GW = 200, GH = 80;
-  const gx = canvas.width - GW - 14, gy = 14;
-  const n  = history.co2.length;
-
-  // Background panel
-  ctx.fillStyle = 'rgba(6, 14, 28, 0.80)';
-  ctx.strokeStyle = 'rgba(46, 204, 113, 0.18)';
-  ctx.lineWidth = 1;
-  ctx.beginPath(); ctx.rect(gx - 8, gy - 8, GW + 16, GH + 28); ctx.fill(); ctx.stroke();
-
-  // Subtle mid-reference line
-  ctx.strokeStyle = 'rgba(255,255,255,0.07)';
-  ctx.setLineDash([3, 3]);
-  ctx.beginPath(); ctx.moveTo(gx, gy + GH/2); ctx.lineTo(gx + GW, gy + GH/2); ctx.stroke();
-  ctx.setLineDash([]);
-
-  // Four data lines
-  HISTORY_KEYS.forEach((key, i) => {
-    const data = history[key];
-    ctx.beginPath(); ctx.strokeStyle = OV_COLORS[i]; ctx.lineWidth = 1.5; ctx.lineJoin = 'round';
-    data.forEach((v, j) => {
-      const x = gx + (j / Math.max(n - 1, 1)) * GW;
-      const y = gy + GH - (v / TOTAL_CARBON) * GH * 0.92;
-      j === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
-    });
-    ctx.stroke();
-  });
-
-  // Legend dots
-  const labels = ['CO₂', 'Plants', 'Animals', 'Dead'];
-  ctx.font = '8px Segoe UI';
-  labels.forEach((lbl, i) => {
-    const lx = gx + i * 50;
-    ctx.fillStyle = OV_COLORS[i];
-    ctx.beginPath(); ctx.arc(lx + 4, gy + GH + 16, 3, 0, Math.PI * 2); ctx.fill();
-    ctx.fillStyle = 'rgba(180, 210, 255, 0.60)';
-    ctx.fillText(lbl, lx + 10, gy + GH + 19);
-  });
-}
-
 // ── Canvas resize ─────────────────────────────────────────────
 function resizeCanvas() {
   const canvas = document.getElementById('scene');
@@ -335,10 +288,9 @@ function loop(ts) {
     drawGraph();
   }
 
-  // Scene animates every frame; overlay graph drawn on top
-  if (typeof Scene      !== 'undefined') Scene.draw(ts, controls, state);
-  if (typeof Particles  !== 'undefined') Particles.draw(ts, controls, state, isPlaying);
-  drawOverlayGraph();
+  // Scene animates every frame
+  if (typeof Scene     !== 'undefined') Scene.draw(ts, controls, state);
+  if (typeof Particles !== 'undefined') Particles.draw(ts, controls, state, isPlaying);
 }
 
 // ── Init ─────────────────────────────────────────────────────
