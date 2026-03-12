@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Plate Tectonics — Utah SEEd</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+  <h1>🌍 Plate Tectonics: Patterns on Earth's Surface</h1>
+  <div class="badge-wrap">
+    <button class="std-badge" onclick="togglePopup()">ESS.2.3</button>
+    <div class="std-popup" id="stdPopup">
+      <strong>Utah SEEd — ESS.2.3</strong>
+      <p>Construct an explanation for how plate tectonics results in patterns on
+         Earth's surface. Emphasize past and current plate motions.</p>
+    </div>
+  </div>
+</header>
+
+<div class="content-wrapper">
+
+  <main class="main-area">
+    <div class="map-section">
+      <canvas id="mapCanvas"></canvas>
+    </div>
+    <div class="cross-section-wrap">
+      <div id="crossSection">
+        <p class="placeholder-text">
+          Click a boundary on the map above to explore what happens where plates meet.
+        </p>
+      </div>
+    </div>
+  </main>
+
+  <aside class="sidebar">
+
+    <div class="filter-group">
+      <p class="sidebar-label">Filter Boundaries</p>
+      <button class="filter-btn active" data-filter="all"
+              onclick="setFilter('all')">Show All</button>
+      <button class="filter-btn" data-filter="convergent"
+              onclick="setFilter('convergent')">Convergent</button>
+      <button class="filter-btn" data-filter="divergent"
+              onclick="setFilter('divergent')">Divergent</button>
+      <button class="filter-btn" data-filter="transform"
+              onclick="setFilter('transform')">Transform</button>
+    </div>
+
+    <details class="vocab-section">
+      <summary>Vocabulary</summary>
+      <dl class="vocab-list">
+        <dt>Plate tectonics</dt>
+        <dd>The theory that Earth's outer shell is divided into plates that move slowly over the mantle.</dd>
+        <dt>Convergent boundary</dt>
+        <dd>Where two plates move toward each other; produces mountains, volcanoes, or trenches.</dd>
+        <dt>Divergent boundary</dt>
+        <dd>Where two plates pull apart; magma rises to form new crust and mid-ocean ridges.</dd>
+        <dt>Transform boundary</dt>
+        <dd>Where two plates grind horizontally past each other; produces earthquakes.</dd>
+        <dt>Subduction</dt>
+        <dd>When a denser plate sinks beneath another plate into the hot mantle below.</dd>
+        <dt>Mid-ocean ridge</dt>
+        <dd>An underwater mountain chain formed where oceanic plates diverge and new seafloor is created.</dd>
+        <dt>Rift valley</dt>
+        <dd>A lowland formed as continental crust stretches and pulls apart at a divergent boundary.</dd>
+        <dt>Trench</dt>
+        <dd>A deep, narrow depression on the ocean floor formed where one plate subducts beneath another.</dd>
+      </dl>
+    </details>
+
+  </aside>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
