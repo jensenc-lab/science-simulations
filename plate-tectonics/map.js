@@ -2,92 +2,78 @@
 
 const canvas = document.getElementById('mapCanvas');
 const ctx    = canvas.getContext('2d');
+const TC     = { convergent: '#e74c3c', divergent: '#3498db', transform: '#f1c40f' };
 
-// ── Continent polygons: [x%, y%] of canvas ───────────────────
-const CONTINENTS = [
-  // North America  (green)
-  { color: '#3a7a4a', pts: [[5,18],[18,10],[30,11],[36,20],[33,26],[28,33],[23,40],[18,36],[13,28],[9,22]] },
-  // Greenland      (green)
-  { color: '#3a7a4a', pts: [[32,7],[40,5],[44,10],[42,18],[36,19],[30,14]] },
-  // South America  (olive)
-  { color: '#6a8a3a', pts: [[24,40],[32,36],[37,47],[33,56],[28,65],[22,68],[18,62],[20,52],[22,42]] },
-  // Africa         (orange)
-  { color: '#c0753a', pts: [[44,30],[52,27],[58,27],[60,35],[62,45],[58,60],[54,68],[48,70],[43,65],[42,50],[42,40],[45,33]] },
-  // Eurasia        (tan)
-  { color: '#b8a070', pts: [[42,32],[44,26],[46,24],[50,22],[58,20],[72,17],[88,19],[92,27],[88,35],[85,40],[80,42],[72,40],[68,38],[62,33],[58,30],[54,33],[50,30],[46,30],[44,30]] },
-  // India          (coral — Indo-Australian plate)
-  { color: '#c07060', pts: [[64,40],[72,38],[78,40],[77,48],[74,52],[70,52],[67,48],[65,44]] },
-  // Australia      (coral — Indo-Australian plate)
-  { color: '#c07060', pts: [[72,55],[79,52],[86,54],[90,60],[88,65],[82,70],[73,68],[70,62],[70,57]] },
-  // Antarctica     (gray)
-  { color: '#a0a8b0', pts: [[0,87],[100,87],[100,100],[0,100]] },
+// ── Map image ─────────────────────────────────────────────────
+const IMG = new Image();
+IMG.crossOrigin = 'anonymous';
+IMG.src = 'map-bg.png';
+// Fallback to Wikimedia CDN if local file is unavailable
+IMG.onerror = () => {
+  if (!IMG.src.includes('wikimedia')) {
+    IMG.src = 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/bf/Tectonic_plates_boundaries_detailed-en.svg/1280px-Tectonic_plates_boundaries_detailed-en.svg.png';
+  }
+};
+
+// ── State ─────────────────────────────────────────────────────
+let pulse   = 0;
+let hovered = null;
+// Tracks where the image is drawn so hotspot px() and hitTest() stay in sync
+let imgRect = { dx: 0, dy: 0, dw: 1, dh: 1 };
+
+// ── Helpers ───────────────────────────────────────────────────
+const af  = ()  => window.tectonics?.activeFilter() ?? 'all';
+// Convert boundary's mapX/mapY percentages to canvas pixels
+const hpx = (b) => [
+  imgRect.dx + b.mapX / 100 * imgRect.dw,
+  imgRect.dy + b.mapY / 100 * imgRect.dh,
 ];
 
-// ── Plate boundary lines ─────────────────────────────────────
-const BLINES = [
-  { type: 'divergent',  pts: [[42,8],[42,65]]   },   // Mid-Atlantic Ridge
-  { type: 'divergent',  pts: [[55,40],[57,62]]  },   // E African Rift
-  { type: 'convergent', pts: [[58,33],[76,34]]  },   // Himalayas
-  { type: 'convergent', pts: [[21,38],[21,70]]  },   // Andes / Peru-Chile Trench
-  { type: 'convergent', pts: [[78,32],[83,45]]  },   // Mariana Trench
-  { type: 'convergent', pts: [[8,21],[12,30]]   },   // Cascadia
-  { type: 'transform',  pts: [[9,26],[13,37]]   },   // San Andreas
-];
+// ── Draw: image background + dark overlay ────────────────────
+function drawMap() {
+  const W = canvas.width, H = canvas.height;
 
-const TC = { convergent: '#e74c3c', divergent: '#3498db', transform: '#f1c40f' };
+  // Base fill (visible as letterbox bars if image aspect differs)
+  ctx.fillStyle = '#0d1b2a';
+  ctx.fillRect(0, 0, W, H);
 
-let pulse = 0, hovered = null;
+  if (!IMG.complete || !IMG.naturalWidth) {
+    ctx.fillStyle = '#7f8ea3';
+    ctx.font = '14px "Segoe UI",system-ui,sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('Loading map…', W / 2, H / 2);
+    ctx.textAlign = 'left';
+    return false;
+  }
 
-// ── Helpers ──────────────────────────────────────────────────
-const px  = (x, y) => [x / 100 * canvas.width, y / 100 * canvas.height];
-const af  = ()     => window.tectonics?.activeFilter() ?? 'all';
+  // Contain: scale image to fit canvas while preserving aspect ratio
+  const iw = IMG.naturalWidth, ih = IMG.naturalHeight;
+  const scale = Math.min(W / iw, H / ih);
+  const dw = iw * scale, dh = ih * scale;
+  const dx = (W - dw) / 2, dy = (H - dh) / 2;
+  imgRect = { dx, dy, dw, dh };
 
-function poly(pts, fill) {
-  ctx.beginPath();
-  pts.forEach(([x, y], i) => {
-    const [cx, cy] = px(x, y);
-    i ? ctx.lineTo(cx, cy) : ctx.moveTo(cx, cy);
-  });
-  ctx.closePath();
-  ctx.fillStyle   = fill;
-  ctx.fill();
-  ctx.strokeStyle = 'rgba(0,0,0,0.28)';
-  ctx.lineWidth   = 0.6;
-  ctx.stroke();
+  ctx.drawImage(IMG, dx, dy, dw, dh);
+
+  // Slight dark overlay to match the deep-navy theme
+  ctx.fillStyle = 'rgba(13,27,42,0.32)';
+  ctx.fillRect(dx, dy, dw, dh);
+
+  return true;
 }
 
-// ── Draw: boundary lines ─────────────────────────────────────
-function drawBoundaryLines() {
-  const filter = af();
-  BLINES.forEach(l => {
-    const dim = filter !== 'all' && filter !== l.type;
-    ctx.globalAlpha = dim ? 0.1 : 0.85;
-    ctx.strokeStyle = TC[l.type];
-    ctx.lineWidth   = 2;
-    ctx.setLineDash([7, 4]);
-    ctx.beginPath();
-    l.pts.forEach(([x, y], i) => {
-      const [cx, cy] = px(x, y);
-      i ? ctx.lineTo(cx, cy) : ctx.moveTo(cx, cy);
-    });
-    ctx.stroke();
-    ctx.setLineDash([]);
-  });
-  ctx.globalAlpha = 1;
-}
-
-// ── Draw: hotspot markers ────────────────────────────────────
+// ── Draw: hotspot markers ─────────────────────────────────────
 function drawHotspots(t) {
   const filter = af();
   (window.tectonics?.boundaries ?? []).forEach(b => {
-    const [cx, cy] = px(b.mapX, b.mapY);
+    const [cx, cy] = hpx(b);
     const color    = TC[b.type];
     const dim      = filter !== 'all' && filter !== b.type;
 
-    // Pulsing ring (skip when dimmed)
+    // Pulsing ring (skipped when dimmed)
     if (!dim) {
       const ph = t % 1;
-      ctx.globalAlpha = (1 - ph) * 0.48;
+      ctx.globalAlpha = (1 - ph) * 0.5;
       ctx.beginPath();
       ctx.arc(cx, cy, 8 + ph * 16, 0, Math.PI * 2);
       ctx.strokeStyle = color;
@@ -116,15 +102,15 @@ function drawHotspots(t) {
   });
 }
 
-// ── Draw: legend (bottom-left) ───────────────────────────────
+// ── Draw: legend (bottom-left of image area) ──────────────────
 function drawLegend() {
-  const lx = 10, ly = canvas.height - 64;
-  ctx.fillStyle = 'rgba(0,12,26,0.78)';
+  const lx = imgRect.dx + 10, ly = imgRect.dy + imgRect.dh - 64;
+  ctx.fillStyle = 'rgba(0,12,26,0.80)';
   ctx.beginPath();
   ctx.roundRect(lx, ly, 132, 56, 6);
   ctx.fill();
 
-  [['convergent','Convergent'], ['divergent','Divergent'], ['transform','Transform']]
+  [['convergent', 'Convergent'], ['divergent', 'Divergent'], ['transform', 'Transform']]
     .forEach(([type, label], i) => {
       const iy = ly + 14 + i * 16;
       ctx.globalAlpha = 0.9;
@@ -136,23 +122,23 @@ function drawLegend() {
       ctx.lineTo(lx + 26, iy);
       ctx.stroke();
       ctx.setLineDash([]);
-      ctx.fillStyle   = '#cdd6f4';
       ctx.globalAlpha = 1;
+      ctx.fillStyle   = '#cdd6f4';
       ctx.font        = '9px "Segoe UI",system-ui,sans-serif';
       ctx.fillText(label, lx + 32, iy + 4);
     });
 }
 
-// ── Draw: hover tooltip ──────────────────────────────────────
+// ── Draw: hover tooltip ───────────────────────────────────────
 function drawTooltip() {
   if (!hovered) return;
-  const [cx, cy] = px(hovered.mapX, hovered.mapY);
+  const [cx, cy] = hpx(hovered);
   const text = `${hovered.name}  ·  ${hovered.type}`;
   ctx.font = '10px "Segoe UI",system-ui,sans-serif';
   const tw = ctx.measureText(text).width;
   let tx = cx + 14, ty = cy - 16;
-  if (tx + tw + 14 > canvas.width)  tx = cx - tw - 18;
-  if (ty < 10)                       ty = cy + 22;
+  if (tx + tw + 14 > canvas.width) tx = cx - tw - 18;
+  if (ty < 10)                      ty = cy + 22;
   ctx.fillStyle = 'rgba(0,12,26,0.92)';
   ctx.beginPath();
   ctx.roundRect(tx - 6, ty - 14, tw + 14, 22, 4);
@@ -161,9 +147,19 @@ function drawTooltip() {
   ctx.fillText(text, tx, ty);
 }
 
-// ── Animation loop ───────────────────────────────────────────
+// ── Draw: attribution ─────────────────────────────────────────
+function drawAttrib() {
+  ctx.font      = '8px "Segoe UI",system-ui,sans-serif';
+  ctx.fillStyle = 'rgba(255,255,255,0.38)';
+  ctx.fillText(
+    'Map: Wikimedia Commons, CC BY-SA 2.5',
+    imgRect.dx + 8,
+    imgRect.dy + imgRect.dh - 5,
+  );
+}
+
+// ── Animation loop ────────────────────────────────────────────
 function loop(time) {
-  // Sync canvas resolution to CSS layout size
   if (canvas.clientWidth > 0 &&
       (canvas.width !== canvas.clientWidth || canvas.height !== canvas.clientHeight)) {
     canvas.width  = canvas.clientWidth;
@@ -171,27 +167,24 @@ function loop(time) {
   }
 
   pulse = time / 1600;
+  const ready = drawMap();
 
-  // Ocean background
-  ctx.fillStyle = '#1a3a5a';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-  CONTINENTS.forEach(c => poly(c.pts, c.color));
-  drawBoundaryLines();
-  drawHotspots(pulse);
-  drawLegend();
-  drawTooltip();
+  if (ready) {
+    drawHotspots(pulse);
+    drawLegend();
+    drawAttrib();
+    drawTooltip();
+  }
 
   requestAnimationFrame(loop);
 }
 
-// ── Mouse interaction ────────────────────────────────────────
+// ── Mouse interaction ─────────────────────────────────────────
 function hitTest(e) {
   const r  = canvas.getBoundingClientRect();
-  const mx = e.clientX - r.left;
-  const my = e.clientY - r.top;
+  const mx = e.clientX - r.left, my = e.clientY - r.top;
   return (window.tectonics?.boundaries ?? []).find(b => {
-    const [bx, by] = px(b.mapX, b.mapY);
+    const [bx, by] = hpx(b);
     return Math.hypot(mx - bx, my - by) < 14;
   }) ?? null;
 }
