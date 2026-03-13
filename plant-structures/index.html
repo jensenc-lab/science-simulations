@@ -10,8 +10,9 @@
 
 <header>
   <div class="header-inner">
-    <h1>🌱 Plant Structures Explorer</h1>
+    <h1 id="pageTitle">🌱 Plant Structures Explorer</h1>
     <button class="std-badge" id="stdBtn">4.1.1</button>
+    <button class="lang-btn" id="langBtn">🇪🇸 Español</button>
   </div>
 </header>
 
@@ -19,8 +20,8 @@
 <div id="stdPopup" class="popup hidden">
   <div class="popup-box">
     <button class="popup-close" id="stdClose">✕</button>
-    <h3>Utah SEEd Standard 4.1.1</h3>
-    <p>Learn how the parts of a plant help it <strong>survive</strong>, <strong>grow</strong>, and <strong>reproduce</strong> in its environment!</p>
+    <h3 id="stdTitle">Utah SEEd Standard 4.1.1</h3>
+    <p id="stdDesc">Learn how the parts of a plant help it <strong>survive</strong>, <strong>grow</strong>, and <strong>reproduce</strong> in its environment!</p>
   </div>
 </div>
 
@@ -33,9 +34,7 @@
   </div>
 
   <!-- Coming-soon notice for non-desert -->
-  <div id="comingSoon" class="coming-soon hidden">
-    🌿 Coming Soon! The <strong id="envName"></strong> plant is being built. Try the Desert for now!
-  </div>
+  <div id="comingSoon" class="coming-soon hidden"></div>
 
   <!-- Main scene + info panel -->
   <div class="scene-row">
@@ -51,7 +50,7 @@
     </div>
   </div>
 
-  <p class="hint-text">👆 Click the glowing spots on the plant to learn about each part!</p>
+  <p class="hint-text" id="hintText">👆 Click the glowing spots on the plant to learn about each part!</p>
 </main>
 
 <script src="app.js"></script>

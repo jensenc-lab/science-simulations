@@ -44,6 +44,22 @@ h1 {
 }
 .std-badge:hover { background: rgba(255,255,255,0.4); }
 
+/* Language toggle */
+.lang-btn {
+  margin-left: auto;
+  background: rgba(255,255,255,0.18);
+  color: #fff;
+  border: 2px solid rgba(255,255,255,0.6);
+  border-radius: 20px;
+  padding: 5px 16px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s;
+  white-space: nowrap;
+}
+.lang-btn:hover { background: rgba(255,255,255,0.36); }
+
 /* ── Popup ── */
 .popup {
   position: fixed; inset: 0;
