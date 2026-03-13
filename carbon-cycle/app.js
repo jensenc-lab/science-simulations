@@ -25,6 +25,97 @@ const HISTORY_LEN = 300;
 const history = { co2: [], plant: [], cons: [], dead: [] };
 const HISTORY_KEYS = ['co2', 'plant', 'cons', 'dead'];
 
+// ── Language state ────────────────────────────────────────────
+let lang = 'en';
+
+// ── UI Translations ───────────────────────────────────────────
+const T = {
+  en: {
+    pageTitle:  '🌿 Carbon Cycle Ecosystem Simulation',
+    badge831:   '8.3.1 Photosynthesis',
+    badge832:   '8.3.2 Respiration',
+    badge833:   '8.3.3 Carbon Cycle',
+    lblSun:     '☀️ Sunlight Intensity',
+    lblProd:    '🌱 Producers',
+    lblCons:    '🐛 Consumers',
+    lblDecomp:  '🍄 Decomposer Activity',
+    lblHuman:   '🏭 Human Activity',
+    lblFossil:  'Burning fossil fuels adds CO₂',
+    lblSim:     '⏱️ Simulation',
+    btnPlay:    '▶ Play',
+    btnPause:   '⏸ Pause',
+    btnReset:   '↺ Reset',
+    lblSpeed:   'Speed',
+    lblTryThis: '💡 Try This',
+    try1:       'Set sunlight to 0% — what happens to plant carbon?',
+    try2:       'Max out decomposers and watch dead matter shrink.',
+    try3:       'Raise factories and remove producers — CO₂ soars!',
+    statCo2:    'Atm. CO₂',
+    statPlant:  'Plant Carbon',
+    statCons:   'Consumer Carbon',
+    statDead:   'Dead Matter',
+    statTotal:  'Total Carbon',
+    langBtn:    '🇪🇸 Español',
+  },
+  es: {
+    pageTitle:  '🌿 Simulación del Ciclo del Carbono en el Ecosistema',
+    badge831:   '8.3.1 Fotosíntesis',
+    badge832:   '8.3.2 Respiración',
+    badge833:   '8.3.3 Ciclo del Carbono',
+    lblSun:     '☀️ Intensidad de Luz Solar',
+    lblProd:    '🌱 Productores',
+    lblCons:    '🐛 Consumidores',
+    lblDecomp:  '🍄 Actividad de Descomponedores',
+    lblHuman:   '🏭 Actividad Humana',
+    lblFossil:  'Quemar combustibles fósiles añade CO₂',
+    lblSim:     '⏱️ Simulación',
+    btnPlay:    '▶ Reproducir',
+    btnPause:   '⏸ Pausar',
+    btnReset:   '↺ Reiniciar',
+    lblSpeed:   'Velocidad',
+    lblTryThis: '💡 ¡Inténtalo!',
+    try1:       'Pon la luz solar a 0% — ¿qué pasa con el carbono de las plantas?',
+    try2:       'Sube los descomponedores al máximo y observa cómo disminuye la materia muerta.',
+    try3:       'Sube las fábricas y quita los productores — ¡el CO₂ se dispara!',
+    statCo2:    'CO₂ Atmosférico',
+    statPlant:  'Carbono en Plantas',
+    statCons:   'Carbono en Consumidores',
+    statDead:   'Materia Muerta',
+    statTotal:  'Carbono Total',
+    langBtn:    '🇺🇸 English',
+  },
+};
+
+// ── Apply current language to all UI elements ─────────────────
+function applyLang() {
+  const t  = T[lang];
+  const el = id => document.getElementById(id);
+  el('page-title').textContent    = t.pageTitle;
+  el('badge-831').textContent     = t.badge831;
+  el('badge-832').textContent     = t.badge832;
+  el('badge-833').textContent     = t.badge833;
+  el('lbl-sun').textContent       = t.lblSun;
+  el('lbl-prod').textContent      = t.lblProd;
+  el('lbl-cons').textContent      = t.lblCons;
+  el('lbl-decomp').textContent    = t.lblDecomp;
+  el('lbl-human').textContent     = t.lblHuman;
+  el('lbl-fossil').textContent    = t.lblFossil;
+  el('lbl-sim').textContent       = t.lblSim;
+  el('play-pause').textContent    = isPlaying ? t.btnPause : t.btnPlay;
+  el('reset').textContent         = t.btnReset;
+  el('lbl-speed').textContent     = t.lblSpeed;
+  el('lbl-trythis').textContent   = t.lblTryThis;
+  el('try-1').textContent         = t.try1;
+  el('try-2').textContent         = t.try2;
+  el('try-3').textContent         = t.try3;
+  el('lbl-stat-co2').textContent  = t.statCo2;
+  el('lbl-stat-plant').textContent = t.statPlant;
+  el('lbl-stat-cons').textContent = t.statCons;
+  el('lbl-stat-dead').textContent = t.statDead;
+  el('lbl-stat-total').textContent = t.statTotal;
+  el('lang-btn').textContent      = t.langBtn;
+}
+
 // ── Standard badge descriptions ───────────────────────────────
 const STD_INFO = {
   '8.3.1': {
@@ -69,7 +160,7 @@ function initSimButtons() {
 
   playBtn.addEventListener('click', () => {
     isPlaying = !isPlaying;
-    playBtn.textContent = isPlaying ? '⏸ Pause' : '▶ Play';
+    playBtn.textContent = isPlaying ? T[lang].btnPause : T[lang].btnPlay;
   });
 
   document.getElementById('reset').addEventListener('click', () => {
@@ -293,12 +384,21 @@ function loop(ts) {
   if (typeof Particles !== 'undefined') Particles.draw(ts, controls, state, isPlaying);
 }
 
+// ── Language toggle ───────────────────────────────────────────
+function initLangToggle() {
+  document.getElementById('lang-btn').addEventListener('click', () => {
+    lang = lang === 'en' ? 'es' : 'en';
+    applyLang();
+  });
+}
+
 // ── Init ─────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
   initSliders();
   initSimButtons();
   initBadges();
   initAlerts();
+  initLangToggle();
   resizeCanvas();
   window.addEventListener('resize', resizeCanvas);
 
