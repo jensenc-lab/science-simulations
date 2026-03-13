@@ -55,7 +55,28 @@ const T = {
     statCons:   'Consumer Carbon',
     statDead:   'Dead Matter',
     statTotal:  'Total Carbon',
-    langBtn:    '🇪🇸 Español',
+    langBtn:      '🇪🇸 Español',
+    modalClose:   'Close',
+    alertsHeader: '⚠ Ecosystem Alerts',
+    alertSunlight:  '⚠ Plants dying — not enough sunlight',
+    alertCO2:       '⚠ Plants dying — not enough CO₂ absorption',
+    alertConsumers: '⚠ Consumers dying — not enough food from producers',
+    alertHighCO2:   '⚠ High atmospheric CO₂',
+    alertDeadMatter:"⚠ Dead matter accumulating — decomposers can't keep up",
+    info: {
+      '8.3.1': {
+        title: '8.3.1 — Photosynthesis',
+        desc:  'Photosynthesis: Plan and conduct an investigation and use the evidence to construct an explanation of how photosynthetic organisms use energy to transform matter.',
+      },
+      '8.3.2': {
+        title: '8.3.2 — Respiration',
+        desc:  'Respiration: Develop a model to describe how food is changed through chemical reactions to form new molecules that support growth and/or release energy.',
+      },
+      '8.3.3': {
+        title: '8.3.3 — Carbon Cycle',
+        desc:  'Carbon Cycle: Ask questions to obtain, evaluate, and communicate information about how changes to an ecosystem affect the stability of cycling matter and energy.',
+      },
+    },
   },
   es: {
     pageTitle:  '🌿 Simulación del Ciclo del Carbono en el Ecosistema',
@@ -82,7 +103,28 @@ const T = {
     statCons:   'Carbono en Consumidores',
     statDead:   'Materia Muerta',
     statTotal:  'Carbono Total',
-    langBtn:    '🇺🇸 English',
+    langBtn:      '🇺🇸 English',
+    modalClose:   'Cerrar',
+    alertsHeader: '⚠ Alertas del Ecosistema',
+    alertSunlight:  '⚠ Plantas muriendo — no hay suficiente luz solar',
+    alertCO2:       '⚠ Plantas muriendo — no hay suficiente absorción de CO₂',
+    alertConsumers: '⚠ Consumidores muriendo — no hay suficiente alimento de los productores',
+    alertHighCO2:   '⚠ Alto nivel de CO₂ atmosférico',
+    alertDeadMatter:'⚠ Materia muerta acumulándose — los descomponedores no pueden procesarla',
+    info: {
+      '8.3.1': {
+        title: '8.3.1 — Fotosíntesis',
+        desc:  'Fotosíntesis: Planificar y realizar una investigación y usar la evidencia para construir una explicación de cómo los organismos fotosintéticos usan energía para transformar la materia.',
+      },
+      '8.3.2': {
+        title: '8.3.2 — Respiración',
+        desc:  'Respiración: Desarrollar un modelo para describir cómo los alimentos se transforman a través de reacciones químicas para formar nuevas moléculas que apoyan el crecimiento y/o liberan energía.',
+      },
+      '8.3.3': {
+        title: '8.3.3 — Ciclo del Carbono',
+        desc:  'Ciclo del Carbono: Hacer preguntas para obtener, evaluar y comunicar información sobre cómo los cambios en un ecosistema afectan la estabilidad del ciclo de materia y energía.',
+      },
+    },
   },
 };
 
@@ -114,23 +156,23 @@ function applyLang() {
   el('lbl-stat-dead').textContent = t.statDead;
   el('lbl-stat-total').textContent = t.statTotal;
   el('lang-btn').textContent      = t.langBtn;
+  el('modal-close').textContent   = t.modalClose;
+  // Alerts header (created dynamically by initAlerts)
+  const alertsHdr = el('eco-alerts-header');
+  if (alertsHdr) alertsHdr.textContent = t.alertsHeader;
+  // Re-render alert messages in new language
+  updateAlerts();
+  // Refresh modal content if it is currently open
+  const overlay = el('modal-overlay');
+  if (overlay && overlay.classList.contains('active') && lastBadgeStd) {
+    const info = t.info[lastBadgeStd];
+    el('modal-title').textContent = info.title;
+    el('modal-desc').textContent  = info.desc;
+  }
 }
 
-// ── Standard badge descriptions ───────────────────────────────
-const STD_INFO = {
-  '8.3.1': {
-    title: '8.3.1 — Photosynthesis',
-    desc:  'Plants (producers) use sunlight energy to convert CO₂ from the atmosphere and water from the soil into glucose and oxygen. This process stores carbon in plant biomass and is the entry point for carbon into the food web.',
-  },
-  '8.3.2': {
-    title: '8.3.2 — Cellular Respiration',
-    desc:  'All living organisms — producers, consumers, and decomposers — release energy from glucose through cellular respiration. This process releases CO₂ back into the atmosphere and is the primary way carbon exits living organisms.',
-  },
-  '8.3.3': {
-    title: '8.3.3 — The Carbon Cycle',
-    desc:  'Carbon moves continuously between the atmosphere, living organisms, soil, and human systems. Photosynthesis removes CO₂; respiration, decomposition, and burning fossil fuels return it. Human activity is increasingly disrupting this natural balance.',
-  },
-};
+// ── Track last-opened badge (for modal re-render on lang switch) ──
+let lastBadgeStd = null;
 
 // ── Slider wiring ─────────────────────────────────────────────
 function initSliders() {
@@ -183,8 +225,9 @@ function initBadges() {
 
   document.querySelectorAll('.std-badge').forEach(btn => {
     btn.addEventListener('click', () => {
-      const info = STD_INFO[btn.dataset.std];
+      const info = T[lang].info[btn.dataset.std];
       if (!info) return;
+      lastBadgeStd        = btn.dataset.std;
       titleEl.textContent = info.title;
       descEl.textContent  = info.desc;
       overlay.classList.add('active');
@@ -217,7 +260,7 @@ function initAlerts() {
   sec.className = 'ctrl-section';
   sec.style.display = 'none';
   sec.innerHTML =
-    '<div class="ctrl-header" style="color:#e74c3c;font-size:0.78rem">⚠ Ecosystem Alerts</div>' +
+    '<div id="eco-alerts-header" class="ctrl-header" style="color:#e74c3c;font-size:0.78rem">⚠ Ecosystem Alerts</div>' +
     '<div id="eco-alert-list"></div>';
   const tryThis = document.querySelector('.try-this');
   if (tryThis) tryThis.before(sec);
@@ -230,19 +273,18 @@ function updateAlerts() {
 
   const msgs = [];
 
+  const tw = T[lang];
   if (state.actualProducers < controls.producers - 0.5) {
-    msgs.push(controls.sunlight < 20
-      ? '⚠ Plants dying — not enough sunlight'
-      : '⚠ Plants dying — not enough CO₂ absorbed');
+    msgs.push(controls.sunlight < 20 ? tw.alertSunlight : tw.alertCO2);
   }
   if (controls.consumers > 0 && state.actualConsumers < controls.consumers - 0.5) {
-    msgs.push('⚠ Consumers dying — not enough food from producers');
+    msgs.push(tw.alertConsumers);
   }
   if (state.atmCO2 > 600) {
-    msgs.push('⚠ High atmospheric CO₂');
+    msgs.push(tw.alertHighCO2);
   }
   if (state.deadMatter > 300 && controls.decomposers < 30) {
-    msgs.push('⚠ Dead matter accumulating — decomposers can\'t keep up');
+    msgs.push(tw.alertDeadMatter);
   }
 
   sec.style.display = msgs.length ? '' : 'none';
