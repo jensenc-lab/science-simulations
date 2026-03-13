@@ -22,23 +22,13 @@
 
 <div class="content-wrapper">
 
-  <main class="main-area">
-    <div class="map-section">
-      <canvas id="mapCanvas"></canvas>
-    </div>
-    <div class="cross-section-wrap">
-      <div id="crossSection">
-        <p class="placeholder-text">
-          Click a boundary on the map above to explore what happens where plates meet.
-        </p>
-      </div>
-    </div>
-  </main>
+  <div class="map-section">
+    <canvas id="mapCanvas"></canvas>
+  </div>
 
-  <aside class="sidebar">
+  <div class="bottom-panel">
 
-    <div class="filter-group">
-      <p class="sidebar-label">Filter Boundaries</p>
+    <div class="filter-row">
       <button class="filter-btn active" data-filter="all"
               onclick="setFilter('all')">Show All</button>
       <button class="filter-btn" data-filter="convergent"
@@ -47,6 +37,12 @@
               onclick="setFilter('divergent')">Divergent</button>
       <button class="filter-btn" data-filter="transform"
               onclick="setFilter('transform')">Transform</button>
+    </div>
+
+    <div class="info-area" id="crossSection">
+      <p class="placeholder-text">
+        Click a boundary on the map above to explore what happens where plates meet.
+      </p>
     </div>
 
     <details class="vocab-section">
@@ -71,10 +67,12 @@
       </dl>
     </details>
 
-  </aside>
+  </div>
+
 </div>
 
 <script src="app.js"></script>
+<script src="cross-section.js"></script>
 <script src="map.js"></script>
 </body>
 </html>

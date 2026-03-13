@@ -12,7 +12,7 @@ const boundaries = [
     plates: ['Indo-Australian Plate', 'Eurasian Plate'],
     description: 'Two continental plates collide head-on. Neither can subduct because both are low-density rock, so the crust crumples and thickens, pushing up the world\'s highest mountain range.',
     surfaceFeatures: ['Himalayan Mountain Range', 'Tibetan High Plateau', 'Fold mountains', 'No volcanoes'],
-    mapX: 68, mapY: 38,
+    mapX: 22, mapY: 32,
   },
   {
     name: 'Andes Mountains',
@@ -21,7 +21,7 @@ const boundaries = [
     plates: ['Nazca Plate', 'South American Plate'],
     description: 'The denser oceanic Nazca Plate subducts beneath the lighter South American plate. Water released from the sinking plate lowers the mantle\'s melting point, generating magma that fuels a volcanic arc.',
     surfaceFeatures: ['Andes Mountain Range', 'Volcanic arc', 'Peru–Chile Trench (offshore)', 'Frequent earthquakes'],
-    mapX: 25, mapY: 62,
+    mapX: 80, mapY: 61,
   },
   {
     name: 'Mid-Atlantic Ridge',
@@ -30,7 +30,7 @@ const boundaries = [
     plates: ['North American Plate', 'Eurasian Plate'],
     description: 'Two oceanic plates pull apart. Hot mantle rock rises to fill the gap, cools, and solidifies as new seafloor. This seafloor spreading widens the Atlantic Ocean by about 2.5 cm per year.',
     surfaceFeatures: ['Underwater mountain ridge', 'Central rift valley', 'Iceland (volcanic island)', 'Hydrothermal vents'],
-    mapX: 42, mapY: 40,
+    mapX: 87, mapY: 37,
   },
   {
     name: 'East African Rift',
@@ -39,7 +39,7 @@ const boundaries = [
     plates: ['African Plate (splitting into Somali and Nubian sub-plates)'],
     description: 'A continental plate is being pulled apart by mantle convection. The crust stretches and drops, forming a rift valley. Continued rifting over millions of years may eventually split Africa and open a new ocean.',
     surfaceFeatures: ['Great Rift Valley', 'Chain of deep lakes (Tanganyika, Malawi)', 'Active volcanoes (Kilimanjaro)', 'Hot springs'],
-    mapX: 55, mapY: 55,
+    mapX: 11, mapY: 44,
   },
   {
     name: 'San Andreas Fault',
@@ -48,7 +48,7 @@ const boundaries = [
     plates: ['Pacific Plate', 'North American Plate'],
     description: 'Two plates grind horizontally past each other — the Pacific Plate moves northwest, the North American Plate moves southeast. Stick-slip motion builds then releases elastic strain energy as earthquakes. No magma is produced.',
     surfaceFeatures: ['Linear fault valley', 'Offset stream channels', 'Linear ridges and sag ponds', 'Frequent earthquakes'],
-    mapX: 13, mapY: 38,
+    mapX: 69, mapY: 34,
   },
   {
     name: 'Mariana Trench',
@@ -57,7 +57,7 @@ const boundaries = [
     plates: ['Pacific Plate', 'Philippine Plate'],
     description: 'The older, denser Pacific Plate subducts beneath the younger Philippine Plate, creating the deepest point on Earth — Challenger Deep at ~11 km. A volcanic island arc forms above the subducting slab.',
     surfaceFeatures: ['Mariana Trench (deepest ocean point)', 'Mariana Islands volcanic arc', 'Intense seismic activity'],
-    mapX: 82, mapY: 45,
+    mapX: 41, mapY: 41,
   },
   {
     name: 'Cascadia Subduction Zone',
@@ -66,7 +66,7 @@ const boundaries = [
     plates: ['Juan de Fuca Plate', 'North American Plate'],
     description: 'The small Juan de Fuca oceanic plate subducts beneath the North American continent, driving volcanic activity in the Cascade Range. The locked zone between the plates stores energy for potential megathrust earthquakes.',
     surfaceFeatures: ['Cascade Volcanic Arc (Mt. St. Helens, Mt. Rainier)', 'Offshore accretionary wedge', 'Megathrust earthquake potential'],
-    mapX: 12, mapY: 32,
+    mapX: 66, mapY: 27,
   },
 ];
 
@@ -100,7 +100,17 @@ function setFilter(type) {
 ─────────────────────────────────────────────────────────────── */
 function selectBoundary(boundary) {
   selectedBoundary = boundary;
+
+  // All boundary types get an animated diagram
+  if (window.showCrossSection) {
+    window.showCrossSection(boundary);
+    return;
+  }
+
+  // Fallback — stop any running animation and show text info
+  window.stopCrossSection?.();
   const panel = document.getElementById('crossSection');
+  panel.style.cssText = '';
 
   const featureItems = boundary.surfaceFeatures
     .map(f => `<li>${f}</li>`)

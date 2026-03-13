@@ -46,18 +46,22 @@ function drawMap() {
     return false;
   }
 
-  // Contain: scale image to fit canvas while preserving aspect ratio
+  // Cover: scale image to fill canvas, clip overflow
   const iw = IMG.naturalWidth, ih = IMG.naturalHeight;
-  const scale = Math.min(W / iw, H / ih);
+  const scale = Math.max(W / iw, H / ih);
   const dw = iw * scale, dh = ih * scale;
   const dx = (W - dw) / 2, dy = (H - dh) / 2;
   imgRect = { dx, dy, dw, dh };
 
+  ctx.save();
+  ctx.beginPath();
+  ctx.rect(0, 0, W, H);
+  ctx.clip();
   ctx.drawImage(IMG, dx, dy, dw, dh);
-
   // Slight dark overlay to match the deep-navy theme
   ctx.fillStyle = 'rgba(13,27,42,0.32)';
   ctx.fillRect(dx, dy, dw, dh);
+  ctx.restore();
 
   return true;
 }
@@ -92,7 +96,7 @@ function drawHotspots(t) {
     ctx.stroke();
 
     // Label
-    ctx.font        = 'bold 9px "Segoe UI",system-ui,sans-serif';
+    ctx.font        = 'bold 14px "Segoe UI",system-ui,sans-serif';
     ctx.fillStyle   = '#fff';
     ctx.shadowColor = 'rgba(0,0,0,0.9)';
     ctx.shadowBlur  = 3;
@@ -124,7 +128,7 @@ function drawLegend() {
       ctx.setLineDash([]);
       ctx.globalAlpha = 1;
       ctx.fillStyle   = '#cdd6f4';
-      ctx.font        = '9px "Segoe UI",system-ui,sans-serif';
+      ctx.font        = '12px "Segoe UI",system-ui,sans-serif';
       ctx.fillText(label, lx + 32, iy + 4);
     });
 }
@@ -134,7 +138,7 @@ function drawTooltip() {
   if (!hovered) return;
   const [cx, cy] = hpx(hovered);
   const text = `${hovered.name}  ·  ${hovered.type}`;
-  ctx.font = '10px "Segoe UI",system-ui,sans-serif';
+  ctx.font = '14px "Segoe UI",system-ui,sans-serif';
   const tw = ctx.measureText(text).width;
   let tx = cx + 14, ty = cy - 16;
   if (tx + tw + 14 > canvas.width) tx = cx - tw - 18;
