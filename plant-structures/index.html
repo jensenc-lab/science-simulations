@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Plant Structures Explorer</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <h1>🌱 Plant Structures Explorer</h1>
+    <button class="std-badge" id="stdBtn">4.1.1</button>
+  </div>
+</header>
+
+<!-- Standard popup -->
+<div id="stdPopup" class="popup hidden">
+  <div class="popup-box">
+    <button class="popup-close" id="stdClose">✕</button>
+    <h3>Utah SEEd Standard 4.1.1</h3>
+    <p>Learn how the parts of a plant help it <strong>survive</strong>, <strong>grow</strong>, and <strong>reproduce</strong> in its environment!</p>
+  </div>
+</div>
+
+<main>
+  <!-- Environment selector -->
+  <div class="env-row">
+    <button class="env-btn active" data-env="desert">🏜️<br><span>Utah Desert</span></button>
+    <button class="env-btn" data-env="forest">🌲<br><span>Utah Forest</span></button>
+    <button class="env-btn" data-env="wetland">🦆<br><span>Utah Wetland</span></button>
+  </div>
+
+  <!-- Coming-soon notice for non-desert -->
+  <div id="comingSoon" class="coming-soon hidden">
+    🌿 Coming Soon! The <strong id="envName"></strong> plant is being built. Try the Desert for now!
+  </div>
+
+  <!-- Main scene + info panel -->
+  <div class="scene-row">
+    <div id="scene">
+      <svg id="plantSvg" viewBox="0 0 700 480" xmlns="http://www.w3.org/2000/svg"></svg>
+    </div>
+
+    <div id="infoPanel" class="info-panel hidden">
+      <button class="info-close" id="infoClose">✕</button>
+      <div class="info-emoji" id="infoEmoji"></div>
+      <div class="info-title" id="infoTitle"></div>
+      <div class="info-body" id="infoBody"></div>
+    </div>
+  </div>
+
+  <p class="hint-text">👆 Click the glowing spots on the plant to learn about each part!</p>
+</main>
+
+<script src="app.js"></script>
+</body>
+</html>
