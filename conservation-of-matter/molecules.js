@@ -288,7 +288,10 @@ const MolViz = (function () {
     row.className = 'mol-visual-row';
 
     items.forEach((item, i) => {
-      row.appendChild(makeMolGroup(item.drawFns, item.formula, item.name));
+      const translatedName = (typeof T !== 'undefined' && T[lang] && T[lang].moleculeNames)
+        ? (T[lang].moleculeNames[item.name] || item.name)
+        : item.name;
+      row.appendChild(makeMolGroup(item.drawFns, item.formula, translatedName));
       if (i < items.length - 1) {
         const sep = document.createElement('div');
         sep.className = 'mol-separator';
@@ -465,7 +468,7 @@ const MolViz = (function () {
     const ph = document.createElement('div');
     ph.className   = 'mol-placeholder';
     ph.id          = 'molPlaceholder';
-    ph.textContent = 'Products will appear after the reaction.';
+    ph.textContent = (typeof T !== 'undefined' && T[lang]) ? T[lang].placeholder : 'Products will appear after the reaction.';
 
     reactantsEl.appendChild(_reactRow);
     productsEl.appendChild(_prodRow);

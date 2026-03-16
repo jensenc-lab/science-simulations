@@ -331,13 +331,15 @@ const ReactionVisuals = (function () {
     // Post-reaction label (hidden; fades in after rust complete)
     const lblG = document.createElementNS(NS, 'g');
     lblG.style.opacity = '0'; lblG.style.transition = 'opacity 0.8s ease';
-    function addLbl(txt, y) {
+    function addLbl(txt, y, id) {
       const t = el('text', { x:'100', y, 'text-anchor':'middle', 'font-size':'8.5',
         fill:'#7a3a00', 'font-family':'Segoe UI,system-ui,sans-serif' });
-      t.textContent = txt; lblG.appendChild(t);
+      t.textContent = txt;
+      if (id) t.id = id;
+      lblG.appendChild(t);
     }
-    addLbl('The rusty nail has MORE mass!',    '144');
-    addLbl('Oxygen atoms bonded to iron.',     '155');
+    addLbl('The rusty nail has MORE mass!',    '144', 'rv-nail-lbl1');
+    addLbl('Oxygen atoms bonded to iron.',     '155', 'rv-nail-lbl2');
     svg.appendChild(lblG); _nailLabel = lblG;
 
     return svg;

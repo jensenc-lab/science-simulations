@@ -4,6 +4,149 @@
 // Phase 2 will add molecule visualizations (SVG/canvas)
 // ============================================================
 
+// ---- TRANSLATIONS ----
+const T = {
+  en: {
+    pageTitle: '⚗️ Conservation of Matter: Virtual Reaction Lab',
+    stdPopupTitle: 'Utah SEEd Standard 8.1.6',
+    stdPopupDesc: 'Develop a model to describe how the total number of atoms does not change in a chemical reaction, indicating that matter is conserved.',
+    rxNames: {
+      bakingSodaVinegar: 'Baking Soda + Vinegar',
+      burningCandle: 'Burning a Candle',
+      rustingIron: 'Rusting Iron',
+    },
+    sideReactants: 'Reactants',
+    sideProducts: 'Products',
+    reactBtn: 'React!',
+    resetBtn: '↺ Reset',
+    placeholder: 'Products will appear after the reaction.',
+    inventoryTitle: '⚖️ Atom Inventory',
+    inventoryNote: 'Atoms are neither created nor destroyed — they are rearranged into new molecules.',
+    tableHeaders: ['Element', 'Symbol', 'Color', 'Reactant Count', 'Product Count', 'Match?'],
+    elementNames: { Carbon: 'Carbon', Hydrogen: 'Hydrogen', Oxygen: 'Oxygen', Sodium: 'Sodium', Iron: 'Iron' },
+    conservedOk: '<strong>MATTER IS CONSERVED</strong> — The total number of each type of atom is the same before and after the reaction. Atoms are rearranged, not created or destroyed.',
+    conservedViolation: '<strong>MATTER NOT CONSERVED</strong> — This would violate the Law of Conservation of Matter! In real chemistry, this <em>NEVER</em> happens. Atoms cannot appear or disappear.',
+    whatifBtn: '🔬 What if atoms COULD be created or destroyed?',
+    whatifNote: 'This is fictional! In real chemistry, this NEVER happens. Atoms cannot appear or disappear in a reaction — only rearrange.',
+    vocabSummary: '📚 Key Vocabulary',
+    guideSummary: '❓ Guide Questions',
+    vocab: [
+      { term: 'Atom',                          def: 'The smallest unit of an element that keeps its chemical properties.' },
+      { term: 'Molecule',                      def: 'Two or more atoms bonded together (like H₂O or CO₂).' },
+      { term: 'Reactant',                      def: 'A substance that goes INTO a chemical reaction (the starting materials). Found on the left side of a chemical equation.' },
+      { term: 'Product',                       def: 'A substance that comes OUT of a chemical reaction (what\'s made). Found on the right side of a chemical equation.' },
+      { term: 'Chemical Reaction',             def: 'A process where atoms in reactants rearrange to form new products.' },
+      { term: 'Law of Conservation of Matter', def: 'In a chemical reaction, matter is neither created nor destroyed. The total number of each type of atom stays the same.' },
+    ],
+    moleculeNames: {
+      'Methane':                         'Methane',
+      'Oxygen (×2)':                     'Oxygen (×2)',
+      'Carbon Dioxide':                  'Carbon Dioxide',
+      'Water (×2)':                      'Water (×2)',
+      'Sodium Bicarbonate (Baking Soda)':'Sodium Bicarbonate (Baking Soda)',
+      'Acetic Acid (Vinegar)':           'Acetic Acid (Vinegar)',
+      'Sodium Acetate':                  'Sodium Acetate',
+      'Water':                           'Water',
+      'Iron (×4)':                       'Iron (×4)',
+      'Oxygen (×3)':                     'Oxygen (×3)',
+      'Iron Oxide / Rust (×2)':          'Iron Oxide / Rust (×2)',
+      'Methane (Natural Gas)':           'Methane (Natural Gas)',
+      'Oxygen':                          'Oxygen',
+      'Iron':                            'Iron',
+      'Iron Oxide (Rust)':               'Iron Oxide (Rust)',
+      'Sodium Bicarbonate (Baking Soda)':'Sodium Bicarbonate (Baking Soda)',
+    },
+    questions: {
+      bakingSodaVinegar: [
+        'Count the carbon atoms in the reactants. Now count them in the products. Did any carbon atoms appear or disappear?',
+        'When baking soda and vinegar react, you see bubbles. Those bubbles are CO₂ gas escaping. If the gas escapes into the air, would a scale show the same mass before and after? Why or why not?',
+        'If you sealed the reaction in a closed container so no gas could escape, what would happen to the total mass?',
+      ],
+      burningCandle: [
+        'Where does the carbon in CH₄ go after the reaction? Where does the hydrogen go?',
+        'When a candle burns, it seems to disappear. But does the matter actually vanish? Where does it go?',
+        'This reaction needs oxygen. What would happen if you put a jar over a burning candle and sealed it?',
+      ],
+      rustingIron: [
+        'An iron nail gains mass as it rusts. Where does the extra mass come from? Use the atom inventory to explain.',
+        'Rusting is a slow reaction, but it follows the same law as the fast reactions. How can you tell matter is conserved?',
+        'If you sealed iron in a container with limited oxygen, what would eventually happen to the rusting process?',
+      ],
+    },
+    nailLabels: ['The rusty nail has MORE mass!', 'Oxygen atoms bonded to iron.'],
+    langBtn: '🇪🇸 Español',
+  },
+  es: {
+    pageTitle: '⚗️ Conservación de la Materia: Laboratorio Virtual de Reacciones',
+    stdPopupTitle: 'Estándar Utah SEEd 8.1.6',
+    stdPopupDesc: 'Desarrollar un modelo para describir cómo el número total de átomos no cambia en una reacción química, lo que indica que la materia se conserva.',
+    rxNames: {
+      bakingSodaVinegar: 'Bicarbonato de Sodio + Vinagre',
+      burningCandle: 'Quemar una Vela',
+      rustingIron: 'Oxidación del Hierro',
+    },
+    sideReactants: 'Reactivos',
+    sideProducts: 'Productos',
+    reactBtn: '¡Reaccionar!',
+    resetBtn: '↺ Reiniciar',
+    placeholder: 'Los productos aparecerán después de la reacción.',
+    inventoryTitle: '⚖️ Inventario de Átomos',
+    inventoryNote: 'Los átomos no se crean ni se destruyen — se reorganizan en nuevas moléculas.',
+    tableHeaders: ['Elemento', 'Símbolo', 'Color', 'Cantidad en Reactivos', 'Cantidad en Productos', '¿Coincide?'],
+    elementNames: { Carbon: 'Carbono', Hydrogen: 'Hidrógeno', Oxygen: 'Oxígeno', Sodium: 'Sodio', Iron: 'Hierro' },
+    conservedOk: '<strong>LA MATERIA SE CONSERVA</strong> — El número total de cada tipo de átomo es el mismo antes y después de la reacción. Los átomos se reorganizan, no se crean ni se destruyen.',
+    conservedViolation: '<strong>MATERIA NO CONSERVADA</strong> — ¡Esto violaría la Ley de Conservación de la Materia! En la química real, esto <em>NUNCA</em> sucede. Los átomos no pueden aparecer ni desaparecer.',
+    whatifBtn: '🔬 ¿Qué pasaría si los átomos PUDIERAN crearse o destruirse?',
+    whatifNote: '¡Esto es ficticio! En la química real, esto NUNCA sucede. Los átomos no pueden aparecer ni desaparecer en una reacción — solo reorganizarse.',
+    vocabSummary: '📚 Vocabulario Clave',
+    guideSummary: '❓ Preguntas Guía',
+    vocab: [
+      { term: 'Átomo',                               def: 'La unidad más pequeña de un elemento que conserva sus propiedades químicas.' },
+      { term: 'Molécula',                            def: 'Dos o más átomos unidos entre sí (como H₂O o CO₂).' },
+      { term: 'Reactivo',                            def: 'Una sustancia que entra en una reacción química (los materiales de inicio). Se encuentra en el lado izquierdo de una ecuación química.' },
+      { term: 'Producto',                            def: 'Una sustancia que sale de una reacción química (lo que se produce). Se encuentra en el lado derecho de una ecuación química.' },
+      { term: 'Reacción Química',                    def: 'Un proceso en el que los átomos de los reactivos se reorganizan para formar nuevos productos.' },
+      { term: 'Ley de Conservación de la Materia',   def: 'En una reacción química, la materia no se crea ni se destruye. El número total de cada tipo de átomo permanece igual.' },
+    ],
+    moleculeNames: {
+      'Methane':                          'Metano',
+      'Oxygen (×2)':                      'Oxígeno (×2)',
+      'Carbon Dioxide':                   'Dióxido de Carbono',
+      'Water (×2)':                       'Agua (×2)',
+      'Sodium Bicarbonate (Baking Soda)': 'Bicarbonato de Sodio',
+      'Acetic Acid (Vinegar)':            'Ácido Acético (Vinagre)',
+      'Sodium Acetate':                   'Acetato de Sodio',
+      'Water':                            'Agua',
+      'Iron (×4)':                        'Hierro (×4)',
+      'Oxygen (×3)':                      'Oxígeno (×3)',
+      'Iron Oxide / Rust (×2)':           'Óxido de Hierro / Herrumbre (×2)',
+      'Methane (Natural Gas)':            'Metano (Gas Natural)',
+      'Oxygen':                           'Oxígeno',
+      'Iron':                             'Hierro',
+      'Iron Oxide (Rust)':                'Óxido de Hierro (Herrumbre)',
+    },
+    questions: {
+      bakingSodaVinegar: [
+        'Cuenta los átomos de carbono en los reactivos. Ahora cuéntalos en los productos. ¿Aparecieron o desaparecieron átomos de carbono?',
+        'Cuando el bicarbonato y el vinagre reaccionan, ves burbujas. Esas burbujas son gas CO₂ escapando. Si el gas escapa al aire, ¿una balanza mostraría la misma masa antes y después? ¿Por qué sí o por qué no?',
+        'Si sellaras la reacción en un recipiente cerrado para que no escapara el gas, ¿qué pasaría con la masa total?',
+      ],
+      burningCandle: [
+        '¿A dónde va el carbono del CH₄ después de la reacción? ¿A dónde va el hidrógeno?',
+        'Cuando una vela se quema, parece desaparecer. Pero, ¿la materia realmente se desvanece? ¿A dónde va?',
+        'Esta reacción necesita oxígeno. ¿Qué pasaría si pusieras un frasco sobre una vela encendida y lo sellaras?',
+      ],
+      rustingIron: [
+        'Un clavo de hierro gana masa al oxidarse. ¿De dónde viene la masa extra? Usa el inventario de átomos para explicar.',
+        'La oxidación es una reacción lenta, pero sigue la misma ley que las reacciones rápidas. ¿Cómo puedes saber que la materia se conserva?',
+        'Si sellaras hierro en un recipiente con oxígeno limitado, ¿qué pasaría eventualmente con el proceso de oxidación?',
+      ],
+    },
+    nailLabels: ['¡El clavo oxidado tiene MÁS masa!', 'Átomos de oxígeno unidos al hierro.'],
+    langBtn: '🇺🇸 English',
+  },
+};
+
 // ---- REACTION DATA ----
 // Each reaction has:
 //   reactants / products: array of { formula (HTML), name, coefficient }
@@ -143,6 +286,7 @@ const REACTIONS = {
 // ---- APPLICATION STATE ----
 let currentReactionKey = 'bakingSodaVinegar';
 let whatIfActive       = false;
+let lang               = 'en';
 
 // ---- DOM REFERENCES ----
 const reactionCards     = document.querySelectorAll('.reaction-card');
@@ -179,9 +323,10 @@ function renderMolecules(container, molecules) {
       ? `<span class="mol-coefficient">${mol.coefficient}</span>`
       : '';
 
+    const molName = T[lang].moleculeNames[mol.name] || mol.name;
     item.innerHTML = `
       <div class="molecule-formula">${coefHTML}${mol.formula}</div>
-      <div class="molecule-name">${mol.name}</div>
+      <div class="molecule-name">${molName}</div>
     `;
     container.appendChild(item);
 
@@ -208,9 +353,10 @@ function renderInventory(atoms) {
     const matches = atom.reactantCount === atom.productCount;
     const swatchClass = 'atom-swatch' + (atom.isLight ? ' swatch-light' : '');
 
+    const translatedName = T[lang].elementNames[atom.element] || atom.element;
     const tr = document.createElement('tr');
     tr.innerHTML = `
-      <td>${atom.element}</td>
+      <td>${translatedName}</td>
       <td><strong>${atom.symbol}</strong></td>
       <td><span class="${swatchClass}" style="background:${atom.color};" title="${atom.element}"></span></td>
       <td class="count-cell">${atom.reactantCount}</td>
@@ -227,13 +373,15 @@ function renderInventory(atoms) {
  * @param {string[]} questions
  */
 function renderGuideQuestions(questions) {
+  // Prefer translated questions from T; fall back to passed-in array
+  const qs = (T[lang].questions && T[lang].questions[currentReactionKey]) || questions;
   const container = document.getElementById('guideQuestions');
   container.innerHTML = '';
-  if (!questions || questions.length === 0) return;
+  if (!qs || qs.length === 0) return;
 
   const ol = document.createElement('ol');
   ol.className = 'guide-questions-list';
-  questions.forEach(q => {
+  qs.forEach(q => {
     const li = document.createElement('li');
     li.textContent = q;
     ol.appendChild(li);
@@ -252,13 +400,11 @@ function updateConservationCheck(conserved) {
   if (conserved) {
     el.className = 'conservation-check check-ok';
     el.innerHTML = '<span class="check-icon" aria-hidden="true">✅</span>'
-      + '<div><strong>MATTER IS CONSERVED</strong> — The total number of each type of atom '
-      + 'is the same before and after the reaction. Atoms are rearranged, not created or destroyed.</div>';
+      + '<div>' + T[lang].conservedOk + '</div>';
   } else {
     el.className = 'conservation-check check-violation';
     el.innerHTML = '<span class="check-icon" aria-hidden="true">❌</span>'
-      + '<div><strong>MATTER NOT CONSERVED</strong> — This would violate the Law of Conservation '
-      + 'of Matter! In real chemistry, this <em>NEVER</em> happens. Atoms cannot appear or disappear.</div>';
+      + '<div>' + T[lang].conservedViolation + '</div>';
   }
 }
 
@@ -358,6 +504,7 @@ reactionCards.forEach(card => {
 
     currentReactionKey = card.dataset.reaction;
     updateView();
+    applyLang();
   });
 });
 
@@ -403,5 +550,90 @@ resetBtn.addEventListener('click', () => {
 
 whatifBtn.addEventListener('click', toggleWhatIf);
 
+// ---- LANGUAGE TOGGLE ----
+/**
+ * Rebuilds the vocab grid from T[lang].vocab.
+ */
+function renderVocab() {
+  const grid = document.getElementById('vocabGrid');
+  if (!grid) return;
+  grid.innerHTML = T[lang].vocab.map(v =>
+    `<div class="vocab-item"><dt>${v.term}</dt><dd>${v.def}</dd></div>`
+  ).join('');
+}
+
+/**
+ * Updates all translatable DOM elements to the current language.
+ */
+function applyLang() {
+  const t = T[lang];
+
+  // Header
+  document.getElementById('pageTitle').textContent        = t.pageTitle;
+  document.getElementById('stdPopupTitle').textContent    = t.stdPopupTitle;
+  document.getElementById('stdPopupDesc').textContent     = t.stdPopupDesc;
+  document.getElementById('langBtn').textContent          = t.langBtn;
+
+  // Reaction cards
+  document.getElementById('rxName-bakingSodaVinegar').textContent = t.rxNames.bakingSodaVinegar;
+  document.getElementById('rxName-burningCandle').textContent     = t.rxNames.burningCandle;
+  document.getElementById('rxName-rustingIron').textContent       = t.rxNames.rustingIron;
+
+  // Simulation side labels
+  document.getElementById('sideReactants').textContent = t.sideReactants;
+  document.getElementById('sideProducts').textContent  = t.sideProducts;
+
+  // React / Reset buttons (update regardless of visibility so they're correct when shown)
+  reactBtn.textContent = t.reactBtn;
+  resetBtn.textContent = t.resetBtn;
+
+  // Atom inventory
+  document.getElementById('inventoryTitle').textContent = t.inventoryTitle;
+  document.getElementById('inventoryNote').textContent  = t.inventoryNote;
+
+  // Table headers
+  const thIds = ['th-element', 'th-symbol', 'th-color', 'th-reactantCount', 'th-productCount', 'th-match'];
+  thIds.forEach((id, i) => { document.getElementById(id).textContent = t.tableHeaders[i]; });
+
+  // Re-render inventory rows (translates element names)
+  const reaction = REACTIONS[currentReactionKey];
+  renderInventory(whatIfActive ? generateFakeAtoms(reaction.atoms) : reaction.atoms);
+
+  // Conservation check callout
+  updateConservationCheck(!whatIfActive);
+
+  // What If? toggle
+  whatifBtn.textContent        = t.whatifBtn;
+  whatifNote.textContent       = t.whatifNote;
+
+  // Re-render molecule visuals so molecule names update in current language
+  MolAnim.cleanup();
+  MolViz.init(reactantsDisplay, productsDisplay, currentReactionKey);
+  reactBtn.style.display = '';
+  reactBtn.disabled      = false;
+  resetBtn.style.display = 'none';
+
+  // Any visible placeholder text
+  document.querySelectorAll('.mol-placeholder').forEach(el => { el.textContent = t.placeholder; });
+
+  // Bottom panels
+  document.getElementById('vocabSummary').textContent  = t.vocabSummary;
+  document.getElementById('guideSummary').textContent  = t.guideSummary;
+  renderVocab();
+  renderGuideQuestions();
+
+  // Nail post-reaction labels (if visible)
+  const lbl1 = document.getElementById('rv-nail-lbl1');
+  const lbl2 = document.getElementById('rv-nail-lbl2');
+  if (lbl1) lbl1.textContent = t.nailLabels[0];
+  if (lbl2) lbl2.textContent = t.nailLabels[1];
+}
+
+document.getElementById('langBtn').addEventListener('click', () => {
+  lang = lang === 'en' ? 'es' : 'en';
+  applyLang();
+});
+
 // ---- INIT ----
 updateView();
+applyLang();

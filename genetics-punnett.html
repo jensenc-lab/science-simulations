@@ -11,6 +11,8 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#e8ecf1;color:#1a2a3
 .header h1{font-size:1.15em;color:#fff;flex:1;min-width:200px}
 .std-badge{background:rgba(46,204,113,0.2);border:1px solid #2ecc7188;border-radius:12px;padding:4px 12px;font-size:0.72em;color:#a8f0cb;cursor:pointer;transition:0.3s}
 .std-badge:hover{background:rgba(46,204,113,0.45);color:#fff}
+.lang-btn{background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.4);border-radius:12px;padding:4px 12px;font-size:0.78em;color:#fff;cursor:pointer;font-family:inherit;font-weight:600;transition:0.2s;margin-left:auto;white-space:nowrap}
+.lang-btn:hover{background:rgba(255,255,255,0.28)}
 .info-popup{display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:440px;max-width:92vw;background:#fff;border:2px solid #2ecc71;border-radius:14px;padding:24px;z-index:200;box-shadow:0 12px 40px rgba(0,0,0,0.3);color:#1a2a3a;font-size:0.85em;line-height:1.6}
 .info-popup.show{display:block}
 .info-popup h3{color:#1a5276;margin-bottom:10px}
@@ -193,20 +195,23 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#e8ecf1;color:#1a2a3
 <body>
 
 <div class="header">
-  <h1>Mendelian Genetics: Inheritance Patterns</h1>
+  <h1 id="pageTitle">Mendelian Genetics: Inheritance Patterns</h1>
   <div class="std-badge" id="stdBadge">BIO.3.2 — Inheritance Patterns</div>
+  <button class="lang-btn" id="langBtn">🇪🇸 Español</button>
 </div>
 
 <div class="overlay" id="overlay"></div>
 <div class="info-popup" id="infoPopup">
   <span class="close-btn" id="closePopup">✕</span>
-  <h3>Utah SEEd Standard BIO.3.2</h3>
+  <h3 id="stdPopupTitle">Utah SEEd Standard BIO.3.2</h3>
+  <div id="stdPopupContent">
   <p>Use computational thinking and patterns to make predictions about the expression of specific traits that are passed in genes on chromosomes from parents to offspring.</p>
   <p style="margin-top:8px">Emphasize that various inheritance patterns can be predicted by observing the way genes are expressed using tools like Punnett squares.</p>
   <p style="margin-top:10px"><b>Simple Dominance:</b> Dog fur color — B (black) masks b (brown). Bb and BB look identical.</p>
   <p style="margin-top:6px"><b>Incomplete Dominance:</b> Flower color — R (red) and W (white) <em>blend</em> in RW, producing pink. Neither fully masks the other.</p>
   <p style="margin-top:6px"><b>Codominance:</b> Cattle coat color — R (red) and W (white) are <em>both fully expressed</em> in RW, producing a roan (patchy red + white) coat. No blending occurs.</p>
   <p style="margin-top:6px"><b>Sex-Linked:</b> Cat coat color — Xᴼ (orange) and Xᴮ (black) are carried on the X chromosome. Males (XY) can only be orange or black; females (XX) can also be tortoiseshell — both colors expressed simultaneously.</p>
+  </div>
 </div>
 
 <div class="main">
@@ -252,7 +257,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#e8ecf1;color:#1a2a3
     </div>
 
     <div class="results-box" id="resultsBox" style="display:none">
-      <h3>Predicted Offspring Ratios</h3>
+      <h3 id="resultsTitle">Predicted Offspring Ratios</h3>
       <div id="genoRatio"></div>
       <div id="phenoRatio" style="margin-top:6px"></div>
     </div>
@@ -286,11 +291,11 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#e8ecf1;color:#1a2a3
     <!-- Educational -->
     <div class="edu-section">
       <div class="collapsible" id="vocabSection">
-        <div class="collapsible-header" onclick="toggleCollapsible('vocabSection')">📖 Key Vocabulary <span class="arrow">▼</span></div>
+        <div class="collapsible-header" onclick="toggleCollapsible('vocabSection')"><span id="vocabHeaderText">📖 Key Vocabulary</span> <span class="arrow">▼</span></div>
         <div class="collapsible-body" id="vocabBody"></div>
       </div>
       <div class="collapsible" id="guideSection">
-        <div class="collapsible-header" onclick="toggleCollapsible('guideSection')">💡 Guide Questions <span class="arrow">▼</span></div>
+        <div class="collapsible-header" onclick="toggleCollapsible('guideSection')"><span id="guideHeaderText">💡 Guide Questions</span> <span class="arrow">▼</span></div>
         <div class="collapsible-body" id="guideBody"></div>
       </div>
     </div>
@@ -308,7 +313,252 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#e8ecf1;color:#1a2a3
 </div>
 
 <script>
+// === TRANSLATIONS ===
+const T = {
+  en: {
+    pageTitle:        'Mendelian Genetics: Inheritance Patterns',
+    stdPopupTitle:    'Utah SEEd Standard BIO.3.2',
+    stdPopupContent:  `<p>Use computational thinking and patterns to make predictions about the expression of specific traits that are passed in genes on chromosomes from parents to offspring.</p>
+      <p style="margin-top:8px">Emphasize that various inheritance patterns can be predicted by observing the way genes are expressed using tools like Punnett squares.</p>
+      <p style="margin-top:10px"><b>Simple Dominance:</b> Dog fur color — B (black) masks b (brown). Bb and BB look identical.</p>
+      <p style="margin-top:6px"><b>Incomplete Dominance:</b> Flower color — R (red) and W (white) <em>blend</em> in RW, producing pink. Neither fully masks the other.</p>
+      <p style="margin-top:6px"><b>Codominance:</b> Cattle coat color — R (red) and W (white) are <em>both fully expressed</em> in RW, producing a roan (patchy red + white) coat. No blending occurs.</p>
+      <p style="margin-top:6px"><b>Sex-Linked:</b> Cat coat color — X&#7612; (orange) and X&#7470; (black) are carried on the X chromosome. Males (XY) can only be orange or black; females (XX) can also be tortoiseshell — both colors expressed simultaneously.</p>`,
+    modeSimple:       'Simple Dominance',
+    modeIncomplete:   'Incomplete Dominance',
+    modeCodominance:  'Codominance',
+    modeSexLinked:    'Sex-Linked',
+    crossBtn:         '✕ Cross Parents',
+    resultsTitle:     'Predicted Offspring Ratios',
+    genoRatioLabel:   'Genotype Ratio:',
+    phenoRatioLabel:  'Phenotype Ratio:',
+    predictedPct:     'Predicted %:',
+    litterTitle:      '🧪 Test the Prediction — Breed a Litter!',
+    sizeLabel:        'Litter size:',
+    breedBtn:         '🐾 Breed Litter',
+    breedManyBtn:     'Breed 10 Litters',
+    resetBtn:         'Reset',
+    chartTitle:       'Predicted vs. Actual Results',
+    predicted:        'predicted',
+    actual:           'actual',
+    legendPredicted:  'Predicted',
+    legendActual:     'Actual',
+    totalsTotal:      'Total puppies:',
+    vocabHeader:      '📖 Key Vocabulary',
+    guideHeader:      '💡 Guide Questions',
+    modeTitles: {
+      simple:      'Mendelian Genetics: Dog Fur Color',
+      incomplete:  'Mendelian Genetics: Flower Color',
+      codominance: 'Mendelian Genetics: Cow Coat Color',
+      sexlinked:   'Mendelian Genetics: Cat Coat Color',
+    },
+    parentTitles: {
+      simple:      ['🐕 Parent 1 (Mother)',    '🐕 Parent 2 (Father)'],
+      incomplete:  ['🌸 Parent 1 (Plant)',     '🌸 Parent 2 (Plant)'],
+      codominance: ['🐄 Parent 1 (Cow)',       '🐄 Parent 2 (Cow)'],
+      sexlinked:   ['🐱 Parent 1 (Mother ♀)', '🐱 Parent 2 (Father ♂)'],
+    },
+    simplePhenoLabels: {
+      BB: 'Black Fur (homozygous)',
+      Bb: 'Black Fur (carrier)',
+      bb: 'Brown Fur (homozygous)',
+    },
+    simpleColorLabels: { black: 'Black', brown: 'Brown' },
+    simpleGuideQuestions: [
+      'Cross two heterozygous parents (Bb × Bb). What genotype and phenotype ratios does the Punnett square predict?',
+      'Can two black-furred dogs produce a brown puppy? Set up the cross and find out. What must be true about the parents\' genotypes?',
+      'Breed a litter of 4 puppies, then breed a litter of 100. Which result is closer to the predicted ratio? Why does sample size matter?',
+      'If all puppies in a litter are black, can you be 100% certain about both parents\' genotypes? Why or why not?',
+    ],
+    incompletePhenoLabels: { RR: 'Red Flower', RW: 'Pink Flower', WW: 'White Flower' },
+    codominancePhenoLabels: { RR: 'Red Coat', RW: 'Roan Coat', WW: 'White Coat' },
+    incompleteLitterLabels: ['🌱 Grow Offspring — Test the Prediction!', '🌱 Grow Offspring', 'Grow 10 Generations', 'Offspring count:'],
+    codominanceLitterLabels: ['🐄 Breed Herd — Test the Prediction!', '🐄 Breed Herd', 'Breed 10 Herds', 'Herd size:'],
+    incompleteColorLabels: { red: 'Red', pink: 'Pink', white: 'White' },
+    codominanceColorLabels: { red: 'Red', roan: 'Roan', white: 'White' },
+    incompleteVocabExtra: `
+      <p><span class="vocab-term">Incomplete Dominance:</span> Neither allele fully masks the other. The heterozygous (RW) phenotype is a <em>blend</em> — pink — rather than red or white. Both alleles contribute partially.</p>
+      <p><span class="vocab-term">Comparison tip:</span> In simple dominance, Bb = BB (dominant hides recessive). In incomplete dominance, RW = something new (a blend).</p>`,
+    codominanceVocabExtra: `
+      <p><span class="vocab-term">Codominance:</span> Both alleles are <em>fully and simultaneously expressed</em> in the heterozygous organism. In roan cattle (RW), individual hairs are either red OR white — both colors are visible as distinct patches, not blended.</p>
+      <p><span class="vocab-term">Key distinction — Codominance vs. Incomplete Dominance:</span><br>
+      Incomplete dominance: RW = <em>pink flower</em> (alleles blend into a new color)<br>
+      Codominance: RW = <em>roan cow</em> (both red and white appear separately, no blending)</p>`,
+    incompleteGuideQuestions: [
+      'Cross two pink flowers (RW × RW). What ratio do you predict? How is this different from a simple dominance cross of two heterozygous parents?',
+      'In simple dominance, Bb looks the same as BB. In incomplete dominance, what does RW look like compared to RR? Why is this a key difference?',
+      'Can you identify a heterozygous organism just by looking at it in incomplete dominance? What about in simple dominance?',
+      'If you see a pink flower, what MUST its genotype be? Is the same true in simple dominance — can you always determine genotype from phenotype alone?',
+    ],
+    codominanceGuideQuestions: [
+      'Cross two roan cows (RW × RW). How does the predicted ratio compare to the same cross in incomplete dominance (RW × RW)? Are the numbers the same or different? Why?',
+      'How is a roan cow (RW) different from a pink flower (RW)? Both are heterozygous with the same allele letters — so why do they look completely different?',
+      'In codominance, can you always determine the genotype just by looking at the phenotype? How does this compare to simple dominance, where Bb looks identical to BB?',
+      'A farmer has only roan cows (RW). Can the farmer ever produce a solid red calf? What cross is needed, and what is the probability of a red offspring?',
+    ],
+    sexlinkedPhenoLabels: {
+      'black-f':  'Black Fur (female)',
+      'tortie-f': 'Tortoiseshell (female)',
+      'orange-f': 'Orange Fur (female)',
+      'black-m':  'Black Fur (male)',
+      'orange-m': 'Orange Fur (male)',
+    },
+    sexlinkedLitterLabels: ['🐱 Breed Kittens — Test the Prediction!', '🐱 Breed Kittens', 'Breed 10 Litters', 'Litter size:'],
+    sexlinkedColorLabels: {
+      'black-f':  'Black ♀',
+      'tortie-f': 'Tortoiseshell ♀',
+      'orange-f': 'Orange ♀',
+      'black-m':  'Black ♂',
+      'orange-m': 'Orange ♂',
+    },
+    sexlinkedTotalsTotal: 'Total kittens:',
+    sexlinkedVocabExtra: `
+      <p><span class="vocab-term">Sex-Linked Trait:</span> A trait controlled by a gene located on the X chromosome. Because males have only one X chromosome (XY), they express whatever single coat-color allele they inherit — there is no second allele to interact with.</p>
+      <p><span class="vocab-term">Y Chromosome:</span> Does not carry the coat color gene. This is why males can only be orange (X&#7612; Y) or black (X&#7470; Y) — they have no second X allele to interact with.</p>
+      <p><span class="vocab-term">Carrier (not applicable here):</span> In many sex-linked traits, a heterozygous female who doesn't show the trait is called a "carrier." But in cat coat color, the heterozygous female (X&#7470; X&#7612;) visibly expresses <em>both</em> alleles as a tortoiseshell pattern — she is not a silent carrier. This makes cat coat color behave more like codominance on the X chromosome.</p>
+      <p><span class="vocab-term">Why males cannot be tortoiseshell:</span> Tortoiseshell requires two different coat-color alleles (X&#7470; and X&#7612;). Males have only one X chromosome, so they can only carry one coat-color allele. This is why tortoiseshell cats are almost always female.</p>`,
+    sexlinkedGuideQuestions: [
+      'Cross a tortoiseshell female (X\u1D2EX\u1D3C) with an orange male (X\u1D3CY). Can any male kittens be tortoiseshell? Why not?',
+      'Why are orange cats more often male? Set up crosses to find what parents produce an orange female.',
+      'A black female has an orange kitten. What must the father\'s genotype be?',
+      'In simple dominance, does the organism\'s sex affect the trait? Why is sex-linked different?',
+    ],
+    vocab: {
+      allele:       ['Allele',        'A version of a gene. Organisms have two alleles for each trait — one from each parent.'],
+      genotype:     ['Genotype',      'The combination of alleles an organism has (e.g., BB, Bb, RR, RW, WW).'],
+      phenotype:    ['Phenotype',     'The observable trait — what the organism actually looks like.'],
+      homozygous:   ['Homozygous',    'Two identical alleles (BB, bb, RR, WW).'],
+      heterozygous: ['Heterozygous',  'Two different alleles (Bb, RW). The phenotype of RW differs by inheritance pattern!'],
+      punnett:      ['Punnett Square','A grid used to predict the probability of offspring genotypes from a genetic cross.'],
+      dominant:     ['Dominant',      'An allele that masks the other. B (black) is dominant — one copy is enough for black fur.'],
+      recessive:    ['Recessive',     'An allele only expressed when two copies are present. b (brown) requires bb genotype.'],
+    },
+    langBtn: '🇪🇸 Español',
+  },
+  es: {
+    pageTitle:        'Genética Mendeliana: Patrones de Herencia',
+    stdPopupTitle:    'Estándar Utah SEEd BIO.3.2',
+    stdPopupContent:  `<p>Usar el pensamiento computacional y los patrones para hacer predicciones sobre la expresión de rasgos específicos que se transmiten en los genes de los cromosomas de padres a descendencia.</p>
+      <p style="margin-top:8px">Se enfatiza que varios patrones de herencia pueden predecirse observando la forma en que los genes se expresan usando herramientas como los cuadros de Punnett.</p>
+      <p style="margin-top:10px"><b>Dominancia Simple:</b> Color del pelaje del perro — B (negro) enmascara a b (marrón). Bb y BB se ven idénticos.</p>
+      <p style="margin-top:6px"><b>Dominancia Incompleta:</b> Color de flores — R (rojo) y W (blanco) se <em>mezclan</em> en RW, produciendo rosa. Ninguno enmascara completamente al otro.</p>
+      <p style="margin-top:6px"><b>Codominancia:</b> Color del pelaje bovino — R (rojo) y W (blanco) se expresan <em>ambos completamente</em> en RW, produciendo un pelaje ruano (rojo + blanco en parches). No hay mezcla.</p>
+      <p style="margin-top:6px"><b>Ligado al Sexo:</b> Color del pelaje del gato — X&#7612; (naranja) y X&#7470; (negro) se encuentran en el cromosoma X. Los machos (XY) solo pueden ser naranja o negro; las hembras (XX) también pueden ser carey — ambos colores expresados simultáneamente.</p>`,
+    modeSimple:       'Dominancia Simple',
+    modeIncomplete:   'Dominancia Incompleta',
+    modeCodominance:  'Codominancia',
+    modeSexLinked:    'Ligado al Sexo',
+    crossBtn:         '✕ Cruzar Progenitores',
+    resultsTitle:     'Proporciones Predichas de la Descendencia',
+    genoRatioLabel:   'Proporción de Genotipo:',
+    phenoRatioLabel:  'Proporción de Fenotipo:',
+    predictedPct:     'Porcentaje Predicho:',
+    litterTitle:      '🧪 ¡Pon a Prueba la Predicción — Cría una Camada!',
+    sizeLabel:        'Tamaño de camada:',
+    breedBtn:         '🐾 Criar Camada',
+    breedManyBtn:     'Criar 10 Camadas',
+    resetBtn:         'Reiniciar',
+    chartTitle:       'Resultados Predichos vs. Reales',
+    predicted:        'predicho',
+    actual:           'real',
+    legendPredicted:  'Predicho',
+    legendActual:     'Real',
+    totalsTotal:      'Total de cachorros:',
+    vocabHeader:      '📖 Vocabulario Clave',
+    guideHeader:      '💡 Preguntas Guía',
+    modeTitles: {
+      simple:      'Genética Mendeliana: Color del Pelaje de Perros',
+      incomplete:  'Genética Mendeliana: Color de las Flores',
+      codominance: 'Genética Mendeliana: Color del Pelaje de Vacas',
+      sexlinked:   'Genética Mendeliana: Color del Pelaje de Gatos',
+    },
+    parentTitles: {
+      simple:      ['🐕 Progenitor 1 (Madre)',    '🐕 Progenitor 2 (Padre)'],
+      incomplete:  ['🌸 Progenitor 1 (Planta)',   '🌸 Progenitor 2 (Planta)'],
+      codominance: ['🐄 Progenitor 1 (Vaca)',     '🐄 Progenitor 2 (Vaca)'],
+      sexlinked:   ['🐱 Progenitor 1 (Madre ♀)', '🐱 Progenitor 2 (Padre ♂)'],
+    },
+    simplePhenoLabels: {
+      BB: 'Pelaje Negro (homocigoto)',
+      Bb: 'Pelaje Negro (portador)',
+      bb: 'Pelaje Café (homocigoto)',
+    },
+    simpleColorLabels: { black: 'Negro', brown: 'Café' },
+    simpleGuideQuestions: [
+      'Cruza dos progenitores heterocigotos (Bb × Bb). ¿Qué proporciones de genotipo y fenotipo predice el cuadro de Punnett?',
+      '¿Pueden dos perros de pelaje negro producir un cachorro café? Configura el cruce y descúbrelo. ¿Qué debe ser cierto sobre los genotipos de los padres?',
+      'Cría una camada de 4 cachorros, luego cría una de 100. ¿Cuál resultado se acerca más a la proporción predicha? ¿Por qué importa el tamaño de la muestra?',
+      'Si todos los cachorros de una camada son negros, ¿puedes estar 100% seguro de los genotipos de ambos padres? ¿Por qué sí o por qué no?',
+    ],
+    incompletePhenoLabels: { RR: 'Flor Roja', RW: 'Flor Rosa', WW: 'Flor Blanca' },
+    codominancePhenoLabels: { RR: 'Pelaje Rojo', RW: 'Pelaje Ruano', WW: 'Pelaje Blanco' },
+    incompleteLitterLabels: ['🌱 ¡Cultiva Descendencia — Pon a Prueba la Predicción!', '🌱 Cultivar Descendencia', 'Cultivar 10 Generaciones', 'Número de descendencia:'],
+    codominanceLitterLabels: ['🐄 ¡Cría un Rebaño — Pon a Prueba la Predicción!', '🐄 Criar Rebaño', 'Criar 10 Rebaños', 'Tamaño del rebaño:'],
+    incompleteColorLabels: { red: 'Rojo', pink: 'Rosa', white: 'Blanco' },
+    codominanceColorLabels: { red: 'Rojo', roan: 'Ruano', white: 'Blanco' },
+    incompleteVocabExtra: `
+      <p><span class="vocab-term">Dominancia Incompleta:</span> Ningún alelo enmascara completamente al otro. El fenotipo heterocigoto (RW) es una <em>mezcla</em> — rosa — en lugar de rojo o blanco. Ambos alelos contribuyen parcialmente.</p>
+      <p><span class="vocab-term">Consejo de comparación:</span> En la dominancia simple, Bb = BB (el dominante oculta al recesivo). En la dominancia incompleta, RW = algo nuevo (una mezcla).</p>`,
+    codominanceVocabExtra: `
+      <p><span class="vocab-term">Codominancia:</span> Ambos alelos se expresan <em>completa y simultáneamente</em> en el organismo heterocigoto. En el ganado ruano (RW), los pelos individuales son rojos O blancos — ambos colores son visibles como parches distintos, sin mezcla.</p>
+      <p><span class="vocab-term">Distinción clave — Codominancia vs. Dominancia Incompleta:</span><br>
+      Dominancia incompleta: RW = <em>flor rosa</em> (los alelos se mezclan en un nuevo color)<br>
+      Codominancia: RW = <em>vaca ruana</em> (rojo y blanco aparecen por separado, sin mezcla)</p>`,
+    incompleteGuideQuestions: [
+      'Cruza dos flores rosas (RW × RW). ¿Qué proporción predices? ¿En qué se diferencia de la dominancia simple?',
+      'En la dominancia simple, Bb se ve igual que BB. En la dominancia incompleta, ¿cómo se ve RW comparado con RR? ¿Por qué?',
+      '¿Puedes identificar un organismo heterocigoto solo con mirarlo en la dominancia incompleta? ¿Y en la dominancia simple?',
+      'Si ves una flor rosa, ¿cuál DEBE ser su genotipo? ¿Es esto posible con la dominancia simple?',
+    ],
+    codominanceGuideQuestions: [
+      'Cruza dos vacas ruanas (RW × RW). ¿Cómo se compara la proporción predicha con el mismo cruce en dominancia incompleta?',
+      '¿En qué se diferencia una vaca ruana (RW) de una flor rosa (RW)? Ambas son heterocigotas — entonces, ¿por qué se ven diferentes?',
+      'En la codominancia, ¿puedes siempre determinar el genotipo solo mirando el fenotipo?',
+      'Un granjero solo tiene vacas ruanas. ¿Puede el granjero alguna vez producir un becerro completamente rojo?',
+    ],
+    sexlinkedPhenoLabels: {
+      'black-f':  'Pelaje Negro (hembra)',
+      'tortie-f': 'Carey (hembra)',
+      'orange-f': 'Pelaje Naranja (hembra)',
+      'black-m':  'Pelaje Negro (macho)',
+      'orange-m': 'Pelaje Naranja (macho)',
+    },
+    sexlinkedLitterLabels: ['🐱 ¡Cría Gatitos — Pon a Prueba la Predicción!', '🐱 Criar Gatitos', 'Criar 10 Camadas', 'Tamaño de camada:'],
+    sexlinkedColorLabels: {
+      'black-f':  'Negro ♀',
+      'tortie-f': 'Carey ♀',
+      'orange-f': 'Naranja ♀',
+      'black-m':  'Negro ♂',
+      'orange-m': 'Naranja ♂',
+    },
+    sexlinkedTotalsTotal: 'Total de gatitos:',
+    sexlinkedVocabExtra: `
+      <p><span class="vocab-term">Rasgo Ligado al Sexo:</span> Un rasgo controlado por un gen ubicado en el cromosoma X. Debido a que los machos solo tienen un cromosoma X (XY), expresan el único alelo de color de pelaje que heredan — no hay un segundo alelo para interactuar.</p>
+      <p><span class="vocab-term">Cromosoma Y:</span> No lleva el gen de color de pelaje. Por eso los machos solo pueden ser naranja (X&#7612; Y) o negro (X&#7470; Y) — no tienen un segundo alelo X para interactuar.</p>
+      <p><span class="vocab-term">Portador (no aplica aquí):</span> En muchos rasgos ligados al sexo, a una hembra heterocigota que no muestra el rasgo se le llama "portadora". Pero en el color del pelaje de gatos, la hembra heterocigota (X&#7470; X&#7612;) expresa visiblemente <em>ambos</em> alelos como un patrón carey — no es una portadora silenciosa. Esto hace que el color del pelaje del gato se comporte más como codominancia en el cromosoma X.</p>
+      <p><span class="vocab-term">Por qué los machos no pueden ser carey:</span> El carey requiere dos alelos diferentes de color de pelaje (X&#7470; y X&#7612;). Los machos solo tienen un cromosoma X, por lo que solo pueden llevar un alelo de color de pelaje. Por eso los gatos carey son casi siempre hembras.</p>`,
+    sexlinkedGuideQuestions: [
+      'Cruza una hembra carey (X\u1D2EX\u1D3C) con un macho naranja (X\u1D3CY). ¿Puede algún gatito macho ser carey? ¿Por qué no?',
+      '¿Por qué los gatos naranjas son más frecuentemente machos? Configura cruces para encontrar qué progenitores producen una hembra naranja.',
+      'Una hembra negra tiene un gatito naranja. ¿Cuál debe ser el genotipo del padre?',
+      'En la dominancia simple, ¿el sexo del organismo afecta el rasgo? ¿Por qué es diferente en los rasgos ligados al sexo?',
+    ],
+    vocab: {
+      allele:       ['Alelo',               'Una versión de un gen. Los organismos tienen dos alelos para cada rasgo — uno de cada progenitor.'],
+      genotype:     ['Genotipo',            'La combinación de alelos que tiene un organismo (ej., BB, Bb, RR, RW, WW).'],
+      phenotype:    ['Fenotipo',            'El rasgo observable — cómo se ve realmente el organismo.'],
+      homozygous:   ['Homocigoto',          'Dos alelos idénticos (BB, bb, RR, WW).'],
+      heterozygous: ['Heterocigoto',        'Dos alelos diferentes (Bb, RW). ¡El fenotipo de RW varía según el patrón de herencia!'],
+      punnett:      ['Cuadro de Punnett',   'Una cuadrícula usada para predecir la probabilidad de genotipos de la descendencia en un cruce genético.'],
+      dominant:     ['Dominante',           'Un alelo que enmascara al otro. B (negro) es dominante — una copia es suficiente para tener pelaje negro.'],
+      recessive:    ['Recesivo',            'Un alelo que solo se expresa cuando hay dos copias presentes. El genotipo bb es necesario para el pelaje marrón.'],
+    },
+    langBtn: '🇺🇸 English',
+  },
+};
+
 // === STATE ===
+let lang = 'en';
 let mode = 'simple';
 let p1 = 'Bb', p2 = 'Bb';
 let litterSize = 4;
@@ -553,18 +803,15 @@ function getPhenoKey(g) {
 function getPhenoLabel(g) {
   if (mode==='sexlinked') return getSLPhenoLabel(g);
   if (mode==='simple') {
-    if (g==='BB') return 'Black Fur (homozygous dominant)';
-    if (g==='Bb') return 'Black Fur (heterozygous)';
-    return 'Brown Fur (homozygous recessive)';
+    return T[lang].simplePhenoLabels[g] || g;
   }
   if (mode==='incomplete') {
-    if (g==='RR') return 'Red Flowers (homozygous)';
-    if (g==='RW') return 'Pink Flowers (heterozygous blend)';
-    return 'White Flowers (homozygous)';
+    return T[lang].incompletePhenoLabels[g] || g;
   }
-  if (g==='RR') return 'Red Coat (homozygous)';
-  if (g==='RW') return 'Roan Coat — both alleles expressed';
-  return 'White Coat (homozygous)';
+  if (mode==='codominance') {
+    return T[lang].codominancePhenoLabels[g] || g;
+  }
+  return T[lang].codominancePhenoLabels[g] || g;
 }
 
 function getCellBg(g) {
@@ -709,18 +956,18 @@ function showResults() {
     .map(([k,v]) => `${v}% ${k.charAt(0).toUpperCase()+k.slice(1)}`).join(', ');
 
   document.getElementById('genoRatio').innerHTML =
-    `<div class="ratio-row"><span class="ratio-label">Genotype Ratio:</span><span class="ratio-val">${genoStr}</span></div>`;
+    `<div class="ratio-row"><span class="ratio-label">${T[lang].genoRatioLabel}</span><span class="ratio-val">${genoStr}</span></div>`;
   document.getElementById('phenoRatio').innerHTML =
-    `<div class="ratio-row"><span class="ratio-label">Phenotype Ratio:</span><span class="ratio-val">${phenoStr}</span></div>
-     <div class="ratio-row"><span class="ratio-label">Predicted %:</span><span class="ratio-val">${pctStr}</span></div>`;
+    `<div class="ratio-row"><span class="ratio-label">${T[lang].phenoRatioLabel}</span><span class="ratio-val">${phenoStr}</span></div>
+     <div class="ratio-row"><span class="ratio-label">${T[lang].predictedPct}</span><span class="ratio-val">${pctStr}</span></div>`;
 
   document.getElementById('resultsBox').style.display = 'block';
   document.getElementById('litterSection').style.display = 'block';
 
   const lbls = {
-    simple:      ['🧪 Test the Prediction — Breed a Litter!', '🐾 Breed Litter',    'Breed 10 Litters',    'Litter size:'],
-    incomplete:  ['🌱 Grow Offspring — Test the Prediction!', '🌱 Grow Offspring',   'Grow 10 Generations', 'Offspring count:'],
-    codominance: ['🐄 Test the Prediction — Breed a Herd!',   '🐄 Breed Herd',       'Breed 10 Herds',      'Herd size:']
+    simple:      [T[lang].litterTitle,                         T[lang].breedBtn,          T[lang].breedManyBtn,      T[lang].sizeLabel],
+    incomplete:  T[lang].incompleteLitterLabels,
+    codominance: T[lang].codominanceLitterLabels,
   };
   const [lt,bb,bmb,sl] = lbls[mode];
   document.getElementById('litterTitle').textContent  = lt;
@@ -820,29 +1067,29 @@ function updateChart() {
 
   const cats =
     mode==='simple'
-      ? [{key:'black',label:'Black',cls:'bar-black'},{key:'brown',label:'Brown',cls:'bar-brown'}]
+      ? [{key:'black',label:T[lang].simpleColorLabels.black,cls:'bar-black'},{key:'brown',label:T[lang].simpleColorLabels.brown,cls:'bar-brown'}]
     : mode==='incomplete'
-      ? [{key:'red',label:'Red',cls:'bar-red'},{key:'pink',label:'Pink',cls:'bar-pink'},{key:'white',label:'White',cls:'bar-white'}]
-    :   [{key:'red',label:'Red',cls:'bar-red'},{key:'roan',label:'Roan',cls:'bar-roan'},{key:'white',label:'White',cls:'bar-white'}];
+      ? [{key:'red',label:T[lang].incompleteColorLabels.red,cls:'bar-red'},{key:'pink',label:T[lang].incompleteColorLabels.pink,cls:'bar-pink'},{key:'white',label:T[lang].incompleteColorLabels.white,cls:'bar-white'}]
+    :   [{key:'red',label:T[lang].codominanceColorLabels.red,cls:'bar-red'},{key:'roan',label:T[lang].codominanceColorLabels.roan,cls:'bar-roan'},{key:'white',label:T[lang].codominanceColorLabels.white,cls:'bar-white'}];
 
-  let html = '<h3 style="font-size:0.82em;color:#1a5276;margin-bottom:6px">Predicted vs. Actual Results</h3>';
+  let html = `<h3 style="font-size:0.82em;color:#1a5276;margin-bottom:6px">${T[lang].chartTitle}</h3>`;
   cats.forEach((cat,i) => {
     const pred = (window.predictedPcts||{})[cat.key]||0;
     const act  = totalPups>0 ? (totals[cat.key]/totalPups*100) : 0;
     if (i>0) html += '<div style="height:4px"></div>';
     html += `
       <div class="chart-row">
-        <div class="chart-label">${cat.label}<br><span style="font-weight:400;color:#8a9aaa">(predicted)</span></div>
+        <div class="chart-label">${cat.label}<br><span style="font-weight:400;color:#8a9aaa">(${T[lang].predicted})</span></div>
         <div class="chart-bar-bg"><div class="chart-bar ${cat.cls} predicted" style="width:${pred}%">${pred>8?pred+'%':''}</div></div>
       </div>
       <div class="chart-row">
-        <div class="chart-label">${cat.label}<br><span style="font-weight:400;color:#8a9aaa">(actual)</span></div>
+        <div class="chart-label">${cat.label}<br><span style="font-weight:400;color:#8a9aaa">(${T[lang].actual})</span></div>
         <div class="chart-bar-bg"><div class="chart-bar ${cat.cls} actual" style="width:${act.toFixed(1)}%">${act>8?act.toFixed(1)+'%':''}</div></div>
       </div>`;
   });
   html += `<div class="chart-legend">
-    <span><span class="legend-swatch" style="background:rgba(0,0,0,0.3)"></span>Predicted</span>
-    <span><span class="legend-swatch" style="background:rgba(0,0,0,0.8)"></span>Actual</span>
+    <span><span class="legend-swatch" style="background:rgba(0,0,0,0.3)"></span>${T[lang].legendPredicted}</span>
+    <span><span class="legend-swatch" style="background:rgba(0,0,0,0.8)"></span>${T[lang].legendActual}</span>
   </div>`;
   chart.innerHTML = html;
 
@@ -850,17 +1097,20 @@ function updateChart() {
   if (mode==='simple') {
     const bPct  = totalPups>0?(totals.black/totalPups*100).toFixed(1):0;
     const brPct = totalPups>0?(totals.brown/totalPups*100).toFixed(1):0;
-    tb.innerHTML = `Total: <b>${totalPups}</b> &nbsp;|&nbsp; Black: <b>${totals.black}</b> (<b>${bPct}</b>%) &nbsp;|&nbsp; Brown: <b>${totals.brown}</b> (<b>${brPct}</b>%)`;
+    const sCL = T[lang].simpleColorLabels;
+    tb.innerHTML = `${T[lang].totalsTotal} <b>${totalPups}</b> &nbsp;|&nbsp; ${sCL.black}: <b>${totals.black}</b> (<b>${bPct}</b>%) &nbsp;|&nbsp; ${sCL.brown}: <b>${totals.brown}</b> (<b>${brPct}</b>%)`;
   } else if (mode==='incomplete') {
     const rPct = totalPups>0?(totals.red/totalPups*100).toFixed(1):0;
     const pPct = totalPups>0?(totals.pink/totalPups*100).toFixed(1):0;
     const wPct = totalPups>0?(totals.white/totalPups*100).toFixed(1):0;
-    tb.innerHTML = `Total: <b>${totalPups}</b> &nbsp;|&nbsp; Red: <b>${totals.red}</b> (<b>${rPct}</b>%) &nbsp;|&nbsp; Pink: <b>${totals.pink}</b> (<b>${pPct}</b>%) &nbsp;|&nbsp; White: <b>${totals.white}</b> (<b>${wPct}</b>%)`;
+    const iCL = T[lang].incompleteColorLabels;
+    tb.innerHTML = `${T[lang].totalsTotal} <b>${totalPups}</b> &nbsp;|&nbsp; ${iCL.red}: <b>${totals.red}</b> (<b>${rPct}</b>%) &nbsp;|&nbsp; ${iCL.pink}: <b>${totals.pink}</b> (<b>${pPct}</b>%) &nbsp;|&nbsp; ${iCL.white}: <b>${totals.white}</b> (<b>${wPct}</b>%)`;
   } else {
     const rPct  = totalPups>0?(totals.red/totalPups*100).toFixed(1):0;
     const roPct = totalPups>0?(totals.roan/totalPups*100).toFixed(1):0;
     const wPct  = totalPups>0?(totals.white/totalPups*100).toFixed(1):0;
-    tb.innerHTML = `Total: <b>${totalPups}</b> &nbsp;|&nbsp; Red: <b>${totals.red}</b> (<b>${rPct}</b>%) &nbsp;|&nbsp; Roan: <b>${totals.roan}</b> (<b>${roPct}</b>%) &nbsp;|&nbsp; White: <b>${totals.white}</b> (<b>${wPct}</b>%)`;
+    const cCL = T[lang].codominanceColorLabels;
+    tb.innerHTML = `${T[lang].totalsTotal} <b>${totalPups}</b> &nbsp;|&nbsp; ${cCL.red}: <b>${totals.red}</b> (<b>${rPct}</b>%) &nbsp;|&nbsp; ${cCL.roan}: <b>${totals.roan}</b> (<b>${roPct}</b>%) &nbsp;|&nbsp; ${cCL.white}: <b>${totals.white}</b> (<b>${wPct}</b>%)`;
   }
 }
 
@@ -877,12 +1127,8 @@ function switchMode(m) {
   else if (m==='sexlinked') { p1='X\u1D2EX\u1D3C'; p2='X\u1D3CY'; }
   else                      { p1='RW';    p2='RW'; }
 
-  const titles = {
-    simple:      ['🐕 Parent 1 (Mother)',    '🐕 Parent 2 (Father)'],
-    incomplete:  ['🌸 Parent 1 (Plant)',     '🌸 Parent 2 (Plant)'],
-    codominance: ['🐄 Parent 1 (Cow)',       '🐄 Parent 2 (Cow)'],
-    sexlinked:   ['🐱 Parent 1 (Mother ♀)', '🐱 Parent 2 (Father ♂)']
-  };
+  document.getElementById('pageTitle').textContent = T[lang].modeTitles[m];
+  const titles = T[lang].parentTitles;
   document.getElementById('p1title').textContent = titles[m][0];
   document.getElementById('p2title').textContent = titles[m][1];
 
@@ -898,29 +1144,13 @@ function switchMode(m) {
 
 // === VOCABULARY ===
 function updateVocab() {
-  const shared = `
-    <p><span class="vocab-term">Allele:</span> A version of a gene. Organisms have two alleles for each trait — one from each parent.</p>
-    <p><span class="vocab-term">Genotype:</span> The combination of alleles an organism has (e.g., BB, Bb, RR, RW, WW).</p>
-    <p><span class="vocab-term">Phenotype:</span> The observable trait — what the organism actually looks like.</p>
-    <p><span class="vocab-term">Homozygous:</span> Two identical alleles (BB, bb, RR, WW).</p>
-    <p><span class="vocab-term">Heterozygous:</span> Two different alleles (Bb, RW). The phenotype of RW differs by inheritance pattern!</p>
-    <p><span class="vocab-term">Punnett Square:</span> A grid used to predict the probability of offspring genotypes from a genetic cross.</p>`;
-  const simpleExtra = `
-    <p><span class="vocab-term">Dominant:</span> An allele that masks the other. B (black) is dominant — one copy is enough for black fur.</p>
-    <p><span class="vocab-term">Recessive:</span> An allele only expressed when two copies are present. b (brown) requires bb genotype.</p>`;
-  const incompleteExtra = `
-    <p><span class="vocab-term">Incomplete Dominance:</span> Neither allele fully masks the other. The heterozygous (RW) phenotype is a <em>blend</em> — pink — rather than red or white. Both alleles contribute partially.</p>
-    <p><span class="vocab-term">Comparison tip:</span> In simple dominance, Bb = BB (dominant hides recessive). In incomplete dominance, RW = something new (a blend).</p>`;
-  const codominanceExtra = `
-    <p><span class="vocab-term">Codominance:</span> Both alleles are <em>fully and simultaneously expressed</em> in the heterozygous organism. In roan cattle (RW), individual hairs are either red OR white — both colors are visible as distinct patches, not blended.</p>
-    <p><span class="vocab-term">Key distinction — Codominance vs. Incomplete Dominance:</span><br>
-    Incomplete dominance: RW = <em>pink flower</em> (alleles blend into a new color)<br>
-    Codominance: RW = <em>roan cow</em> (both red and white appear separately, no blending)</p>`;
-  const sexlinkedExtra = `
-    <p><span class="vocab-term">Sex-Linked Trait:</span> A trait controlled by a gene located on the X chromosome. Because males have only one X chromosome (XY), they express whatever single coat-color allele they inherit — there is no second allele to interact with.</p>
-    <p><span class="vocab-term">Y Chromosome:</span> Does not carry the coat color gene. This is why males can only be orange (Xᴼ Y) or black (Xᴮ Y) — they have no second X allele to interact with.</p>
-    <p><span class="vocab-term">Carrier (not applicable here):</span> In many sex-linked traits, a heterozygous female who doesn't show the trait is called a "carrier." But in cat coat color, the heterozygous female (Xᴮ Xᴼ) visibly expresses <em>both</em> alleles as a tortoiseshell pattern — she is not a silent carrier. This makes cat coat color behave more like codominance on the X chromosome.</p>
-    <p><span class="vocab-term">Why males cannot be tortoiseshell:</span> Tortoiseshell requires two different coat-color alleles (Xᴮ and Xᴼ). Males have only one X chromosome, so they can only carry one coat-color allele. This is why tortoiseshell cats are almost always female.</p>`;
+  const v = T[lang].vocab;
+  const vt = (key) => `<p><span class="vocab-term">${v[key][0]}:</span> ${v[key][1]}</p>`;
+  const shared = vt('allele') + vt('genotype') + vt('phenotype') + vt('homozygous') + vt('heterozygous') + vt('punnett');
+  const simpleExtra = vt('dominant') + vt('recessive');
+  const incompleteExtra  = T[lang].incompleteVocabExtra;
+  const codominanceExtra = T[lang].codominanceVocabExtra;
+  const sexlinkedExtra = T[lang].sexlinkedVocabExtra;
 
   const extra = mode==='simple' ? simpleExtra
               : mode==='incomplete' ? incompleteExtra
@@ -932,30 +1162,10 @@ function updateVocab() {
 // === GUIDE QUESTIONS ===
 function updateGuide() {
   const qSets = {
-    simple: [
-      'Cross two heterozygous parents (Bb × Bb). What genotype and phenotype ratios does the Punnett square predict?',
-      'Can two black-furred dogs produce a brown puppy? Set up the cross and find out. What must be true about the parents\' genotypes?',
-      'Breed a litter of 4 puppies, then breed a litter of 100. Which result is closer to the predicted ratio? Why does sample size matter?',
-      'If all puppies in a litter are black, can you be 100% certain about both parents\' genotypes? Why or why not?'
-    ],
-    incomplete: [
-      'Cross two pink flowers (RW × RW). What ratio do you predict? How is this different from a simple dominance cross of two heterozygous parents?',
-      'In simple dominance, Bb looks the same as BB. In incomplete dominance, what does RW look like compared to RR? Why is this a key difference?',
-      'Can you identify a heterozygous organism just by looking at it in incomplete dominance? What about in simple dominance?',
-      'If you see a pink flower, what MUST its genotype be? Is the same true in simple dominance — can you always determine genotype from phenotype alone?'
-    ],
-    codominance: [
-      'Cross two roan cows (RW × RW). How does the predicted ratio compare to the same cross in incomplete dominance (RW × RW)? Are the numbers the same or different? Why?',
-      'How is a roan cow (RW) different from a pink flower (RW)? Both are heterozygous with the same allele letters — so why do they look completely different?',
-      'In codominance, can you always determine the genotype just by looking at the phenotype? How does this compare to simple dominance, where Bb looks identical to BB?',
-      'A farmer has only roan cows (RW). Can the farmer ever produce a solid red calf? What cross is needed, and what is the probability of a red offspring?'
-    ],
-    sexlinked: [
-      'Cross a tortoiseshell female (XᴮXᴼ) with an orange male (XᴼY). Can any male kittens be tortoiseshell? Use the Punnett square to explain why or why not.',
-      'Why are orange cats more often male than female? Set up different crosses to figure out what parents would be needed to produce an orange female kitten.',
-      'A black female cat gives birth to an orange kitten. What must be true about the father\'s genotype? Use the Punnett square to support your answer.',
-      'In simple dominance, does the sex of the organism affect which trait appears? Why is sex-linked inheritance fundamentally different from autosomal inheritance?'
-    ]
+    simple:      T[lang].simpleGuideQuestions,
+    incomplete:  T[lang].incompleteGuideQuestions,
+    codominance: T[lang].codominanceGuideQuestions,
+    sexlinked: T[lang].sexlinkedGuideQuestions
   };
   document.getElementById('guideBody').innerHTML =
     qSets[mode].map((q,i) => `<div class="guide-q">${i+1}. ${q}</div>`).join('');
@@ -993,6 +1203,73 @@ document.getElementById('overlay').addEventListener('click', () => {
   document.getElementById('overlay').classList.remove('show');
 });
 
+// === LANGUAGE TOGGLE ===
+function applyLang() {
+  const t = T[lang];
+  document.getElementById('pageTitle').textContent    = t.modeTitles[mode] || t.pageTitle;
+  document.getElementById('stdPopupTitle').textContent = t.stdPopupTitle;
+  document.getElementById('stdPopupContent').innerHTML = t.stdPopupContent;
+  document.getElementById('langBtn').textContent      = t.langBtn;
+  document.getElementById('btnSimple').textContent      = t.modeSimple;
+  document.getElementById('btnIncomplete').textContent  = t.modeIncomplete;
+  document.getElementById('btnCodominance').textContent = t.modeCodominance;
+  document.getElementById('btnSexLinked').textContent   = t.modeSexLinked;
+  document.getElementById('crossBtn').textContent      = t.crossBtn;
+  document.getElementById('resultsTitle').textContent  = t.resultsTitle;
+  document.getElementById('resetLitterBtn').textContent = t.resetBtn;
+  document.getElementById('vocabHeaderText').textContent = t.vocabHeader;
+  document.getElementById('guideHeaderText').textContent = t.guideHeader;
+  // Parent titles
+  const pt = t.parentTitles[mode];
+  document.getElementById('p1title').textContent = pt[0];
+  document.getElementById('p2title').textContent = pt[1];
+  // Re-render parent phenotype labels (text changes with language)
+  document.getElementById('pheno1').textContent = getPhenoLabel(p1);
+  document.getElementById('pheno2').textContent = getPhenoLabel(p2);
+  // Re-render vocab and guide questions (change with language)
+  updateVocab();
+  updateGuide();
+  // Re-render results labels if results are showing
+  if (document.getElementById('resultsBox').style.display !== 'none') {
+    // Trigger re-render of ratio labels by re-running showResults logic
+    // (guide questions are mode-specific — Part 2)
+    const el = document.getElementById('genoRatio');
+    if (el && el.innerHTML) {
+      const gRow = el.querySelector('.ratio-val');
+      if (gRow) el.innerHTML = `<div class="ratio-row"><span class="ratio-label">${t.genoRatioLabel}</span><span class="ratio-val">${gRow.textContent}</span></div>`;
+    }
+    const ph = document.getElementById('phenoRatio');
+    if (ph) {
+      const vals = ph.querySelectorAll('.ratio-val');
+      if (vals.length >= 2) {
+        ph.innerHTML =
+          `<div class="ratio-row"><span class="ratio-label">${t.phenoRatioLabel}</span><span class="ratio-val">${vals[0].textContent}</span></div>
+           <div class="ratio-row"><span class="ratio-label">${t.predictedPct}</span><span class="ratio-val">${vals[1].textContent}</span></div>`;
+      }
+    }
+    // Litter labels
+    if (mode === 'simple') {
+      document.getElementById('litterTitle').textContent  = t.litterTitle;
+      document.getElementById('breedBtn').textContent     = t.breedBtn;
+      document.getElementById('breedManyBtn').textContent = t.breedManyBtn;
+      document.getElementById('sizeLabel').textContent    = t.sizeLabel;
+    } else if (mode === 'sexlinked') {
+      document.getElementById('litterTitle').textContent  = t.sexlinkedLitterLabels[0];
+      document.getElementById('breedBtn').textContent     = t.sexlinkedLitterLabels[1];
+      document.getElementById('breedManyBtn').textContent = t.sexlinkedLitterLabels[2];
+      document.getElementById('sizeLabel').textContent    = t.sexlinkedLitterLabels[3];
+    }
+    // Re-render chart if visible
+    if (document.getElementById('chartContainer').style.display !== 'none') updateChart();
+    if (document.getElementById('totalsBar').style.display !== 'none') updateChart();
+  }
+}
+
+document.getElementById('langBtn').addEventListener('click', () => {
+  lang = lang === 'en' ? 'es' : 'en';
+  applyLang();
+});
+
 // === INIT ===
 rebuildButtons('p1btns', 1);
 rebuildButtons('p2btns', 2);
@@ -1000,6 +1277,7 @@ updateParentDisplay(1, p1, false);
 updateParentDisplay(2, p2, false);
 updateVocab();
 updateGuide();
+applyLang();
 
 
 // ================================================================
@@ -1162,12 +1440,8 @@ function getSLPhenoKey(g) {
 }
 
 function getSLPhenoLabel(g) {
-  if (g === SL_XB + SL_XB) return 'Black Fur (female)';
-  if (g === SL_XB + SL_XO) return 'Tortoiseshell (female)';
-  if (g === SL_XO + SL_XO) return 'Orange Fur (female)';
-  if (g === SL_XB + 'Y')   return 'Black Fur (male)';
-  if (g === SL_XO + 'Y')   return 'Orange Fur (male)';
-  return '';
+  const key = getSLPhenoSexKey(g);
+  return T[lang].sexlinkedPhenoLabels[key] || '';
 }
 
 function getSLAlleleParts(g) {
@@ -1321,17 +1595,18 @@ function slShowResults() {
     .join(', ');
 
   document.getElementById('genoRatio').innerHTML =
-    `<div class="ratio-row"><span class="ratio-label">Genotype Ratio:</span><span class="ratio-val">${genoStr}</span></div>`;
+    `<div class="ratio-row"><span class="ratio-label">${T[lang].genoRatioLabel}</span><span class="ratio-val">${genoStr}</span></div>`;
   document.getElementById('phenoRatio').innerHTML =
-    `<div class="ratio-row"><span class="ratio-label">Phenotype Ratio:</span><span class="ratio-val">${phenoStr}</span></div>
-     <div class="ratio-row"><span class="ratio-label">Predicted %:</span><span class="ratio-val">${pctStr}</span></div>`;
+    `<div class="ratio-row"><span class="ratio-label">${T[lang].phenoRatioLabel}</span><span class="ratio-val">${phenoStr}</span></div>
+     <div class="ratio-row"><span class="ratio-label">${T[lang].predictedPct}</span><span class="ratio-val">${pctStr}</span></div>`;
 
   document.getElementById('resultsBox').style.display  = 'block';
   document.getElementById('litterSection').style.display = 'block';
-  document.getElementById('litterTitle').textContent   = '🐱 Breed Kittens — Test the Prediction!';
-  document.getElementById('breedBtn').textContent      = '🐱 Breed Kittens';
-  document.getElementById('breedManyBtn').textContent  = 'Breed 10 Litters';
-  document.getElementById('sizeLabel').textContent     = 'Litter size:';
+  const sl = T[lang].sexlinkedLitterLabels;
+  document.getElementById('litterTitle').textContent   = sl[0];
+  document.getElementById('breedBtn').textContent      = sl[1];
+  document.getElementById('breedManyBtn').textContent  = sl[2];
+  document.getElementById('sizeLabel').textContent     = sl[3];
 }
 
 // --- Step 2: litter simulation ---
@@ -1415,25 +1690,25 @@ function slUpdateChart() {
   // Only render categories that are possible (predicted > 0) for this cross
   const activeCats = SL_CATS.filter(c => (preds[c.key] || 0) > 0);
 
-  let html = '<h3 style="font-size:0.82em;color:#1a5276;margin-bottom:6px">Predicted vs. Actual Results</h3>';
+  let html = `<h3 style="font-size:0.82em;color:#1a5276;margin-bottom:6px">${T[lang].chartTitle}</h3>`;
   activeCats.forEach((cat, i) => {
     const pred = preds[cat.key] || 0;
     const act  = totalPups > 0 ? ((slTotals[cat.key] || 0) / totalPups * 100) : 0;
     if (i > 0) html += '<div style="height:4px"></div>';
-    const catLabelHtml = slSexSpan(cat.label);
+    const catLabelHtml = slSexSpan(T[lang].sexlinkedColorLabels[cat.key] || cat.label);
     html += `
       <div class="chart-row">
-        <div class="chart-label">${catLabelHtml}<br><span style="font-weight:400;color:#8a9aaa">(predicted)</span></div>
+        <div class="chart-label">${catLabelHtml}<br><span style="font-weight:400;color:#8a9aaa">(${T[lang].predicted})</span></div>
         <div class="chart-bar-bg"><div class="chart-bar ${cat.cls} predicted" style="width:${pred}%">${pred > 8 ? pred + '%' : ''}</div></div>
       </div>
       <div class="chart-row">
-        <div class="chart-label">${catLabelHtml}<br><span style="font-weight:400;color:#8a9aaa">(actual)</span></div>
+        <div class="chart-label">${catLabelHtml}<br><span style="font-weight:400;color:#8a9aaa">(${T[lang].actual})</span></div>
         <div class="chart-bar-bg"><div class="chart-bar ${cat.cls} actual" style="width:${act.toFixed(1)}%">${act > 8 ? act.toFixed(1) + '%' : ''}</div></div>
       </div>`;
   });
   html += `<div class="chart-legend">
-    <span><span class="legend-swatch" style="background:rgba(0,0,0,0.3)"></span>Predicted</span>
-    <span><span class="legend-swatch" style="background:rgba(0,0,0,0.8)"></span>Actual</span>
+    <span><span class="legend-swatch" style="background:rgba(0,0,0,0.3)"></span>${T[lang].legendPredicted}</span>
+    <span><span class="legend-swatch" style="background:rgba(0,0,0,0.8)"></span>${T[lang].legendActual}</span>
   </div>`;
   chart.innerHTML = html;
 
@@ -1442,9 +1717,10 @@ function slUpdateChart() {
   const tbParts  = activeCats.map(c => {
     const cnt = slTotals[c.key] || 0;
     const pct = totalPups > 0 ? (cnt / totalPups * 100).toFixed(1) : '0.0';
-    return `${c.label}: <b>${cnt}</b> (<b>${pct}</b>%)`;
+    const lbl = T[lang].sexlinkedColorLabels[c.key] || c.label;
+    return `${slSexSpan(lbl)}: <b>${cnt}</b> (<b>${pct}</b>%)`;
   });
-  tb.innerHTML = `Total: <b>${totalPups}</b> &nbsp;|&nbsp; ` + tbParts.join(' &nbsp;|&nbsp; ');
+  tb.innerHTML = `${T[lang].sexlinkedTotalsTotal} <b>${totalPups}</b> &nbsp;|&nbsp; ` + tbParts.join(' &nbsp;|&nbsp; ');
 }
 </script>
 </body>

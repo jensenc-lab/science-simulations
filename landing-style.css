@@ -223,7 +223,7 @@ a { text-decoration: none; color: inherit; }
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 24px;
-  align-items: start;
+  align-items: stretch;
 }
 
 /* ============================================================
@@ -283,6 +283,10 @@ a { text-decoration: none; color: inherit; }
   color: var(--text-muted);
   line-height: 1.65;
   flex: 1;
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 /* ---- Launch button ---- */
