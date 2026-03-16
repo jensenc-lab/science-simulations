@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Speed &amp; Energy Bowling</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <h1 id="pageTitle">🎳 Speed &amp; Energy Bowling</h1>
+    <button class="std-badge" id="stdBtn">4.2.1</button>
+    <button class="lang-btn" id="langBtn">🇪🇸 Español</button>
+  </div>
+</header>
+
+<!-- Standard popup -->
+<div id="stdPopup" class="popup hidden">
+  <div class="popup-box">
+    <button class="popup-close" id="stdClose">✕</button>
+    <h3 id="stdTitle">Utah SEEd Standard 4.2.1</h3>
+    <p id="stdDesc">Learn how the speed of an object is connected to how much energy it has!</p>
+  </div>
+</div>
+
+<main>
+  <div class="sim-row">
+
+    <!-- LEFT: Lane -->
+    <div class="lane-col">
+      <canvas id="laneCanvas" width="340" height="460"></canvas>
+
+      <!-- Ball controls -->
+      <div class="controls-box">
+        <label class="ctrl-label" id="sliderLabel">How hard do you roll the ball?</label>
+        <div class="speed-labels">
+          <span>🐌</span><span>🐢</span><span>🚶</span><span>🏃</span><span>🚀</span>
+        </div>
+        <input type="range" id="speedSlider" min="1" max="5" value="3" step="1">
+        <div class="speed-name" id="speedName">Medium</div>
+        <div class="btn-row">
+          <button class="roll-btn" id="rollBtn">🎳 ROLL!</button>
+          <button class="reset-btn" id="resetBtn">Reset Pins</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: Dashboard -->
+    <div class="dash-col">
+      <div class="dash-title" id="dashTitle">⚡ Energy Dashboard</div>
+
+      <div class="meters-row">
+        <!-- Speed meter -->
+        <div class="meter-wrap">
+          <div class="meter-label" id="meterSpeedLbl">Speed</div>
+          <div class="meter-bar-bg">
+            <div class="meter-bar" id="speedBar"></div>
+          </div>
+          <div class="meter-qual" id="speedQual">Medium</div>
+        </div>
+        <!-- Energy meter -->
+        <div class="meter-wrap">
+          <div class="meter-label" id="meterEnergyLbl">Energy</div>
+          <div class="meter-bar-bg">
+            <div class="meter-bar" id="energyBar"></div>
+          </div>
+          <div class="meter-qual" id="energyQual">Medium</div>
+        </div>
+      </div>
+
+      <!-- Results -->
+      <div class="results-box" id="resultsBox">
+        <div class="results-title" id="resultsPinsLbl" style="display:none"></div>
+        <div class="results-desc" id="resultsDesc"></div>
+      </div>
+
+      <!-- Score table -->
+      <div class="score-wrap">
+        <table class="score-table" id="scoreTable">
+          <thead>
+            <tr>
+              <th id="thRoll">#</th>
+              <th id="thSpeed">Speed</th>
+              <th id="thPins">Pins</th>
+              <th id="thEnergy">Energy</th>
+            </tr>
+          </thead>
+          <tbody id="scoreBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- What Do You Notice -->
+  <details class="notice-section">
+    <summary id="noticeTitle">💡 What Do You Notice?</summary>
+    <ul id="noticeList">
+      <li>Roll the ball at every speed. What pattern do you see between speed and pins knocked down?</li>
+      <li>Which speed knocked down the most pins? Why?</li>
+      <li>Does a faster ball have MORE or LESS energy than a slow ball?</li>
+    </ul>
+  </details>
+
+  <!-- Vocabulary -->
+  <details class="vocab-section">
+    <summary id="vocabTitle">📖 Vocabulary</summary>
+    <dl id="vocabList">
+      <dt id="vEnergy">Energy</dt>
+      <dd id="vEnergyDef">What makes things move, crash, and change. A moving object has energy!</dd>
+      <dt id="vSpeed">Speed</dt>
+      <dd id="vSpeedDef">How fast something is moving.</dd>
+      <dt id="vCause">Cause and Effect</dt>
+      <dd id="vCauseDef">When one thing (the cause) makes another thing happen (the effect). Kicking a ball harder (cause) makes it go faster and farther (effect).</dd>
+    </dl>
+  </details>
+</main>
+
+<script src="app.js"></script>
+</body>
+</html>
