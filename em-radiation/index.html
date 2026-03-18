@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EM Radiation & Biological Effects</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="header">
+  <h1 id="pageTitle">☢️ Electromagnetic Radiation &amp; Biological Effects</h1>
+  <div class="std-badge" id="stdBadge">PHYS.4.3</div>
+  <button class="lang-btn" id="langBtn">🇪🇸 Español</button>
+</div>
+
+<div class="overlay" id="overlay"></div>
+<div class="info-popup" id="infoPopup">
+  <span class="close-btn" id="closePopup">✕</span>
+  <h3 id="stdPopupTitle">Utah SEEd Standard PHYS.4.3</h3>
+  <div id="stdPopupContent"><p>Evaluate information about the effects that different frequencies of electromagnetic radiation have when absorbed by biological materials.</p>
+  <p style="margin-top:8px">Emphasize that the energy of electromagnetic radiation is directly proportional to frequency and that the potential damage to living tissue from electromagnetic radiation depends on the energy of the radiation.</p></div>
+</div>
+
+<div class="main-content">
+
+  <!-- TOP: EM Spectrum Bar -->
+  <div class="spectrum-section">
+    <div class="region-labels" id="regionLabels"></div>
+    <div class="spectrum-bar-wrap">
+      <div class="spectrum-bar" id="spectrumBar">
+        <div class="slider-handle" id="sliderHandle"></div>
+      </div>
+    </div>
+    <div class="scale-row">
+      <span class="scale-left">10⁴ Hz</span>
+      <span class="scale-mid" id="freqScale">← Low Frequency &nbsp;&nbsp; High Frequency →</span>
+      <span class="scale-right">10²⁰ Hz</span>
+    </div>
+    <div class="scale-row wl-row">
+      <span class="scale-left">~10⁴ m</span>
+      <span class="scale-mid" id="wlScale">← Long Wavelength &nbsp;&nbsp; Short Wavelength →</span>
+      <span class="scale-right">~10⁻¹² m</span>
+    </div>
+    <div class="energy-arrow" id="energyArrow">← Lower Energy &nbsp;|&nbsp; Higher Energy →</div>
+  </div>
+
+  <!-- MIDDLE: Three panels -->
+  <div class="panels">
+
+    <!-- Left: Info panel -->
+    <div class="panel info-panel">
+      <div class="radiation-name" id="radName">Radio Waves</div>
+      <div class="info-row"><span class="info-label" id="freqLabel">Frequency:</span><span id="freqRange">3 kHz – 300 GHz</span></div>
+      <div class="info-row"><span class="info-label" id="wlLabel">Wavelength:</span><span id="wlRange">1 mm – 100 km</span></div>
+      <div class="source-box" id="sourceBox">
+        <div class="source-icon" id="sourceIcon">📻</div>
+        <div class="source-text" id="sourceText">Radio towers, broadcasting</div>
+      </div>
+      <div class="ionizing-badge" id="ionizingBadge">Non-Ionizing</div>
+      <div class="bio-effect" id="bioEffect">Passes through tissue with negligible energy transfer. No known direct biological damage at normal exposure levels.</div>
+    </div>
+
+    <!-- Center: Cell canvas -->
+    <div class="panel cell-panel">
+      <div class="panel-title" id="cellPanelTitle">Cell / Tissue View</div>
+      <canvas id="cellCanvas" width="320" height="260"></canvas>
+      <div class="cell-label" id="cellLabel">Human Cell</div>
+    </div>
+
+    <!-- Right: Meters -->
+    <div class="panel meters-panel">
+      <div class="meter-group">
+        <div class="meter-title" id="energyMeterTitle">Photon Energy</div>
+        <div class="meter-wrap">
+          <div class="meter-scale-labels" id="energyScaleLabels">
+            <span>Extreme</span>
+            <span>Very High</span>
+            <span>High</span>
+            <span>Medium</span>
+            <span>Low</span>
+          </div>
+          <div class="meter-bar-wrap">
+            <div class="ionizing-line" style="bottom:75%"><span class="ionizing-line-label" id="ionizingLineLabel">Ionizing ↑</span></div>
+            <div class="meter-bg energy-bg">
+              <div class="meter-fill" id="energyFill"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="meter-group">
+        <div class="meter-title" id="damageMeterTitle">Potential Tissue Damage</div>
+        <div class="meter-wrap">
+          <div class="meter-scale-labels damage-labels" id="damageScaleLabels">
+            <span>Dangerous</span>
+            <span>High Risk</span>
+            <span>Caution</span>
+            <span>Low Risk</span>
+            <span>Safe</span>
+          </div>
+          <div class="meter-bar-wrap">
+            <div class="ionizing-line" style="bottom:70%"></div>
+            <div class="meter-bg damage-bg">
+              <div class="meter-fill" id="damageFill"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- end panels -->
+
+  <!-- BOTTOM: Collapsibles -->
+  <div class="edu-section">
+    <div class="collapsible" id="vocabSec">
+      <div class="coll-header" onclick="toggleColl('vocabSec')"><span id="vocabHeader">📖 Key Vocabulary</span> <span class="arrow">▼</span></div>
+      <div class="coll-body" id="vocabBody"></div>
+    </div>
+    <div class="collapsible" id="conceptSec">
+      <div class="coll-header" onclick="toggleColl('conceptSec')"><span id="conceptHeader">💡 Key Concepts</span> <span class="arrow">▼</span></div>
+      <div class="coll-body" id="conceptBody"></div>
+    </div>
+  </div>
+
+</div><!-- end main-content -->
+
+<script src="app.js"></script>
+<script src="cell.js"></script>
+</body>
+</html>
