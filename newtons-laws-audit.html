@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<!--
+╔══════════════════════════════════════════════════════════════════════════╗
+║   ANSWER KEY — INTENTIONAL ACCESSIBILITY & INCLUSION PROBLEMS           ║
+║   Newton's Laws of Motion — Accessibility Audit Exercise                ║
+║   TEACHER USE ONLY — Do not share this file directly with students      ║
+╠══════════════════════════════════════════════════════════════════════════╣
+║                                                                          ║
+║  CATEGORY 1: VISUAL ACCESSIBILITY  (12 issues)                          ║
+║  ────────────────────────────────────────────────────────────────────── ║
+║  V1  LOW CONTRAST — GRAY ON WHITE                                        ║
+║      The "Who Was Isaac Newton?" intro paragraph uses color:#bbb on a   ║
+║      white background (~1.6:1 contrast ratio). WCAG AA requires 4.5:1   ║
+║      for normal text.                                                    ║
+║                                                                          ║
+║  V2  LOW CONTRAST — YELLOW ON LIGHT GREEN                                ║
+║      The "Fun Fact" box uses color:#f5f500 (yellow) on                  ║
+║      background:#a8e6a0 (light green). Contrast ratio ~1.3:1.           ║
+║                                                                          ║
+║  V3  LOW CONTRAST — RED ON DARK BROWN                                    ║
+║      The footer disclaimer uses color:#cc2200 on background:#3b1a08.    ║
+║      Contrast ratio ~2.8:1, fails WCAG AA.                              ║
+║                                                                          ║
+║  V4  COLOR-ONLY INFORMATION — QUIZ FEEDBACK                              ║
+║      After selecting a quiz answer, feedback is shown as a solid green  ║
+║      or red box with no text, icon, or pattern. Users who cannot        ║
+║      distinguish colors receive no feedback.                             ║
+║                                                                          ║
+║  V5  COLOR-ONLY INFORMATION — LAW COLOR LABELS                           ║
+║      The three laws are marked with colored dots (green/red/yellow)     ║
+║      with a "Color Key" legend. No text labels, icons, or patterns      ║
+║      differentiate them beyond color.                                    ║
+║                                                                          ║
+║  V6  RED-GREEN COLOR BLINDNESS UNFRIENDLY                                ║
+║      Law 1 has a green (#2d8a2d) left border and color dot; Law 2 has   ║
+║      a red (#c0392b) left border and dot. For protanopia/deuteranopia   ║
+║      users these appear nearly identical brownish-gray.                  ║
+║                                                                          ║
+║  V7  MISSING ALT TEXT                                                    ║
+║      <img src="newton-portrait.jpg"> has NO alt attribute at all.       ║
+║      Screen readers will announce the filename or skip it.              ║
+║                                                                          ║
+║  V8  USELESS ALT TEXT                                                    ║
+║      <img src="force-diagram.png" alt="picture1.jpg"> — alt text just   ║
+║      repeats the filename and conveys no useful information.            ║
+║                                                                          ║
+║  V9  TINY FONT SIZE                                                      ║
+║      The "Deeper Dive" section uses font-size: 10px throughout. WCAG    ║
+║      recommends a minimum of ~16px for body text. 10px is very hard     ║
+║      to read, especially for low-vision users.                          ║
+║                                                                          ║
+║  V10 CURSIVE / DECORATIVE FONT FOR IMPORTANT CONTENT                     ║
+║      The Law of Inertia explanation uses font-family:'Brush Script MT', ║
+║      cursive — a script/handwriting font that is significantly harder   ║
+║      to read than a standard font, especially for dyslexic users.       ║
+║                                                                          ║
+║  V11 FULLY JUSTIFIED TEXT IN NARROW COLUMN                               ║
+║      The "Historical Context" sidebar uses text-align:justify with      ║
+║      max-width:190px. This creates uneven word spacing ("rivers of      ║
+║      white space") that disrupts reading flow.                           ║
+║                                                                          ║
+║  V12 LIGHTWEIGHT ITALIC FONT FOR ENTIRE SECTION                          ║
+║      The "Newton's Legacy" section uses font-weight:300;                ║
+║      font-style:italic throughout — thin, slanted text is significantly ║
+║      harder to read for many users.                                      ║
+║                                                                          ║
+║  CATEGORY 2: ELL / LANGUAGE BARRIERS  (7 issues)                       ║
+║  ────────────────────────────────────────────────────────────────────── ║
+║  E1  IDIOMS AND SLANG                                                    ║
+║      "Hit it out of the park," "total game-changer," "basically just    ║
+║      chillin'," "keep on truckin'," and "forces are the name of the     ║
+║      game" are idioms that do not translate literally.                  ║
+║                                                                          ║
+║  E2  AMERICAN SPORTS ANALOGY (Football)                                  ║
+║      "Think of it like a quarterback throwing a Hail Mary pass" uses    ║
+║      an American football reference that is culturally specific and     ║
+║      unfamiliar to most international students.                          ║
+║                                                                          ║
+║  E3  SARCASM / IRONIC TONE                                               ║
+║      "Oh sure, everybody totally understands the concept of inertia     ║
+║      the very first time they hear the word. No problem at all."        ║
+║      Sarcasm can be misread as sincere by ELL students.                 ║
+║                                                                          ║
+║  E4  UNNECESSARILY COMPLEX RUN-ON SENTENCE WITH JARGON                  ║
+║      The second paragraph of the Law 2 explanation is a single,        ║
+║      multi-clause sentence (~120 words) packed with academic jargon     ║
+║      and subordinate clauses.                                            ║
+║                                                                          ║
+║  E5  UNDEFINED ACRONYMS                                                  ║
+║      "N1L," "N2L," "N3L," "AP exam," and "NB" appear in the page       ║
+║      without ever being defined or spelled out.                          ║
+║                                                                          ║
+║  E6  INCONSISTENT TERMINOLOGY                                            ║
+║      The second law section uses "net force," "resultant force,"        ║
+║      "total force," and "sum of forces" for the same concept with no   ║
+║      note that these terms are synonymous.                               ║
+║                                                                          ║
+║  E7  AMERICAN SPORTS ANALOGY (Baseball)                                  ║
+║      "It's kind of like hitting a home run — the harder you swing the   ║
+║      bat, the faster the ball accelerates" uses a baseball analogy      ║
+║      that is culturally specific.                                        ║
+║                                                                          ║
+║  CATEGORY 3: STRUCTURE & SEMANTICS  (10 issues)                         ║
+║  ────────────────────────────────────────────────────────────────────── ║
+║  S1  NO SEMANTIC HTML                                                    ║
+║      The entire page uses only <div> and <span>. No <h1>–<h6>, <p>,    ║
+║      <main>, <section>, <article>, <nav>, <ul>, <ol>, or <table>        ║
+║      elements are used anywhere.                                         ║
+║                                                                          ║
+║  S2  FAKE HEADINGS WITH BACKWARDS VISUAL HIERARCHY                       ║
+║      All headings are <div> elements styled with font-size. A visually  ║
+║      small "h3-style" heading ("Key Takeaway:") appears BEFORE a        ║
+║      visually larger "h2-style" heading ("Introduction") in the same    ║
+║      content block — backwards hierarchy with no actual heading         ║
+║      semantics for screen readers.                                       ║
+║                                                                          ║
+║  S3  FAKE TABLE USING DIVS                                               ║
+║      The Force/Mass/Acceleration data uses <div> elements styled with   ║
+║      CSS grid to look like a table. No <table>, <thead>, <th>, <tr>,    ║
+║      or <td> are used. Screen readers cannot associate column headers   ║
+║      with data cells.                                                    ║
+║                                                                          ║
+║  S4  VAGUE LINK TEXT                                                     ║
+║      Multiple links use non-descriptive text: "click here," "read       ║
+║      more," and "this link." Screen reader users navigating by links    ║
+║      hear these out of context and cannot tell where they go.           ║
+║                                                                          ║
+║  S5  COLOR-ONLY LINK                                                     ║
+║      One nav link has text-decoration:none and is only identifiable as  ║
+║      a link by its blue color. No underline, bold, or other visual cue. ║
+║      (All nav links have this problem, but the inline "click here"      ║
+║      links inside body text also lack underlines.)                       ║
+║                                                                          ║
+║  S6  NO SKIP NAVIGATION / NO LANDMARK ROLES / NO ARIA                   ║
+║      There is no skip-navigation link. No role="main", role="nav",      ║
+║      or other ARIA landmark roles exist. No aria-label,                 ║
+║      aria-describedby, or aria-live attributes anywhere on the page.    ║
+║                                                                          ║
+║  S7  ILLOGICAL DOM ORDER (CSS VISUAL REORDERING)                         ║
+║      In the HTML source, Law 3 appears FIRST, then Law 1, then Law 2.  ║
+║      CSS flexbox order property (order:1/2/3) makes them display as    ║
+║      Law 1, Law 2, Law 3 visually. Screen readers and keyboard users   ║
+║      encounter Law 3 content before Law 1.                              ║
+║                                                                          ║
+║  S8  INACCESSIBLE QUIZ BUTTONS                                           ║
+║      Quiz answer choices are <div> elements styled to look like         ║
+║      buttons. They have no role="button", no tabindex, and only         ║
+║      respond to onclick. Keyboard users cannot tab to or activate them. ║
+║      Screen readers do not identify them as interactive controls.       ║
+║                                                                          ║
+║  S9  AUTOPLAYING BLINKING ANIMATION                                      ║
+║      The definition of "force" blinks continuously using a CSS          ║
+║      @keyframes animation with no pause/stop control. This can be       ║
+║      problematic for users with epilepsy, vestibular disorders, or      ║
+║      attention difficulties. Violates WCAG 2.3.1.                       ║
+║                                                                          ║
+║  S10 NO lang ATTRIBUTE ON <html> ELEMENT                                 ║
+║      The <html> element has no lang attribute. Screen readers will use  ║
+║      their default language instead of switching to English, causing    ║
+║      potential mispronunciation. Translation tools may fail to          ║
+║      auto-detect the page language.                                      ║
+║                                                                          ║
+║  TOTAL DOCUMENTED PROBLEMS: 29 (12 visual + 7 ELL + 10 structural)     ║
+╚══════════════════════════════════════════════════════════════════════════╝
+-->
+<html>
+<!-- S10: No lang attribute on <html> element -->
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Newton's Laws of Motion - 9th Grade Science</title>
+<style>
+
+  /* === RESET & BASE === */
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: Arial, sans-serif;
+    background: #f4f4f4;
+    color: #222;
+  }
+
+  /* === HEADER — busy repeating pattern background (V-bonus) === */
+  .page-header {
+    background-color: #1a3a5c;
+    background-image:
+      repeating-linear-gradient(45deg, rgba(255,255,255,0.06) 0px, rgba(255,255,255,0.06) 2px, transparent 2px, transparent 14px),
+      repeating-linear-gradient(-45deg, rgba(255,255,255,0.04) 0px, rgba(255,255,255,0.04) 2px, transparent 2px, transparent 14px);
+    padding: 28px 24px 22px;
+    text-align: center;
+  }
+  .page-header .main-title {
+    font-size: 30px; font-weight: 900; color: #ffffff; letter-spacing: 1px;
+  }
+  .page-header .sub-title {
+    font-size: 14px; color: #88aacc; margin-top: 6px;
+    /* low contrast against header background — bonus visual issue */
+  }
+
+  /* === NAV BAR — S4 vague links, S5 color-only link === */
+  .nav-bar {
+    background: #112233;
+    padding: 10px 24px;
+    display: flex;
+    gap: 24px;
+    align-items: center;
+  }
+  .nav-bar a {
+    color: #5599ff;
+    text-decoration: none;   /* S5: only color distinguishes these as links */
+    font-size: 14px;
+    font-weight: 500;
+  }
+  .nav-bar a:hover { text-decoration: underline; }
+
+  /* === CONTENT WRAPPER === */
+  .content-wrapper {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 24px 20px 40px;
+  }
+
+  /* === FAKE HEADING STYLES — S1, S2 === */
+  .fake-h1 { font-size: 26px; font-weight: 800; color: #111; margin: 24px 0 10px; }
+  .fake-h2 { font-size: 20px; font-weight: 700; color: #222; margin: 20px 0 8px; border-bottom: 2px solid #ddd; padding-bottom: 4px; }
+  .fake-h3 { font-size: 14px; font-weight: 700; color: #555; margin: 10px 0 6px; }
+  .para { margin: 10px 0; line-height: 1.65; font-size: 15px; }
+
+  /* === V1: LOW CONTRAST — gray on white === */
+  .low-contrast-gray {
+    color: #bbb;
+    background: #ffffff;
+    padding: 12px;
+    border-radius: 4px;
+    line-height: 1.7;
+    font-size: 15px;
+  }
+
+  /* === V2: LOW CONTRAST — yellow on light green === */
+  .fun-fact-box {
+    color: #f5f500;
+    background: #a8e6a0;
+    padding: 12px 16px;
+    margin: 16px 0;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: bold;
+  }
+
+  /* === V3: LOW CONTRAST — red on dark brown (footer) === */
+  .footer-section {
+    color: #cc2200;
+    background: #3b1a08;
+    padding: 14px 20px;
+    font-size: 13px;
+    margin-top: 30px;
+    line-height: 1.6;
+  }
+  .footer-section a { color: #ff9977; text-decoration: none; }
+
+  /* === V10: CURSIVE/SCRIPT FONT for Law 1 explanation === */
+  .cursive-para {
+    font-family: 'Brush Script MT', 'URW Chancery L', cursive;
+    font-size: 1.15em;
+    line-height: 1.7;
+    margin: 10px 0;
+  }
+
+  /* === V12: LIGHTWEIGHT ITALIC for Legacy section === */
+  .legacy-text {
+    font-weight: 300;
+    font-style: italic;
+    line-height: 1.8;
+    font-size: 15px;
+    margin: 10px 0;
+  }
+
+  /* === V9: TINY FONT for Deeper Dive section === */
+  .tiny-text {
+    font-size: 10px;
+    line-height: 1.55;
+    color: #333;
+  }
+
+  /* === V11: JUSTIFIED NARROW TEXT for Historical Sidebar === */
+  .historical-sidebar {
+    float: right;
+    max-width: 195px;
+    background: #ececec;
+    border: 1px solid #ccc;
+    padding: 12px;
+    margin: 0 0 16px 20px;
+    font-size: 13px;
+    text-align: justify;   /* V11: creates uneven word spacing in narrow column */
+    line-height: 1.55;
+  }
+  .historical-sidebar strong { display: block; margin-bottom: 6px; font-size: 13px; }
+
+  /* === V5, V6: COLOR-CODED LAW DOTS === */
+  .law-dot {
+    display: inline-block;
+    width: 13px; height: 13px;
+    border-radius: 50%;
+    margin-right: 7px;
+    vertical-align: middle;
+  }
+  .dot-green  { background: #2d8a2d; }   /* V6: green for Law 1 */
+  .dot-red    { background: #c0392b; }   /* V6: red for Law 2 — near-identical to green for colorblind users */
+  .dot-yellow { background: #d4ac00; }
+
+  .color-key-box {
+    background: #fffde7;
+    border: 1px solid #e0d080;
+    padding: 10px 14px;
+    margin: 14px 0;
+    font-size: 13px;
+    border-radius: 4px;
+  }
+  .color-key-box .key-note {
+    font-size: 11px;
+    color: #999;
+    margin-top: 5px;
+  }
+
+  /* === LAWS CONTAINER — S7: CSS order reordering === */
+  .laws-container {
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+    margin: 20px 0;
+  }
+
+  .law-card {
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    padding: 18px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  }
+
+  /* V6: red/green side-by-side — bad for protanopia/deuteranopia */
+  .law-1-card { border-left: 7px solid #2d8a2d; order: 1; }   /* S7: DOM pos 2, visual pos 1 */
+  .law-2-card { border-left: 7px solid #c0392b; order: 2; }   /* S7: DOM pos 3, visual pos 2 */
+  .law-3-card { border-left: 7px solid #d4ac00; order: 3; }   /* S7: DOM pos 1 (FIRST!), visual pos 3 */
+
+  .law-statement {
+    background: #f7f7f7;
+    border-left: 4px solid #999;
+    padding: 10px 14px;
+    font-style: italic;
+    margin: 10px 0;
+    font-size: 15px;
+    line-height: 1.6;
+  }
+  .law-1-card .law-statement { background: #eaf5ea; border-color: #2d8a2d; }
+  .law-2-card .law-statement { background: #fdecea; border-color: #c0392b; }
+  .law-3-card .law-statement { background: #fdf9e3; border-color: #d4ac00; }
+
+  .examples-list { padding-left: 18px; margin: 8px 0; }
+  .examples-list .ex-item { margin: 5px 0; font-size: 14px; line-height: 1.55; }
+  .ex-item::before { content: "• "; }
+
+  /* === S9: BLINKING ANIMATION for force definition === */
+  @keyframes blink {
+    0%, 49% { opacity: 1; }
+    50%, 100% { opacity: 0; }
+  }
+  .blink-definition {
+    display: inline-block;
+    animation: blink 1.1s step-start infinite;  /* S9: autoplaying, no pause control */
+    background: #fffacd;
+    border: 2px solid #ccaa00;
+    padding: 7px 14px;
+    border-radius: 4px;
+    font-size: 15px;
+    font-weight: bold;
+    margin: 12px 0;
+  }
+
+  /* === S3: FAKE TABLE using CSS Grid === */
+  .fake-table-container { margin: 16px 0; overflow-x: auto; }
+  .fake-table {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1.4fr 1fr;
+    border: 1px solid #aaa;
+    min-width: 480px;
+  }
+  .fake-table-header {
+    background: #2c3e50;
+    color: #fff;
+    padding: 9px 10px;
+    font-size: 13px;
+    font-weight: bold;
+    border: 1px solid #506;
+  }
+  .fake-table-cell {
+    padding: 8px 10px;
+    border: 1px solid #ddd;
+    font-size: 13px;
+    background: #fff;
+  }
+  .fake-table-cell.alt { background: #f5f5f5; }
+
+  /* === S8: FAKE QUIZ BUTTONS (div elements) === */
+  .quiz-section {
+    background: #f0f4fa;
+    border: 1px solid #ccd;
+    border-radius: 8px;
+    padding: 20px;
+    margin: 24px 0;
+  }
+  .quiz-question { margin-bottom: 24px; }
+  .quiz-q-text { font-size: 15px; font-weight: 600; margin-bottom: 10px; color: #222; }
+  .choices-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+
+  /* S8: looks like a button, but: no role="button", no tabindex, keyboard-inaccessible */
+  .quiz-choice {
+    background: #2a68c4;
+    color: #fff;
+    padding: 8px 18px;
+    border-radius: 5px;
+    font-size: 14px;
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.15s;
+  }
+  .quiz-choice:hover { background: #1d4fa0; }
+
+  /* V4: color-only feedback — just a colored rectangle, no text, no icon */
+  .quiz-feedback {
+    display: none;
+    width: 36px;
+    height: 22px;
+    border-radius: 4px;
+    margin-top: 8px;
+  }
+  .feedback-correct { background: #43a047; display: block; }
+  .feedback-wrong   { background: #e53935; display: block; }
+
+  /* inline links inside body text */
+  .body-link { color: #1a60cc; text-decoration: none; }  /* S5: no underline — color only */
+  .body-link:hover { text-decoration: underline; }
+
+  .clearfix::after { content: ''; display: table; clear: both; }
+
+  /* laws intro banner — busy striped background */
+  .laws-intro-banner {
+    background-color: #deeeff;
+    background-image: repeating-linear-gradient(
+      0deg, transparent, transparent 9px,
+      rgba(100,140,200,0.15) 9px, rgba(100,140,200,0.15) 10px
+    );
+    padding: 14px 16px;
+    margin: 14px 0;
+    border-radius: 4px;
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  /* images */
+  .inline-img {
+    border: 2px solid #aaa;
+    display: block;
+    background: #ccc;
+    margin: 12px 0;
+  }
+
+</style>
+</head>
+<body>
+<!-- S6: No skip-navigation link, no landmark roles, no ARIA attributes anywhere -->
+
+<!-- ── PAGE HEADER ── -->
+<div class="page-header">
+  <div class="main-title">Newton's Three Laws of Motion</div>
+  <div class="sub-title">9th Grade Physical Science &nbsp;|&nbsp; Classical Mechanics Unit</div>
+</div>
+
+<!-- ── NAVIGATION — S4: vague link text; S5: color-only links (no underline) ── -->
+<div class="nav-bar">
+  <a href="#law1section">click here</a>
+  <a href="#law2section">read more</a>
+  <a href="#law3section">this link</a>
+  <a href="#tableSection">data table</a>
+  <a href="#quizSection">quiz</a>
+</div>
+
+<div class="content-wrapper">
+
+  <!-- S2: "Key Takeaway" fake-h3 appears VISUALLY BEFORE the fake-h2 "Introduction" — backwards hierarchy -->
+  <div class="fake-h3" style="margin-top:18px;">Key Takeaway: Forces make things move (or stop moving).</div>
+  <div class="fake-h2">Introduction: Who Was Isaac Newton?</div>
+
+  <!-- V7: img with NO alt attribute at all -->
+  <img src="newton-portrait.jpg" class="inline-img" style="float:left; width:115px; height:145px; margin-right:16px; margin-bottom:8px;">
+
+  <!-- V1: LOW CONTRAST — light gray (#bbb) on white background -->
+  <div class="low-contrast-gray">
+    Isaac Newton (1643–1727) was an English mathematician, physicist, and astronomer widely considered one of the most influential scientists of all time. In 1687 he published his landmark work, <em>Philosophiæ Naturalis Principia Mathematica</em>, which laid the entire foundation of classical mechanics. His three laws of motion describe how objects respond to forces and have remained the backbone of physics education for more than three centuries. In addition to his laws of motion, Newton also formulated the law of universal gravitation, co-invented calculus, and advanced the study of optics. His work unified terrestrial and celestial mechanics, showing that the same force governing a falling apple also keeps the Moon in orbit.
+  </div>
+
+  <div style="clear:both; margin-bottom:8px;"></div>
+
+  <!-- V2: LOW CONTRAST — yellow text on light green background -->
+  <div class="fun-fact-box">
+    FUN FACT: Newton reportedly watched an apple fall from a tree, which sparked his thinking about gravity. He also invented calculus AND the reflecting telescope. Overachiever much?
+  </div>
+
+  <!-- E3: SARCASM — can be misread as sincere by ELL/literal thinkers -->
+  <div class="para" style="font-style:italic; color:#556; font-size:14px; margin-bottom:4px;">
+    Oh sure, everybody totally understands the concept of inertia the very first time they hear the word. No problem at all. Totally crystal clear. Moving on.
+  </div>
+
+  <!-- ── LAWS INTRO ── -->
+  <div class="fake-h2" style="margin-top:22px;">What Are Newton's Three Laws?</div>
+
+  <!-- Historical sidebar — V11: narrow justified text -->
+  <div class="historical-sidebar">
+    <strong>Historical Context</strong>
+    Newton developed his laws of motion while working at Cambridge University. When the Great Plague of 1665 forced the university to close, Newton retreated to his family estate in Woolsthorpe, Lincolnshire. During this period of forced isolation he made his greatest discoveries, including the foundations of calculus, optics, and the laws of motion and gravitation. The three laws were formally published in the <em>Principia Mathematica</em> in 1687 and were immediately recognized as a revolution in scientific thinking.
+  </div>
+
+  <!-- E1: IDIOMS/SLANG -->
+  <div class="para">
+    Forces are the name of the game in physics. Without understanding what forces do, you literally cannot explain anything that moves — or anything that stays still. Newton really hit it out of the park when he came up with these three laws, and they've been a total game-changer for science and engineering ever since.
+  </div>
+
+  <!-- S9: BLINKING ANIMATION for important definition — no pause/stop control -->
+  <div class="blink-definition">
+    FORCE: a push or pull acting on an object, measured in Newtons (N)
+  </div>
+
+  <!-- V5: COLOR-ONLY law key — no text labels, only colored dots differentiate the laws -->
+  <div class="color-key-box clearfix">
+    <strong>Law Color Key</strong> — each law section is marked with a colored dot below.<br>
+    <div style="margin-top:7px; line-height:2;">
+      <span class="law-dot dot-green"></span>Law 1 &nbsp;&nbsp;&nbsp;
+      <span class="law-dot dot-red"></span>Law 2 &nbsp;&nbsp;&nbsp;
+      <span class="law-dot dot-yellow"></span>Law 3
+    </div>
+    <div class="key-note">(Laws coded in green are foundational; laws coded in red involve calculations.)</div>
+  </div>
+
+  <div class="laws-intro-banner">
+    Newton's three laws work together as a system. The first law defines when motion changes. The second law explains <em>how much</em> it changes. The third law explains what always happens between interacting objects. <a href="#" class="body-link">click here</a> for a printable summary.
+  </div>
+
+  <div class="clearfix"></div>
+
+  <!-- ══════════════════════════════════════════════════════
+       THREE LAWS — S7: DOM ORDER IS 3 → 1 → 2
+       CSS flexbox order property makes visual order 1 → 2 → 3
+       Screen readers and keyboard users hit Law 3 content FIRST
+       ══════════════════════════════════════════════════════ -->
+  <div class="laws-container">
+
+    <!-- ┌─ DOM POSITION 1 — LAW 3 (CSS order:3 → appears THIRD visually) ─┐ -->
+    <div class="law-card law-3-card" id="law3section">
+      <div class="fake-h2">
+        <span class="law-dot dot-yellow"></span>
+        Newton's Third Law: Action and Reaction
+      </div>
+      <div class="law-statement">
+        <strong>Official Statement:</strong> For every action, there is an equal and opposite reaction. When object A exerts a force on object B, object B simultaneously exerts a force on object A that is equal in magnitude and opposite in direction.
+      </div>
+      <div class="para">
+        This law is one of the most elegant in all of physics. Every single force in the universe comes in a pair. You cannot push on something without it pushing back on you with exactly the same strength. No exceptions.
+      </div>
+      <div class="para">
+        When you push against a wall, the wall pushes back on your hand with the same force. When a rocket fires its engines, it pushes exhaust gases downward, and those gases push the rocket upward with equal force — this is how rockets work in the vacuum of space where there is no ground or air to push against.
+      </div>
+      <div class="fake-h3" style="margin-top:14px;">Everyday Examples:</div>
+      <div class="examples-list">
+        <div class="ex-item">Swimming: you push water backward with your hands; the water pushes you forward.</div>
+        <div class="ex-item">A gun firing: the bullet is pushed forward; the gun recoils backward with equal force.</div>
+        <div class="ex-item">Jumping: you push down on the Earth; the Earth pushes you upward.</div>
+        <div class="ex-item">A bird flying: wings push air downward; air pushes the bird upward.</div>
+      </div>
+      <div class="fake-h3" style="margin-top:12px;">Common Misconception</div>
+      <div class="para">
+        Action-reaction forces act on <em>different objects</em> — they never cancel each other out. The force your foot exerts on the floor and the force the floor exerts on your foot are an action-reaction pair, but they act on different objects (the floor and you). Forces only cancel when they act on the <em>same</em> object.
+      </div>
+    </div>
+    <!-- └─ END LAW 3 ─┘ -->
+
+    <!-- ┌─ DOM POSITION 2 — LAW 1 (CSS order:1 → appears FIRST visually) ─┐ -->
+    <div class="law-card law-1-card" id="law1section">
+      <div class="fake-h2">
+        <span class="law-dot dot-green"></span>
+        Newton's First Law: The Law of Inertia
+      </div>
+      <div class="law-statement">
+        <strong>Official Statement:</strong> An object at rest stays at rest, and an object in motion stays in motion at constant velocity, unless acted upon by a net external force.
+      </div>
+
+      <!-- V10: CURSIVE FONT for important content — hard to read -->
+      <div class="cursive-para">
+        Objects at rest are basically just chillin' — they have zero desire to start moving on their own. Objects that are already moving? They'll keep on truckin' forever in a straight line unless something acts on them to change that. This stubborn tendency to resist any change in motion is what scientists call inertia. The more mass an object has, the more inertia it has, and the harder it is to change its motion.
+      </div>
+
+      <div class="para">
+        Think about sitting in a car when it suddenly brakes. Your body lurches forward — that's inertia in action. Your body wanted to keep moving at the car's original speed even though the car stopped. This is precisely why seatbelts exist and why they save lives.
+      </div>
+
+      <div class="fake-h3" style="margin-top:14px;">Examples of the First Law:</div>
+      <div class="examples-list">
+        <div class="ex-item">A soccer ball on a field stays still until a player kicks it.</div>
+        <div class="ex-item">A hockey puck on ice keeps sliding because friction is very low.</div>
+        <div class="ex-item">An astronaut in space floats in a straight line at constant speed until a force acts on them.</div>
+        <div class="ex-item">Tablecloth trick: yank the tablecloth away quickly, and the dishes stay put (their inertia keeps them in place).</div>
+      </div>
+
+      <!-- E5: UNDEFINED ACRONYMS — N1L, AP, NB never defined -->
+      <div class="para" style="background:#f0f0ff; padding:9px 12px; border-radius:4px; font-size:13px; color:#445;">
+        <em>Per N1L: when all forces are balanced (net force = 0), there is no change in motion. This is the foundational concept for the AP exam unit on dynamics. NB: do not confuse balanced forces with zero forces — an object can have many forces acting on it and still have zero net force.</em>
+      </div>
+    </div>
+    <!-- └─ END LAW 1 ─┘ -->
+
+    <!-- ┌─ DOM POSITION 3 — LAW 2 (CSS order:2 → appears SECOND visually) ─┐ -->
+    <div class="law-card law-2-card" id="law2section">
+      <div class="fake-h2">
+        <span class="law-dot dot-red"></span>
+        Newton's Second Law: Force, Mass &amp; Acceleration
+      </div>
+      <div class="law-statement">
+        <strong>Official Statement:</strong> The acceleration of an object is directly proportional to the net force acting on it and inversely proportional to its mass. Written as an equation: <strong>F = ma</strong>
+      </div>
+
+      <!-- E4: COMPLEX RUN-ON SENTENCE with academic jargon -->
+      <div class="para">
+        The second law, which is arguably the most mathematically significant of Newton's three laws and which forms the quantitative basis of virtually all dynamics problems you will encounter both in this course and in subsequent advanced coursework, establishes a precise and measurable proportional relationship between the resultant force vector acting upon a body of given inertial mass and the corresponding kinematic quantity of linear acceleration that the body will undergo as a direct consequence of the application of that unbalanced force, such that as the sum of forces increases while holding mass constant the acceleration increases proportionally, and conversely as the mass of the object increases while the total force is held constant the acceleration decreases in an inversely proportional manner, which explains fundamentally why it requires considerably greater force to impart the same acceleration to a more massive object than to a less massive one.
+      </div>
+
+      <!-- E1: IDIOMS and E7: BASEBALL ANALOGY -->
+      <div class="para">
+        This law is a total game-changer for engineering. It's kind of like hitting a home run in baseball — the harder you swing the bat (more force), the faster the ball accelerates off of it. Or think of it like a quarterback throwing a Hail Mary pass — more force behind the throw means more acceleration of the football.
+      </div>
+
+      <!-- E6: INCONSISTENT TERMINOLOGY — same concept, 4 different names -->
+      <div class="para">
+        In F = ma, the "F" represents the <strong>net force</strong> on the object — that is, all forces combined into one total value. Some textbooks call this the <em>resultant force</em>. Others write it as the <em>total force</em>. Your teacher may also refer to it as the <em>sum of forces</em>. All of these mean the same thing in the formula, but you have to use the combined force, not just one of many forces acting on the object.
+      </div>
+
+      <!-- E5: MORE UNDEFINED ACRONYMS -->
+      <div class="para" style="font-size:13px; background:#f8f8f8; border:1px solid #e0e0e0; padding:9px 12px; border-radius:4px; color:#555;">
+        Per N2L, F=ma is the single most-used equation on the AP exam. Don't confuse it with N3L. Remember: F is always the net force (not any individual force), m is measured in kg, and a is in m/s². Master this and you're golden.
+      </div>
+
+      <div class="fake-h3" style="margin-top:14px;">Examples of the Second Law:</div>
+      <div class="examples-list">
+        <div class="ex-item">Pushing a shopping cart: applying more force produces more acceleration; a heavier cart (more mass) produces less acceleration for the same push.</div>
+        <div class="ex-item">A rocket burning more fuel produces greater thrust force, causing greater acceleration.</div>
+        <div class="ex-item">A tennis ball and bowling ball hit with the same force: the tennis ball accelerates much more because it has far less mass.</div>
+        <div class="ex-item">Braking a car: the braking force causes deceleration (negative acceleration); a heavier truck requires more braking force to stop in the same distance as a lighter car.</div>
+      </div>
+    </div>
+    <!-- └─ END LAW 2 ─┘ -->
+
+  </div><!-- end .laws-container -->
+
+  <!-- ── DATA TABLE SECTION — S3: fake table with divs ── -->
+  <div class="fake-h2" id="tableSection" style="margin-top:28px;">F = ma: Example Calculations</div>
+
+  <!-- V8: USELESS ALT TEXT — alt="picture1.jpg" -->
+  <img src="force-diagram.png" alt="picture1.jpg" class="inline-img" style="width:200px; height:120px;">
+
+  <div class="para">
+    Using F = ma, we can find any one variable if we know the other two. Study the example scenarios in the table below. <a href="#" class="body-link">click here</a> for an interactive calculator.
+  </div>
+
+  <!-- S3: FAKE TABLE — divs with CSS grid, no <table>/<th>/<tr>/<td>, no header associations -->
+  <div class="fake-table-container">
+    <div class="fake-table">
+      <!-- "header row" — these are divs, not <th> elements -->
+      <div class="fake-table-header">Scenario</div>
+      <div class="fake-table-header">Mass (kg)</div>
+      <div class="fake-table-header">Acceleration (m/s²)</div>
+      <div class="fake-table-header">Net Force (N)</div>
+
+      <div class="fake-table-cell">Soccer ball kicked</div>
+      <div class="fake-table-cell">0.43</div>
+      <div class="fake-table-cell">50</div>
+      <div class="fake-table-cell">21.5</div>
+
+      <div class="fake-table-cell alt">Car braking on highway</div>
+      <div class="fake-table-cell alt">1,200</div>
+      <div class="fake-table-cell alt">−8</div>
+      <div class="fake-table-cell alt">−9,600</div>
+
+      <div class="fake-table-cell">Person jumping upward</div>
+      <div class="fake-table-cell">60</div>
+      <div class="fake-table-cell">4</div>
+      <div class="fake-table-cell">240</div>
+
+      <div class="fake-table-cell alt">Deep space probe</div>
+      <div class="fake-table-cell alt">500</div>
+      <div class="fake-table-cell alt">0.02</div>
+      <div class="fake-table-cell alt">10</div>
+
+      <div class="fake-table-cell">Feather falling (with air drag)</div>
+      <div class="fake-table-cell">0.005</div>
+      <div class="fake-table-cell">0.5</div>
+      <div class="fake-table-cell">0.0025</div>
+
+      <div class="fake-table-cell alt">Freight train braking</div>
+      <div class="fake-table-cell alt">80,000</div>
+      <div class="fake-table-cell alt">−0.5</div>
+      <div class="fake-table-cell alt">−40,000</div>
+    </div>
+  </div>
+  <div class="para" style="font-size:12px; color:#888; margin-top:5px;">
+    Negative acceleration = deceleration. <a href="#" class="body-link">read more</a> about vector quantities.
+  </div>
+
+  <!-- ── DEEPER DIVE — V9: 10px font ── -->
+  <div class="fake-h2" style="margin-top:28px;">Deeper Dive: The Mathematics Behind the Laws</div>
+  <div class="tiny-text para">
+    Newton's second law can be expressed more precisely using calculus as F = dp/dt, where p represents momentum (defined as mass times velocity, p = mv). For objects with constant mass this simplifies to F = m(dv/dt) = ma, which is the form used in introductory physics. The first law is mathematically a special case of the second: when net force F = 0, then ma = 0, and since mass m must be positive, acceleration a must equal zero — meaning constant velocity, which includes the special case of zero velocity (rest). The third law can be derived from the principle of conservation of momentum: in an isolated system with no external forces, total momentum is conserved. If object A exerts force F_AB on object B, then by conservation of momentum, object B must exert force F_BA on object A such that F_AB = −F_BA. Newton expressed this as his third law. Together, the three laws of motion plus Newton's law of universal gravitation (F = Gm₁m₂/r²) form the complete framework of classical mechanics, accurate for objects moving at speeds much less than the speed of light. At relativistic speeds Einstein's special relativity supersedes Newton's framework, and at quantum scales (subatomic particles) quantum mechanics applies instead. For all practical engineering problems at human scales, however, Newtonian mechanics remains fully accurate and in universal use today.
+  </div>
+
+  <!-- ── NEWTON'S LEGACY — V12: font-weight:300, font-style:italic ── -->
+  <div class="fake-h2" style="margin-top:28px;">Newton's Lasting Legacy</div>
+  <div class="legacy-text">
+    Isaac Newton's three laws of motion transformed humanity's understanding of the physical world and ignited the Scientific Revolution. Published in his 1687 masterwork, Philosophiæ Naturalis Principia Mathematica, these laws gave scientists and engineers a precise mathematical framework for predicting the motion of any object under any force. For over two centuries, Newtonian mechanics was considered the complete and final description of the physical universe. Even today, with the advent of quantum mechanics and general relativity, Newton's laws remain the standard toolkit for engineers, architects, and physicists working at human scales. Satellites are placed in orbit, bridges are built, aircraft are designed, and spacecraft are navigated to distant planets — all using principles that Newton first described in a farmhouse in Lincolnshire over 330 years ago. Beyond their practical applications, Newton's laws represent one of the greatest intellectual achievements in human history: the discovery that the universe obeys precise, universal, mathematical rules.
+  </div>
+
+  <!-- ── QUIZ SECTION — S8: div "buttons", no role/tabindex/keyboard support ── -->
+  <div class="fake-h2" id="quizSection" style="margin-top:30px;">Quick Check: Test Your Knowledge</div>
+
+  <div class="quiz-section">
+    <div class="para" style="font-size:13px; color:#556; margin-bottom:16px;">
+      Select the best answer for each question. Your response will be marked below each question.
+      <!-- V4: feedback is color-only (green/red block, no text, no icon) -->
+    </div>
+
+    <!-- Q1 -->
+    <div class="quiz-question">
+      <div class="quiz-q-text">1. A 10 kg object is pushed with a net force of 40 N. What is its acceleration?</div>
+      <!-- S8: <div> styled as button, no role="button", no tabindex, no keydown handler -->
+      <div class="choices-row">
+        <div class="quiz-choice" onclick="checkAnswer('q1fb', false)">400 m/s²</div>
+        <div class="quiz-choice" onclick="checkAnswer('q1fb', false)">0.25 m/s²</div>
+        <div class="quiz-choice" onclick="checkAnswer('q1fb', true)">4 m/s²</div>
+        <div class="quiz-choice" onclick="checkAnswer('q1fb', false)">40 m/s²</div>
+      </div>
+      <!-- V4: feedback is a colored box with NO text, NO icon — color only -->
+      <div class="quiz-feedback" id="q1fb"></div>
+    </div>
+
+    <!-- Q2 -->
+    <div class="quiz-question">
+      <div class="quiz-q-text">2. A passenger lurches forward when a bus suddenly stops. Which of Newton's laws best explains this?</div>
+      <div class="choices-row">
+        <div class="quiz-choice" onclick="checkAnswer('q2fb', true)">First Law — inertia</div>
+        <div class="quiz-choice" onclick="checkAnswer('q2fb', false)">Second Law — F = ma</div>
+        <div class="quiz-choice" onclick="checkAnswer('q2fb', false)">Third Law — action/reaction</div>
+      </div>
+      <div class="quiz-feedback" id="q2fb"></div>
+    </div>
+
+    <!-- Q3 -->
+    <div class="quiz-question">
+      <div class="quiz-q-text">3. A swimmer pushes backward against the water and moves forward. Which law explains this?</div>
+      <div class="choices-row">
+        <div class="quiz-choice" onclick="checkAnswer('q3fb', false)">First Law</div>
+        <div class="quiz-choice" onclick="checkAnswer('q3fb', false)">Second Law</div>
+        <div class="quiz-choice" onclick="checkAnswer('q3fb', true)">Third Law</div>
+      </div>
+      <div class="quiz-feedback" id="q3fb"></div>
+    </div>
+
+  </div><!-- end .quiz-section -->
+
+  <!-- ── FOOTER — V3: red on dark brown ── -->
+  <!-- S4: vague link text "this link" and "click here" -->
+  <div class="footer-section">
+    Content aligned with Utah SEEd 9th grade Physical Science standards.
+    For supplemental materials see <a href="#">this link</a> or <a href="#">click here</a> for the textbook chapter.
+    All physics content is based on classical Newtonian mechanics (ref: AP Physics 1 curriculum, N1L/N2L/N3L framework).
+    Educational use only. Content is accurate as of publication date.
+  </div>
+
+</div><!-- end .content-wrapper -->
+
+<script>
+// S8: Quiz logic uses only onclick — no keyboard (keydown/keyup) event handling
+// Keyboard users cannot tab to these div "buttons" and cannot activate them
+function checkAnswer(feedbackId, isCorrect) {
+  var el = document.getElementById(feedbackId);
+  // V4: purely color-based feedback — no text, no icon, just a colored rectangle
+  el.className = 'quiz-feedback ' + (isCorrect ? 'feedback-correct' : 'feedback-wrong');
+}
+</script>
+
+</body>
+</html>
