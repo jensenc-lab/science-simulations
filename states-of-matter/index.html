@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>States of Matter: Particle Lab</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <h1>🔬 States of Matter: Particle Lab</h1>
+    <button class="std-badge" id="stdBtn">6.2.2</button>
+  </div>
+</header>
+
+<div id="stdPopup" class="popup hidden">
+  <div class="popup-box">
+    <button class="popup-close" id="stdClose">✕</button>
+    <h3>Utah SEEd Standard 6.2.2</h3>
+    <p>Develop a model to predict the effect of heat energy on states of matter and density.</p>
+  </div>
+</div>
+
+<main>
+  <!-- Substance selector -->
+  <div class="sub-row">
+    <button class="sub-btn active" data-sub="water">
+      <span class="sub-icon">💧</span>
+      <span class="sub-name">Water (H₂O)</span>
+      <span class="sub-info">Melts: 0°C · Boils: 100°C</span>
+    </button>
+    <button class="sub-btn" data-sub="iron">
+      <span class="sub-icon">🪨</span>
+      <span class="sub-name">Iron (Fe)</span>
+      <span class="sub-info">Melts: 1538°C · Boils: 2862°C</span>
+    </button>
+    <button class="sub-btn" data-sub="oxygen">
+      <span class="sub-icon">🫧</span>
+      <span class="sub-name">Oxygen (O₂)</span>
+      <span class="sub-info">Melts: −218°C · Boils: −183°C</span>
+    </button>
+  </div>
+
+  <!-- Sim area -->
+  <div class="sim-row">
+
+    <!-- LEFT: canvas + slider -->
+    <div class="left-col">
+      <canvas id="pCanvas" width="400" height="320"></canvas>
+
+      <div class="slider-wrap">
+        <div class="temp-display" id="tempDisplay">−30°C</div>
+        <div class="slider-track-wrap">
+          <input type="range" id="tempSlider" min="-50" max="150" value="-30" step="1">
+          <div class="marker" id="mpMarker">
+            <div class="marker-tick"></div>
+            <div class="marker-lbl" id="mpMarkerLbl">0°C MP</div>
+          </div>
+          <div class="marker" id="bpMarker">
+            <div class="marker-tick"></div>
+            <div class="marker-lbl" id="bpMarkerLbl">100°C BP</div>
+          </div>
+        </div>
+        <div class="slider-ends">
+          <span id="sliderMin">−50°C</span>
+          <span class="slider-mid">❄ Cold — Hot 🔥</span>
+          <span id="sliderMax">150°C</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: dashboard -->
+    <div class="right-col">
+
+      <!-- Thermometer -->
+      <div class="panel thermo-panel">
+        <div class="panel-lbl">Temperature</div>
+        <div class="thermo-outer">
+          <div class="thermo-tube">
+            <div class="thermo-fill" id="thermoFill"></div>
+          </div>
+          <div class="thermo-marks-wrap" id="thermoMarksWrap">
+            <div class="thermo-mark" id="bpMark"><div class="tmark-line"></div><span id="bpMarkLbl">BP 100°C</span></div>
+            <div class="thermo-mark thermo-mark-mp" id="mpMark"><div class="tmark-line tmark-line-mp"></div><span id="mpMarkLbl">MP 0°C</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- State indicator -->
+      <div class="panel state-box" id="stateBox">
+        <span class="state-emoji" id="stateEmoji">❄️</span>
+        <span class="state-label" id="stateLabel">SOLID</span>
+      </div>
+
+      <!-- Density -->
+      <div class="panel density-panel">
+        <div class="panel-lbl">Density</div>
+        <div class="density-dots" id="densityDots">●●●●● HIGH</div>
+      </div>
+
+      <!-- Description -->
+      <div class="panel desc-panel" id="descBox">
+        Particles are locked in a fixed pattern. They vibrate in place but don't move around. Tightly packed = high density.
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Vocabulary -->
+  <details class="coll-section">
+    <summary>📖 Vocabulary</summary>
+    <dl>
+      <dt>States of Matter</dt><dd>The different forms matter can take — solid, liquid, or gas.</dd>
+      <dt>Solid</dt><dd>Particles locked in fixed positions; they vibrate in place.</dd>
+      <dt>Liquid</dt><dd>Particles flow freely but stay close together.</dd>
+      <dt>Gas</dt><dd>Particles spread out and fill any container.</dd>
+      <dt>Melting</dt><dd>Changing from solid → liquid by adding heat energy.</dd>
+      <dt>Freezing</dt><dd>Changing from liquid → solid by removing heat energy.</dd>
+      <dt>Evaporating</dt><dd>Changing from liquid → gas by adding heat energy.</dd>
+      <dt>Condensing</dt><dd>Changing from gas → liquid by removing heat energy.</dd>
+      <dt>Density</dt><dd>How closely packed particles are — solids are densest, gases least dense.</dd>
+      <dt>Phase Change</dt><dd>The process of matter changing from one state to another.</dd>
+      <dt>Heat Energy</dt><dd>Energy that causes particles to move faster.</dd>
+    </dl>
+  </details>
+
+  <!-- Key Concepts -->
+  <details class="coll-section">
+    <summary>💡 Key Concepts</summary>
+    <ul>
+      <li>Adding heat energy makes particles move faster.</li>
+      <li>Removing heat energy makes particles move slower.</li>
+      <li>Density depends on how closely packed the particles are.</li>
+      <li>Different substances change state at different temperatures.</li>
+    </ul>
+  </details>
+
+</main>
+
+<script src="app.js"></script>
+</body>
+</html>
