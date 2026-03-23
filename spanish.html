@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simulaciones Interactivas de Ciencias — Distrito Escolar de Ogden</title>
+  <link rel="stylesheet" href="spanish-style.css">
+</head>
+<body>
+
+  <!-- ===== HERO ===== -->
+  <header class="hero">
+    <div class="hero-particles" aria-hidden="true">
+      <div class="particle"></div>
+      <div class="particle"></div>
+      <div class="particle"></div>
+      <div class="particle"></div>
+      <div class="particle"></div>
+      <div class="particle"></div>
+      <div class="particle"></div>
+      <div class="particle"></div>
+    </div>
+    <div class="hero-content">
+      <p class="hero-district">Distrito Escolar de Ogden</p>
+      <h1 class="hero-title">Simulaciones Interactivas<br>de Ciencias</h1>
+      <p class="hero-sub">Alineadas con los Estándares Utah SEEd — Inmersión en Español</p>
+    </div>
+  </header>
+
+  <!-- ===== SIMULATIONS ===== -->
+  <main class="main">
+    <div class="container">
+
+      <!-- ── Ciencias de 4to Grado ── -->
+      <section class="sim-section">
+        <h2 class="section-title">Ciencias de 4to Grado</h2>
+        <div class="card-grid">
+
+          <!-- Explorador de Estructuras de Plantas -->
+          <div class="card">
+            <div class="card-icon">🌱</div>
+            <div class="card-badges">
+              <span class="std-badge">4.1.1</span>
+            </div>
+            <h3 class="card-title">Explorador de Estructuras de Plantas</h3>
+            <p class="card-desc">Explora cómo las raíces, tallos, hojas, flores y otras estructuras ayudan a las plantas a sobrevivir en los desiertos, bosques y humedales de Utah.</p>
+            <a href="plant-structures-es/" class="launch-btn">Iniciar Simulación</a>
+          </div>
+
+          <!-- Velocidad y Energía: Boliche -->
+          <div class="card">
+            <div class="card-icon">🎳</div>
+            <div class="card-badges">
+              <span class="std-badge">4.2.1</span>
+            </div>
+            <h3 class="card-title">Velocidad y Energía: Boliche</h3>
+            <p class="card-desc">Lanza una bola de boliche a diferentes velocidades y descubre la relación de causa y efecto entre la velocidad y la energía. ¡Las bolas más rápidas tienen más energía y derriban más bolos!</p>
+            <a href="speed-energy-es/" class="launch-btn">Iniciar Simulación</a>
+          </div>
+
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="footer">
+    <p>Creado para el Distrito Escolar de Ogden &nbsp;|&nbsp; Alineado con los Estándares Utah SEEd</p>
+    <p class="footer-year" id="year"></p>
+  </footer>
+
+  <script>
+    document.getElementById('year').textContent = '\u00a9 ' + new Date().getFullYear();
+  </script>
+
+</body>
+</html>
