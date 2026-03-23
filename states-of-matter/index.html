@@ -10,16 +10,17 @@
 
 <header>
   <div class="header-inner">
-    <h1>🔬 States of Matter: Particle Lab</h1>
+    <h1 id="pageTitle">🔬 States of Matter: Particle Lab</h1>
     <button class="std-badge" id="stdBtn">6.2.2</button>
+    <button class="lang-btn" id="langBtn">🇪🇸 Español</button>
   </div>
 </header>
 
 <div id="stdPopup" class="popup hidden">
   <div class="popup-box">
     <button class="popup-close" id="stdClose">✕</button>
-    <h3>Utah SEEd Standard 6.2.2</h3>
-    <p>Develop a model to predict the effect of heat energy on states of matter and density.</p>
+    <h3 id="stdPopupTitle">Utah SEEd Standard 6.2.2</h3>
+    <p id="stdPopupDesc">Develop a model to predict the effect of heat energy on states of matter and density.</p>
   </div>
 </div>
 
@@ -28,18 +29,18 @@
   <div class="sub-row">
     <button class="sub-btn active" data-sub="water">
       <span class="sub-icon">💧</span>
-      <span class="sub-name">Water (H₂O)</span>
-      <span class="sub-info">Melts: 0°C · Boils: 100°C</span>
+      <span class="sub-name" id="sub-name-water">Water (H₂O)</span>
+      <span class="sub-info" id="sub-info-water">Melts: 0°C · Boils: 100°C</span>
     </button>
     <button class="sub-btn" data-sub="iron">
       <span class="sub-icon">🪨</span>
-      <span class="sub-name">Iron (Fe)</span>
-      <span class="sub-info">Melts: 1538°C · Boils: 2862°C</span>
+      <span class="sub-name" id="sub-name-iron">Iron (Fe)</span>
+      <span class="sub-info" id="sub-info-iron">Melts: 1538°C · Boils: 2862°C</span>
     </button>
     <button class="sub-btn" data-sub="oxygen">
       <span class="sub-icon">🫧</span>
-      <span class="sub-name">Oxygen (O₂)</span>
-      <span class="sub-info">Melts: −218°C · Boils: −183°C</span>
+      <span class="sub-name" id="sub-name-oxygen">Oxygen (O₂)</span>
+      <span class="sub-info" id="sub-info-oxygen">Melts: −218°C · Boils: −183°C</span>
     </button>
   </div>
 
@@ -65,7 +66,7 @@
         </div>
         <div class="slider-ends">
           <span id="sliderMin">−50°C</span>
-          <span class="slider-mid">❄ Cold — Hot 🔥</span>
+          <span class="slider-mid" id="sliderMid">❄ Cold — Hot 🔥</span>
           <span id="sliderMax">150°C</span>
         </div>
       </div>
@@ -76,7 +77,7 @@
 
       <!-- Thermometer -->
       <div class="panel thermo-panel">
-        <div class="panel-lbl">Temperature</div>
+        <div class="panel-lbl" id="thermoLbl">Temperature</div>
         <div class="thermo-outer">
           <div class="thermo-tube">
             <div class="thermo-fill" id="thermoFill"></div>
@@ -96,7 +97,7 @@
 
       <!-- Density -->
       <div class="panel density-panel">
-        <div class="panel-lbl">Density</div>
+        <div class="panel-lbl" id="densityLbl">Density</div>
         <div class="density-dots" id="densityDots">●●●●● HIGH</div>
       </div>
 
@@ -110,8 +111,8 @@
 
   <!-- Vocabulary -->
   <details class="coll-section">
-    <summary>📖 Vocabulary</summary>
-    <dl>
+    <summary id="vocabTitle">📖 Vocabulary</summary>
+    <dl id="vocabList">
       <dt>States of Matter</dt><dd>The different forms matter can take — solid, liquid, or gas.</dd>
       <dt>Solid</dt><dd>Particles locked in fixed positions; they vibrate in place.</dd>
       <dt>Liquid</dt><dd>Particles flow freely but stay close together.</dd>
@@ -128,8 +129,8 @@
 
   <!-- Key Concepts -->
   <details class="coll-section">
-    <summary>💡 Key Concepts</summary>
-    <ul>
+    <summary id="conceptsTitle">💡 Key Concepts</summary>
+    <ul id="conceptsList">
       <li>Adding heat energy makes particles move faster.</li>
       <li>Removing heat energy makes particles move slower.</li>
       <li>Density depends on how closely packed the particles are.</li>
