@@ -18,6 +18,7 @@ const T = {
     vocab:[['States of Matter','The different forms matter can take — solid, liquid, or gas.'],['Solid','Particles locked in fixed positions; they vibrate in place.'],['Liquid','Particles flow freely but stay close together.'],['Gas','Particles spread out and fill any container.'],['Melting','Changing from solid → liquid by adding heat energy.'],['Freezing','Changing from liquid → solid by removing heat energy.'],['Evaporating','Changing from liquid → gas by adding heat energy.'],['Condensing','Changing from gas → liquid by removing heat energy.'],['Density','How closely packed particles are — solids are densest, gases least dense.'],['Phase Change','The process of matter changing from one state to another.'],['Heat Energy','Energy that causes particles to move faster.']],
     conceptsTitle:'💡 Key Concepts',
     concepts:['Adding heat energy makes particles move faster.','Removing heat energy makes particles move slower.','Density depends on how closely packed the particles are.','Different substances change state at different temperatures.'],
+    phaseDescs:{melting:'Adding heat energy! Particles gaining energy and breaking free from their fixed positions...',evaporating:'Adding more heat energy! Particles gaining enough energy to escape into the gas phase...',condensing:'Removing heat energy! Particles slowing down and settling together...',freezing:'Removing more heat energy! Particles locking into fixed positions...'},
     langBtn:'🇪🇸 Español'
   },
   es: {
@@ -27,14 +28,15 @@ const T = {
     subInfos:{water:'Funde: 0°C · Hierve: 100°C',iron:'Funde: 1538°C · Hierve: 2862°C',oxygen:'Funde: −218°C · Hierve: −183°C'},
     thermoLbl:'Temperatura', sliderMid:'❄ Frío — Caliente 🔥', mpAbbr:'PF', bpAbbr:'PE', densityLbl:'Densidad',
     stateCfg:{
-      solid: {emoji:'❄️', label:'SÓLIDO',  bg:'#1a4a7a', desc:'Las partículas están bloqueadas en un patrón fijo. Vibran en su lugar pero no se mueven. Muy compactas = densidad alta.', density:'●●●●● ALTA'},
-      liquid:{emoji:'💧', label:'LÍQUIDO', bg:'#0e6655', desc:'Las partículas se deslizan unas sobre otras. Se mantienen juntas pero sin posiciones fijas. Todavía bastante densas.',   density:'●●●○○ MEDIA'},
-      gas:   {emoji:'💨', label:'GAS',    bg:'#7d3c08', desc:'Las partículas vuelan en todas direcciones y llenan todo el recipiente. Grandes espacios entre partículas = densidad muy baja.', density:'●○○○○ BAJA'}
+      solid: {emoji:'❄️', label:'SÓLIDO',  bg:'#1a4a7a', desc:'Las partículas están fijas en un patrón ordenado. Vibran en su lugar pero no se mueven. Muy juntas = alta densidad.', density:'●●●●● ALTA'},
+      liquid:{emoji:'💧', label:'LÍQUIDO', bg:'#0e6655', desc:'Las partículas se deslizan libremente unas sobre otras. Se mantienen cerca pero no tienen un arreglo fijo. Todavía bastante densas.',   density:'●●●○○ MEDIA'},
+      gas:   {emoji:'💨', label:'GAS',    bg:'#7d3c08', desc:'Las partículas vuelan en todas direcciones y llenan todo el recipiente. Grandes espacios entre partículas = muy baja densidad.', density:'●○○○○ BAJA'}
     },
     vocabTitle:'📖 Vocabulario',
     vocab:[['Estados de la Materia','Las diferentes formas que puede tomar la materia — sólido, líquido o gas.'],['Sólido','Partículas bloqueadas en posiciones fijas; vibran en su lugar.'],['Líquido','Las partículas fluyen libremente pero se mantienen juntas.'],['Gas','Las partículas se dispersan y llenan cualquier recipiente.'],['Fusión','Cambio de sólido → líquido al agregar energía térmica.'],['Congelación','Cambio de líquido → sólido al quitar energía térmica.'],['Evaporación','Cambio de líquido → gas al agregar energía térmica.'],['Condensación','Cambio de gas → líquido al quitar energía térmica.'],['Densidad','Qué tan compactas están las partículas — los sólidos son más densos, los gases menos.'],['Cambio de Fase','El proceso por el cual la materia cambia de un estado a otro.'],['Energía Térmica','Energía que hace que las partículas se muevan más rápido.']],
     conceptsTitle:'💡 Conceptos Clave',
     concepts:['Agregar energía térmica hace que las partículas se muevan más rápido.','Quitar energía térmica hace que las partículas se muevan más lento.','La densidad depende de qué tan juntas están las partículas.','Diferentes sustancias cambian de estado a diferentes temperaturas.'],
+    phaseDescs:{melting:'¡Agregando energía térmica! Las partículas ganan energía y se liberan de sus posiciones fijas...',evaporating:'¡Agregando más energía térmica! Las partículas ganan suficiente energía para escapar a la fase gaseosa...',condensing:'¡Quitando energía térmica! Las partículas se desaceleran y se juntan...',freezing:'¡Quitando más energía térmica! Las partículas se fijan en posiciones ordenadas...'},
     langBtn:'🇺🇸 English'
   }
 };
@@ -49,7 +51,7 @@ const SUBS = {
 // ── State ─────────────────────────────────────────────────────────────────────
 const N=40, COLS=8, ROWS=5, SP=14, RAD=6;
 let lang='en', subKey='water', sub=SUBS.water, temp=sub.t0;
-let particles=[], state='solid', transPhase=1;
+let particles=[], state='solid', prevState='solid', transPhase=1;
 
 const cv=document.getElementById('pCanvas'), cx=cv.getContext('2d');
 const W=cv.width, H=cv.height;
@@ -87,7 +89,7 @@ function initParticles(){
 function updateParticles(){
   const ns=calcState();
   if(ns!==state){
-    state=ns; transPhase=0;
+    prevState=state; state=ns; transPhase=0;
     const spd=state==='gas'?3:state==='liquid'?1.4:0;
     particles.forEach(p=>{const a=Math.random()*Math.PI*2; p.vx=Math.cos(a)*spd; p.vy=Math.sin(a)*spd;});
   }
@@ -152,7 +154,8 @@ function updateUI(){
   document.getElementById('stateEmoji').textContent=cfg.emoji;
   document.getElementById('stateLabel').textContent=cfg.label;
   document.getElementById('densityDots').textContent=cfg.density;
-  document.getElementById('descBox').textContent=cfg.desc;
+  const tr=prevState[0]+'>'+state[0], phKey={'sl':'melting','lg':'evaporating','gl':'condensing','ls':'freezing'}[tr];
+  document.getElementById('descBox').textContent=transPhase<1&&phKey?t.phaseDescs[phKey]:cfg.desc;
 }
 
 // ── Substance/slider setup ────────────────────────────────────────────────────
@@ -176,6 +179,7 @@ function setupSlider(){
 function applyLang(){
   const t=T[lang];
   document.documentElement.lang=lang;
+  document.title=t.title;
   document.getElementById('pageTitle').textContent=t.title;
   document.getElementById('stdPopupTitle').textContent=t.stdTitle;
   document.getElementById('stdPopupDesc').textContent=t.stdDesc;
