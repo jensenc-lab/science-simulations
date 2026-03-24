@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🔬 Estados de la Materia: Laboratorio de Partículas</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <h1 id="pageTitle">🔬 Estados de la Materia: Laboratorio de Partículas</h1>
+    <button class="std-badge" id="stdBtn">6.2.2</button>
+  </div>
+</header>
+
+<div id="stdPopup" class="popup hidden">
+  <div class="popup-box">
+    <button class="popup-close" id="stdClose">✕</button>
+    <h3 id="stdPopupTitle">Estándar Utah SEEd 6.2.2</h3>
+    <p id="stdPopupDesc">Desarrolla un modelo para predecir el efecto de la energía térmica en los estados de la materia y la densidad.</p>
+  </div>
+</div>
+
+<main>
+  <!-- Selector de sustancia -->
+  <div class="sub-row">
+    <button class="sub-btn active" data-sub="water">
+      <span class="sub-icon">💧</span>
+      <span class="sub-name" id="sub-name-water">Agua (H₂O)</span>
+      <span class="sub-info" id="sub-info-water">Funde: 0°C · Hierve: 100°C</span>
+    </button>
+    <button class="sub-btn" data-sub="iron">
+      <span class="sub-icon">🪨</span>
+      <span class="sub-name" id="sub-name-iron">Hierro (Fe)</span>
+      <span class="sub-info" id="sub-info-iron">Funde: 1538°C · Hierve: 2862°C</span>
+    </button>
+    <button class="sub-btn" data-sub="oxygen">
+      <span class="sub-icon">🫧</span>
+      <span class="sub-name" id="sub-name-oxygen">Oxígeno (O₂)</span>
+      <span class="sub-info" id="sub-info-oxygen">Funde: −218°C · Hierve: −183°C</span>
+    </button>
+  </div>
+
+  <!-- Área de simulación -->
+  <div class="sim-row">
+
+    <!-- IZQUIERDA: canvas + control deslizante -->
+    <div class="left-col">
+      <canvas id="pCanvas" width="400" height="320"></canvas>
+
+      <div class="slider-wrap">
+        <div class="temp-display" id="tempDisplay">−30°C</div>
+        <div class="slider-track-wrap">
+          <input type="range" id="tempSlider" min="-50" max="150" value="-30" step="1">
+          <div class="marker" id="mpMarker">
+            <div class="marker-tick"></div>
+            <div class="marker-lbl" id="mpMarkerLbl">0°C PF</div>
+          </div>
+          <div class="marker" id="bpMarker">
+            <div class="marker-tick"></div>
+            <div class="marker-lbl" id="bpMarkerLbl">100°C PE</div>
+          </div>
+        </div>
+        <div class="slider-ends">
+          <span id="sliderMin">−50°C</span>
+          <span class="slider-mid" id="sliderMid">❄ Frío — Caliente 🔥</span>
+          <span id="sliderMax">150°C</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- DERECHA: panel -->
+    <div class="right-col">
+
+      <!-- Termómetro -->
+      <div class="panel thermo-panel">
+        <div class="panel-lbl" id="thermoLbl">Temperatura</div>
+        <div class="thermo-outer">
+          <div class="thermo-tube">
+            <div class="thermo-fill" id="thermoFill"></div>
+          </div>
+          <div class="thermo-marks-wrap" id="thermoMarksWrap">
+            <div class="thermo-mark" id="bpMark"><div class="tmark-line"></div><span id="bpMarkLbl">PE 100°C</span></div>
+            <div class="thermo-mark thermo-mark-mp" id="mpMark"><div class="tmark-line tmark-line-mp"></div><span id="mpMarkLbl">PF 0°C</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Indicador de estado -->
+      <div class="panel state-box" id="stateBox">
+        <span class="state-emoji" id="stateEmoji">❄️</span>
+        <span class="state-label" id="stateLabel">SÓLIDO</span>
+      </div>
+
+      <!-- Densidad -->
+      <div class="panel density-panel">
+        <div class="panel-lbl" id="densityLbl">Densidad</div>
+        <div class="density-dots" id="densityDots">●●●●● ALTA</div>
+      </div>
+
+      <!-- Descripción -->
+      <div class="panel desc-panel" id="descBox">
+        Las partículas están fijas en un patrón ordenado. Vibran en su lugar pero no se mueven. Muy juntas = alta densidad.
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Vocabulario -->
+  <details class="coll-section">
+    <summary id="vocabTitle">📖 Vocabulario</summary>
+    <dl id="vocabList">
+      <dt>Estados de la Materia</dt><dd>Las diferentes formas que puede tomar la materia — sólido, líquido o gas.</dd>
+      <dt>Sólido</dt><dd>Partículas bloqueadas en posiciones fijas; vibran en su lugar.</dd>
+      <dt>Líquido</dt><dd>Las partículas fluyen libremente pero se mantienen juntas.</dd>
+      <dt>Gas</dt><dd>Las partículas se dispersan y llenan cualquier recipiente.</dd>
+      <dt>Fusión</dt><dd>Cambio de sólido → líquido al agregar energía térmica.</dd>
+      <dt>Congelación</dt><dd>Cambio de líquido → sólido al quitar energía térmica.</dd>
+      <dt>Evaporación</dt><dd>Cambio de líquido → gas al agregar energía térmica.</dd>
+      <dt>Condensación</dt><dd>Cambio de gas → líquido al quitar energía térmica.</dd>
+      <dt>Densidad</dt><dd>Qué tan compactas están las partículas — los sólidos son más densos, los gases menos.</dd>
+      <dt>Cambio de Fase</dt><dd>El proceso por el cual la materia cambia de un estado a otro.</dd>
+      <dt>Energía Térmica</dt><dd>Energía que hace que las partículas se muevan más rápido.</dd>
+    </dl>
+  </details>
+
+  <!-- Conceptos Clave -->
+  <details class="coll-section">
+    <summary id="conceptsTitle">💡 Conceptos Clave</summary>
+    <ul id="conceptsList">
+      <li>Agregar energía térmica hace que las partículas se muevan más rápido.</li>
+      <li>Quitar energía térmica hace que las partículas se muevan más lento.</li>
+      <li>La densidad depende de qué tan juntas están las partículas.</li>
+      <li>Diferentes sustancias cambian de estado a diferentes temperaturas.</li>
+    </ul>
+  </details>
+
+</main>
+
+<script src="app.js"></script>
+</body>
+</html>

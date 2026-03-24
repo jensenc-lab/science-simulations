@@ -1,0 +1,116 @@
+/* Estados de la Materia: Laboratorio de Partículas — Utah SEEd 6.2.2 */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  background: #1a2a3a; color: #d4e8f8; min-height: 100vh;
+}
+
+/* ── Encabezado ── */
+header {
+  background: linear-gradient(135deg, #0d1f2d, #152840);
+  padding: 14px 24px; border-bottom: 3px solid #2ecc71;
+}
+.header-inner {
+  max-width: 1020px; margin: 0 auto;
+  display: flex; align-items: center; gap: 14px;
+}
+h1 { color: #fff; font-size: 1.5rem; font-weight: 800; text-shadow: 0 2px 6px rgba(0,0,0,0.4); }
+
+.std-badge {
+  background: rgba(46,204,113,0.18); color: #a8f0cb;
+  border: 2px solid rgba(46,204,113,0.4); border-radius: 20px;
+  padding: 4px 14px; font-size: 0.9rem; font-weight: 700;
+  cursor: pointer; transition: background 0.2s; white-space: nowrap;
+}
+.std-badge:hover { background: rgba(46,204,113,0.35); }
+
+/* ── Ventana emergente ── */
+.popup { position: fixed; inset: 0; background: rgba(0,0,0,0.65); display: flex; align-items: center; justify-content: center; z-index: 200; }
+.popup.hidden { display: none; }
+.popup-box { background: #1e3448; border-radius: 20px; padding: 32px 36px; max-width: 380px; text-align: center; position: relative; box-shadow: 0 8px 40px rgba(0,0,0,0.5); border: 1px solid #2a4a6a; }
+.popup-box h3 { color: #2ecc71; font-size: 1.15rem; margin-bottom: 10px; }
+.popup-box p  { font-size: 1rem; line-height: 1.6; color: #b0cce0; }
+.popup-close { position: absolute; top: 10px; right: 14px; background: none; border: none; font-size: 1.3rem; cursor: pointer; color: #6a8aaa; }
+
+/* ── Principal ── */
+main { max-width: 1020px; margin: 0 auto; padding: 14px 16px 32px; }
+
+/* ── Selector de sustancia ── */
+.sub-row { display: flex; gap: 10px; margin-bottom: 12px; }
+.sub-btn {
+  flex: 1; background: #1e3448; border: 2px solid #2a4a6a; border-radius: 14px;
+  padding: 11px 10px; cursor: pointer;
+  display: flex; flex-direction: column; align-items: center; gap: 3px;
+  transition: border-color 0.2s, background 0.2s; color: #d4e8f8; text-align: center;
+}
+.sub-btn:hover { border-color: #4a8aaa; background: #243d53; }
+.sub-btn.active { border-color: #2ecc71; background: #1a3d2e; box-shadow: 0 0 0 3px rgba(46,204,113,0.18); }
+.sub-icon { font-size: 1.5rem; }
+.sub-name { font-weight: 700; font-size: 0.9rem; }
+.sub-info { font-size: 0.68rem; color: #7aaac8; }
+
+/* ── Fila de simulación ── */
+.sim-row { display: flex; gap: 14px; align-items: flex-start; }
+.left-col { flex: 0 0 400px; }
+.right-col { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 10px; }
+
+/* ── Canvas ── */
+#pCanvas { display: block; border-radius: 14px; box-shadow: 0 4px 28px rgba(0,0,0,0.55); width: 100%; }
+
+/* ── Control deslizante ── */
+.slider-wrap { background: #1e3448; border-radius: 14px; padding: 14px 16px 10px; margin-top: 10px; border: 1px solid #2a4a6a; }
+.temp-display { text-align: center; font-size: 1.6rem; font-weight: 800; color: #f39c12; margin-bottom: 8px; font-variant-numeric: tabular-nums; }
+.slider-track-wrap { position: relative; padding-bottom: 26px; }
+#tempSlider { width: 100%; cursor: pointer; accent-color: #e74c3c; height: 6px; background: linear-gradient(to right, #3498db, #e74c3c); border-radius: 4px; appearance: none; -webkit-appearance: none; }
+#tempSlider::-webkit-slider-thumb { appearance: none; width: 18px; height: 18px; border-radius: 50%; background: #fff; border: 2px solid #e74c3c; cursor: pointer; box-shadow: 0 1px 4px rgba(0,0,0,0.4); }
+.marker { position: absolute; top: 10px; transform: translateX(-50%); pointer-events: none; }
+.marker-tick { width: 2px; height: 8px; background: #f9ca24; margin: 0 auto; }
+.marker-lbl { font-size: 0.62rem; color: #f9ca24; white-space: nowrap; text-align: center; margin-top: 2px; }
+.slider-ends { display: flex; justify-content: space-between; font-size: 0.7rem; color: #5a7a9a; margin-top: 2px; }
+.slider-mid { color: #4a6a8a; }
+
+/* ── Paneles derechos ── */
+.panel { background: #1e3448; border-radius: 14px; padding: 12px 14px; border: 1px solid #2a4a6a; }
+.panel-lbl { font-size: 0.78rem; font-weight: 700; color: #7aaac8; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.05em; }
+
+/* ── Termómetro ── */
+.thermo-outer { display: flex; gap: 0; height: 130px; position: relative; }
+.thermo-tube { width: 22px; flex-shrink: 0; background: #0d1822; border-radius: 11px; border: 2px solid #2a4a6a; overflow: hidden; display: flex; align-items: flex-end; }
+.thermo-fill { width: 100%; background: linear-gradient(to top, #e74c3c, #f9ca24); transition: height 0.35s ease; border-radius: 9px; }
+.thermo-marks-wrap { position: relative; flex: 1; height: 100%; }
+.thermo-mark { position: absolute; left: 0; right: 0; display: flex; align-items: center; gap: 4px; }
+.tmark-line { width: 12px; height: 2px; background: #e74c3c; flex-shrink: 0; }
+.tmark-line-mp { background: #f9ca24; }
+.thermo-mark span { font-size: 0.62rem; color: #e74c3c; white-space: nowrap; }
+.thermo-mark-mp span { color: #f9ca24; }
+
+/* ── Indicador de estado ── */
+.state-box { display: flex; align-items: center; gap: 12px; border-color: transparent; transition: background 0.5s ease; }
+.state-emoji { font-size: 2rem; }
+.state-label { font-size: 1.35rem; font-weight: 900; color: #fff; letter-spacing: 0.05em; }
+
+/* ── Densidad ── */
+.density-dots { font-size: 0.95rem; font-weight: 700; color: #2ecc71; letter-spacing: 0.08em; }
+
+/* ── Descripción ── */
+.desc-panel { font-size: 0.88rem; line-height: 1.58; color: #b0cce0; }
+
+/* ── Colapsables ── */
+.coll-section { background: #1e3448; border-radius: 14px; margin-top: 10px; border: 1px solid #2a4a6a; overflow: hidden; }
+.coll-section summary { padding: 12px 16px; font-weight: 700; font-size: 0.95rem; cursor: pointer; list-style: none; color: #2ecc71; }
+.coll-section summary::after { content: ' ▼'; font-size: 0.7rem; }
+.coll-section[open] summary::after { content: ' ▲'; }
+.coll-section dl { padding: 0 16px 14px; }
+.coll-section dt { font-weight: 700; color: #7aaac8; margin-top: 8px; font-size: 0.88rem; }
+.coll-section dd { margin-left: 12px; font-size: 0.83rem; color: #8aaac0; line-height: 1.5; }
+.coll-section ul { padding: 0 16px 14px 32px; }
+.coll-section li { margin-bottom: 6px; font-size: 0.88rem; color: #8aaac0; line-height: 1.5; }
+
+/* ── Responsivo ── */
+@media (max-width: 720px) {
+  .sim-row { flex-direction: column; }
+  .left-col { flex: none; width: 100%; }
+  h1 { font-size: 1.1rem; }
+  .sub-info { display: none; }
+}
