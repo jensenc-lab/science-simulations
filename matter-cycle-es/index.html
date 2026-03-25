@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ciclo de la Materia en el Desierto: ¡Sigue la Materia!</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <h1 id="pageTitle">🏜️ Ciclo de la Materia en el Desierto: ¡Sigue la Materia!</h1>
+    <button class="std-badge" id="stdBtn">5.3.3</button>
+  </div>
+</header>
+
+<div id="stdPopup" class="popup hidden">
+  <div class="popup-box">
+    <button class="popup-close" id="stdClose">✕</button>
+    <h3 id="stdPopupTitle">Estándar Utah SEEd 5.3.3</h3>
+    <p id="stdPopupDesc">¡Descubre cómo se mueve la materia entre plantas, animales, descomponedores y el medio ambiente en un ecosistema desértico de Utah!</p>
+  </div>
+</div>
+
+<main>
+
+  <!-- Food Chain Diagram -->
+  <div class="chain-wrap">
+    <div class="chain-steps" id="chainSteps"></div>
+    <button class="follow-btn" id="followBtn">▶ ¡Sigue la Materia!</button>
+    <div class="tracker-controls hidden" id="trackerControls">
+      <button class="tracker-nav-btn" id="prevBtn" disabled>← Anterior</button>
+      <span class="step-count" id="stepCount">Parada 1 de 7</span>
+      <button class="tracker-nav-btn" id="nextBtn">Siguiente →</button>
+    </div>
+  </div>
+
+  <!-- Desert Scene + Info Panel -->
+  <div class="sim-row">
+    <div class="canvas-col">
+      <canvas id="scene" width="580" height="360"></canvas>
+    </div>
+    <div class="info-col">
+      <div class="info-panel" id="infoPanel">
+        <div class="info-placeholder">👆 ¡Haz clic en un paso arriba o en un organismo en la escena para aprender cómo se mueve la materia!</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tracker completion message -->
+  <div class="tracker-msg hidden" id="trackerMsg"></div>
+
+  <!-- Vocabulary -->
+  <details class="coll-section">
+    <summary id="vocabSummary">📖 Vocabulario</summary>
+    <dl id="vocabList"></dl>
+  </details>
+
+  <!-- Notice prompts -->
+  <details class="coll-section">
+    <summary id="promptsSummary">💡 ¿Qué Observas?</summary>
+    <ul id="promptsList"></ul>
+  </details>
+
+</main>
+
+<script src="app.js"></script>
+<script src="tracker.js"></script>
+</body>
+</html>
