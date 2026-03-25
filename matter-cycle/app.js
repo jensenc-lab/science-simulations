@@ -78,24 +78,36 @@ function drawBg(){
   [[100,305,80,338],[100,305,118,342],[490,305,472,340],[490,305,508,336]].forEach(([x1,y1,x2,y2])=>{
     cx.beginPath(); cx.moveTo(x1,y1); cx.lineTo(x2,y2); cx.stroke();
   });
-  // Soil label
-  cx.fillStyle='rgba(255,210,140,0.6)'; cx.font='11px Segoe UI,sans-serif'; cx.textAlign='center';
-  cx.fillText('🦠  Bacteria & Decomposers at work in the soil', W/2, 346);
+  // Soil label — white pill on dark soil
+  cx.font='bold 11px Segoe UI,sans-serif'; cx.textAlign='center'; cx.textBaseline='middle';
+  const slbl='🦠  Bacteria & Decomposers at work in the soil';
+  const sw=cx.measureText(slbl).width;
+  cx.fillStyle='rgba(255,255,255,0.18)'; cx.fillRect(W/2-sw/2-8,333,sw+16,18);
+  cx.fillStyle='#ffe5a0'; cx.fillText(slbl,W/2,342);
 }
 
 function drawOrg(org, color){
   cx.save();
+  cx.globalAlpha=1;
   cx.textAlign='center'; cx.textBaseline='alphabetic';
+  // Active glow ring
   if(color){
-    cx.fillStyle=color+'44'; cx.shadowColor=color; cx.shadowBlur=22;
-    cx.beginPath(); cx.arc(org.x,org.y-20,30,0,Math.PI*2); cx.fill();
+    cx.fillStyle=color+'55'; cx.shadowColor=color; cx.shadowBlur=26;
+    cx.beginPath(); cx.arc(org.x,org.y-20,32,0,Math.PI*2); cx.fill();
     cx.shadowBlur=0;
   }
-  cx.font='36px "Segoe UI Emoji","Apple Color Emoji","Noto Color Emoji",serif';
+  // Emoji — reset fillStyle to opaque black so inherited state doesn't affect rendering
+  cx.fillStyle='#000';
+  cx.font='42px "Segoe UI Emoji","Apple Color Emoji","Noto Color Emoji",serif';
   cx.fillText(org.emoji,org.x,org.y);
+  // Label: white pill background + fully opaque dark text
   cx.font=(color?'bold ':'')+'11px Segoe UI,sans-serif';
-  cx.fillStyle=color||'rgba(25,10,0,0.58)';
-  cx.fillText(org.label,org.x,org.y+16);
+  cx.textBaseline='middle';
+  const tw=cx.measureText(org.label).width;
+  cx.fillStyle='rgba(255,255,255,0.95)';
+  cx.fillRect(org.x-tw/2-5, org.y+6, tw+10, 15);
+  cx.fillStyle=color||'#2c1205';
+  cx.fillText(org.label,org.x,org.y+14);
   cx.restore();
 }
 
