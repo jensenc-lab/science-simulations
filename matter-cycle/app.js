@@ -7,7 +7,7 @@ const T = {
     title:'🏜️ Desert Matter Cycle: Follow the Matter!',
     stdTitle:'Utah SEEd Standard 5.3.3',
     stdDesc:'Discover how matter moves between plants, animals, decomposers, and the environment in a Utah desert ecosystem!',
-    langBtn:'🇪🇸 Español', followPlay:'▶ Follow the Matter!', followStop:'⏹ Stop',
+    langBtn:'🇪🇸 Español', followPlay:'▶ Follow the Matter!', followPause:'⏸ Pause', followContinue:'▶ Continue', startOver:'↺ Start Over',
     matterIn:'Matter IN:', matterOut:'Matter OUT:',
     clearMsg:'👆 Click a step above or an organism in the scene to learn how matter moves!',
     stepLabels:['Air, Water\n& Soil','Producers\n(Plants)','Primary\nConsumer','Secondary\nConsumer','Dead\nMatter','Decomposers'],
@@ -30,7 +30,7 @@ const T = {
     title:'🏜️ Ciclo de la Materia en el Desierto: ¡Sigue la Materia!',
     stdTitle:'Estándar Utah SEEd 5.3.3',
     stdDesc:'¡Descubre cómo se mueve la materia entre plantas, animales, descomponedores y el medio ambiente en un ecosistema desértico de Utah!',
-    langBtn:'🇺🇸 English', followPlay:'▶ ¡Sigue la Materia!', followStop:'⏹ Detener',
+    langBtn:'🇺🇸 English', followPlay:'▶ ¡Sigue la Materia!', followPause:'⏸ Pausar', followContinue:'▶ Continuar', startOver:'↺ Empezar de Nuevo',
     matterIn:'Materia ENTRA:', matterOut:'Materia SALE:',
     clearMsg:'👆 ¡Haz clic en un paso arriba o en un organismo en la escena para aprender cómo se mueve la materia!',
     stepLabels:['Aire, Agua\ny Suelo','Productores\n(Plantas)','Consumidor\nPrimario','Consumidor\nSecundario','Materia\nMuerta','Descomponedores'],
@@ -190,7 +190,7 @@ function stopAuto(){
 function startAuto(){
   if(autoTimer){stopAuto(); return;}
   autoIdx=0; activateStep(0);
-  document.getElementById('followBtn').textContent=T[lang].followStop;
+  document.getElementById('followBtn').textContent=T[lang].followPause;
   document.getElementById('followBtn').classList.add('playing');
   autoTimer=setInterval(()=>{ autoIdx=(autoIdx+1)%STEPS.length; activateStep(autoIdx); },3000);
 }
@@ -217,7 +217,15 @@ function applyLang(){
   document.getElementById('stdPopupTitle').textContent=t.stdTitle;
   document.getElementById('stdPopupDesc').textContent=t.stdDesc;
   document.getElementById('langBtn').textContent=t.langBtn;
-  document.getElementById('followBtn').textContent=t.followPlay;
+  // Sync followBtn text with current tracker state (tracker.js exposes getTrkActiveState)
+  if(typeof getTrkActiveState==='function'){
+    const {active:a,userPaused:up}=getTrkActiveState();
+    document.getElementById('followBtn').textContent=a?(up?t.followContinue:t.followPause):t.followPlay;
+  } else {
+    document.getElementById('followBtn').textContent=t.followPlay;
+  }
+  const soBtn=document.getElementById('startOverBtn');
+  if(soBtn&&!soBtn.classList.contains('hidden')) soBtn.textContent=t.startOver;
   buildChain();
   document.getElementById('vocabSummary').textContent=t.vocabTitle;
   document.getElementById('vocabList').innerHTML=t.vocab.map(([dt,dd])=>`<dt>${dt}</dt><dd>${dd}</dd>`).join('');
