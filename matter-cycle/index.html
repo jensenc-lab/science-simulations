@@ -29,6 +29,11 @@
   <div class="chain-wrap">
     <div class="chain-steps" id="chainSteps"></div>
     <button class="follow-btn" id="followBtn">▶ Follow the Matter!</button>
+    <div class="tracker-controls hidden" id="trackerControls">
+      <button class="tracker-nav-btn" id="prevBtn" disabled>← Previous</button>
+      <span class="step-count" id="stepCount">Stop 1 of 7</span>
+      <button class="tracker-nav-btn" id="nextBtn">Next →</button>
+    </div>
   </div>
 
   <!-- Desert Scene + Info Panel -->
@@ -42,6 +47,9 @@
       </div>
     </div>
   </div>
+
+  <!-- Tracker completion message -->
+  <div class="tracker-msg hidden" id="trackerMsg"></div>
 
   <!-- Vocabulary -->
   <details class="coll-section">
@@ -70,5 +78,6 @@
 </main>
 
 <script src="app.js"></script>
+<script src="tracker.js"></script>
 </body>
 </html>
