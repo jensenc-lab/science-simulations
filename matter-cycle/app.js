@@ -63,12 +63,12 @@ const STEPS = [
 
 const ORGS = [
   {key:'hawk',   emoji:'🦅', x:528, y:82,  step:'cons2'},
-  {key:'cactus', emoji:'🌵', x:100, y:292, step:'prod' },
-  {key:'sage',   emoji:'🌿', x:490, y:290, step:'prod' },
-  {key:'rat',    emoji:'🐁', x:252, y:288, step:'cons1'},
-  {key:'snake',  emoji:'🐍', x:372, y:294, step:'cons2'},
-  {key:'log',    emoji:'🪵', x:182, y:294, step:'dead' },
-  {key:'shroom', emoji:'🍄', x:207, y:274, step:'decomp'},
+  {key:'cactus', emoji:'🌵', x:94,  y:292, step:'prod' },
+  {key:'sage',   emoji:'🌿', x:508, y:290, step:'prod' },
+  {key:'rat',    emoji:'🐁', x:287, y:288, step:'cons1', labelSide:'above'},
+  {key:'snake',  emoji:'🐍', x:385, y:295, step:'cons2'},
+  {key:'log',    emoji:'🪵', x:165, y:295, step:'dead',  labelSide:'above'},
+  {key:'shroom', emoji:'🍄', x:228, y:274, step:'decomp'},
 ];
 
 let lang='en', activeStep=null, autoTimer=null, autoIdx=0;
@@ -120,8 +120,9 @@ function drawOrg(org, color){
   const lbl=T[lang].orgLabels[org.key]||org.key;
   cx.font=(color?'bold ':'')+'11px Segoe UI,sans-serif'; cx.textBaseline='middle';
   const tw=cx.measureText(lbl).width;
-  cx.fillStyle='rgba(255,255,255,0.95)'; cx.fillRect(org.x-tw/2-5,org.y+6,tw+10,15);
-  cx.fillStyle=color||'#2c1205'; cx.fillText(lbl,org.x,org.y+14);
+  const ly=org.labelSide==='above' ? org.y-62 : org.y+6;
+  cx.fillStyle='rgba(255,255,255,0.95)'; cx.fillRect(org.x-tw/2-5,ly,tw+10,15);
+  cx.fillStyle=color||'#2c1205'; cx.fillText(lbl,org.x,ly+8);
   cx.restore();
 }
 
