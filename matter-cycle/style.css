@@ -9,6 +9,8 @@ header { background: linear-gradient(135deg, #e67e22, #d35400); padding: 14px 24
 h1 { color: #fff; font-size: 1.45rem; font-weight: 800; text-shadow: 0 2px 6px rgba(0,0,0,0.3); }
 .std-badge { background: rgba(249,202,36,0.25); color: #fff; border: 2px solid rgba(249,202,36,0.6); border-radius: 20px; padding: 4px 14px; font-size: 0.9rem; font-weight: 700; cursor: pointer; transition: background 0.2s; white-space: nowrap; }
 .std-badge:hover { background: rgba(249,202,36,0.45); }
+.lang-btn { background: rgba(255,255,255,0.18); color: #fff; border: 2px solid rgba(255,255,255,0.5); border-radius: 20px; padding: 4px 14px; font-size: 0.9rem; font-weight: 700; cursor: pointer; transition: background 0.2s; white-space: nowrap; margin-left: auto; }
+.lang-btn:hover { background: rgba(255,255,255,0.32); }
 
 /* ── Popup ── */
 .popup { position: fixed; inset: 0; background: rgba(0,0,0,0.55); display: flex; align-items: center; justify-content: center; z-index: 200; }

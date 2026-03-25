@@ -10,16 +10,17 @@
 
 <header>
   <div class="header-inner">
-    <h1>🏜️ Desert Matter Cycle: Follow the Matter!</h1>
+    <h1 id="pageTitle">🏜️ Desert Matter Cycle: Follow the Matter!</h1>
     <button class="std-badge" id="stdBtn">5.3.3</button>
+    <button class="lang-btn" id="langBtn">🇪🇸 Español</button>
   </div>
 </header>
 
 <div id="stdPopup" class="popup hidden">
   <div class="popup-box">
     <button class="popup-close" id="stdClose">✕</button>
-    <h3>Utah SEEd Standard 5.3.3</h3>
-    <p>Discover how matter moves between plants, animals, decomposers, and the environment in a Utah desert ecosystem!</p>
+    <h3 id="stdPopupTitle">Utah SEEd Standard 5.3.3</h3>
+    <p id="stdPopupDesc">Discover how matter moves between plants, animals, decomposers, and the environment in a Utah desert ecosystem!</p>
   </div>
 </div>
 
@@ -53,26 +54,14 @@
 
   <!-- Vocabulary -->
   <details class="coll-section">
-    <summary>📖 Vocabulary</summary>
-    <dl>
-      <dt>Matter</dt><dd>The stuff that everything is made of — all living and nonliving things!</dd>
-      <dt>Producer</dt><dd>A plant that makes its own food using sunlight, air, and water.</dd>
-      <dt>Consumer</dt><dd>An animal that gets matter by eating plants or other animals.</dd>
-      <dt>Decomposer</dt><dd>A tiny organism (like bacteria or fungi) that breaks down dead things and returns matter to the soil and air.</dd>
-      <dt>Food Chain</dt><dd>The path that matter takes as it moves from one living thing to another.</dd>
-      <dt>Cycle</dt><dd>A process that repeats over and over — matter never disappears, it just moves!</dd>
-      <dt>Environment</dt><dd>Everything surrounding living things — air, water, soil, sunlight.</dd>
-    </dl>
+    <summary id="vocabSummary">📖 Vocabulary</summary>
+    <dl id="vocabList"></dl>
   </details>
 
   <!-- Notice prompts -->
   <details class="coll-section">
-    <summary>💡 What Do You Notice?</summary>
-    <ul>
-      <li>Follow the matter through the whole cycle. Does any matter ever disappear?</li>
-      <li>What would happen if there were no decomposers in the desert?</li>
-      <li>Where does the matter in YOUR body come from?</li>
-    </ul>
+    <summary id="promptsSummary">💡 What Do You Notice?</summary>
+    <ul id="promptsList"></ul>
   </details>
 
 </main>

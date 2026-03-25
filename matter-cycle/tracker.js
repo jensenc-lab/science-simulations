@@ -1,15 +1,44 @@
 // Matter Particle Tracker — Utah SEEd 5.3.3
 'use strict';
 
+// ── Tracker translations ───────────────────────────────────────────────────────
+const TT = {
+  en:{
+    particleLbl:'✨ Matter',
+    breathLbl:'breathed out',
+    followPlay:'▶ Follow the Matter!',
+    followStop:'⏹ Stop',
+    prevBtn:'← Previous',
+    nextBtn:'Next →',
+    stopLabel:'Stop',
+    of:'of',
+    finishMsg:'The same matter went through the <strong>WHOLE cycle!</strong> Matter is never created or destroyed — it just moves from place to place. ♻️',
+    watchAgain:'🔄 Watch Again',
+  },
+  es:{
+    particleLbl:'✨ Materia',
+    breathLbl:'exhalada',
+    followPlay:'▶ ¡Sigue la Materia!',
+    followStop:'⏹ Detener',
+    prevBtn:'← Anterior',
+    nextBtn:'Siguiente →',
+    stopLabel:'Parada',
+    of:'de',
+    finishMsg:'¡La misma materia pasó por <strong>TODO el ciclo!</strong> La materia nunca se crea ni se destruye — solo se mueve de lugar en lugar. ♻️',
+    watchAgain:'🔄 Ver de Nuevo',
+  }
+};
+const gl=()=>TT[document.documentElement.lang]||TT.en;
+
 // cpx/cpy = bezier control point used when ARRIVING at that stop
 const STOPS = [
-  {step:0, x:260, y:110, cpx:260, cpy: 60, msg:'Matter is in the air and soil!'},
-  {step:1, x:100, y:260, cpx:130, cpy: 55, msg:'The cactus takes in matter from air and water to grow!'},
-  {step:2, x:252, y:268, cpx:176, cpy:195, msg:'The rat eats the cactus — matter moves to the rat!',    breath:true},
-  {step:3, x:372, y:274, cpx:310, cpy:210, msg:'The snake eats the rat — matter moves to the snake!',   breath:true},
-  {step:4, x:182, y:276, cpx:278, cpy:318, msg:'The snake dies — but the matter is still here!'},
-  {step:5, x:207, y:318, cpx:192, cpy:293, msg:'Decomposers break down the dead matter!',              decompose:true},
-  {step:0, x:260, y:110, cpx:160, cpy:210, msg:'Matter returns to the air and soil — the cycle is complete! 🔄', celebrate:true},
+  {step:0, x:260, y:110, cpx:260, cpy: 60, msg:{en:'Matter is in the air and soil!',                                                   es:'¡La materia está en el aire y el suelo!'}},
+  {step:1, x:100, y:260, cpx:130, cpy: 55, msg:{en:'The cactus takes in matter from air and water to grow!',                           es:'¡El cactus absorbe materia del aire y el agua para crecer!'}},
+  {step:2, x:252, y:268, cpx:176, cpy:195, msg:{en:'The rat eats the cactus — matter moves to the rat!',                               es:'¡La rata come el cactus — la materia pasa a la rata!'},         breath:true},
+  {step:3, x:372, y:274, cpx:310, cpy:210, msg:{en:'The snake eats the rat — matter moves to the snake!',                              es:'¡La serpiente come la rata — la materia pasa a la serpiente!'},breath:true},
+  {step:4, x:182, y:276, cpx:278, cpy:318, msg:{en:'The snake dies — but the matter is still here!',                                   es:'¡La serpiente muere — pero la materia sigue aquí!'}},
+  {step:5, x:207, y:318, cpx:192, cpy:293, msg:{en:'Decomposers break down the dead matter!',                                          es:'¡Los descomponedores descomponen la materia muerta!'},          decompose:true},
+  {step:0, x:260, y:110, cpx:160, cpy:210, msg:{en:'Matter returns to the air and soil — the cycle is complete! 🔄',                   es:'¡La materia regresa al aire y al suelo — el ciclo se completa! 🔄'}, celebrate:true},
 ];
 
 let active=false, trkStop=0, trkT=0, trkState='idle';
@@ -54,6 +83,7 @@ function drawExtras(){
 
 function drawParticle(){
   const p=0.7+Math.sin(pulse)*0.3;
+  const lbl=gl().particleLbl;
   trkCx.save();
   // Pulsing glow halo
   const g=trkCx.createRadialGradient(trkX,trkY,2,trkX,trkY,26*p);
@@ -64,16 +94,17 @@ function drawParticle(){
   // Core circle
   trkCx.fillStyle='#f1c40f'; trkCx.beginPath(); trkCx.arc(trkX,trkY,8,0,Math.PI*2); trkCx.fill();
   trkCx.fillStyle='rgba(255,255,255,0.85)'; trkCx.beginPath(); trkCx.arc(trkX-2,trkY-2,3,0,Math.PI*2); trkCx.fill();
-  // "✨ Matter" pill
+  // Particle label pill
   trkCx.font="bold 11px 'Segoe UI',sans-serif"; trkCx.textAlign='center'; trkCx.textBaseline='middle';
-  const lw=trkCx.measureText('✨ Matter').width;
+  const lw=trkCx.measureText(lbl).width;
   trkCx.fillStyle='rgba(20,8,0,0.75)';
   trkCx.beginPath(); trkCx.roundRect(trkX-lw/2-7,trkY-40,lw+14,18,5); trkCx.fill();
-  trkCx.fillStyle='#fff'; trkCx.fillText('✨ Matter',trkX,trkY-31);
+  trkCx.fillStyle='#fff'; trkCx.fillText(lbl,trkX,trkY-31);
   trkCx.restore();
   // Message bubble (while paused)
   if(trkState==='paused'){
-    const msg=STOPS[trkStop].msg;
+    const curLang=document.documentElement.lang;
+    const msg=STOPS[trkStop].msg[curLang]||STOPS[trkStop].msg.en;
     trkCx.save();
     trkCx.font="bold 11px 'Segoe UI',sans-serif"; trkCx.textAlign='center'; trkCx.textBaseline='middle';
     const mw=Math.min(TW-16, trkCx.measureText(msg).width+26);
@@ -133,10 +164,11 @@ function advance(){
 
 // ── Particle effects ──────────────────────────────────────────────────────────
 function spawnBreath(){
+  const lbl=gl().breathLbl;
   for(let i=0;i<4;i++) extras.push({
     x:trkX+(Math.random()-.5)*14, y:trkY-4,
     vx:(Math.random()-.5)*.8, vy:-1.2-Math.random()*.9,
-    a:.85, da:.008, r:4, color:'#aed6f1', lbl:i===0?'breathed out':null
+    a:.85, da:.008, r:4, color:'#aed6f1', lbl:i===0?lbl:null
   });
 }
 function spawnDecompose(){
@@ -157,19 +189,19 @@ function spawnSparkles(){
 function finishCycle(){
   active=false; trail=[]; extras=[]; render();
   document.getElementById('trackerControls').classList.add('hidden');
-  document.getElementById('followBtn').textContent='▶ Follow the Matter!';
+  document.getElementById('followBtn').textContent=gl().followPlay;
   document.getElementById('followBtn').classList.remove('playing');
   const msgEl=document.getElementById('trackerMsg');
   msgEl.classList.remove('hidden');
-  msgEl.innerHTML=`<p>The same matter went through the <strong>WHOLE cycle!</strong> Matter is never created or destroyed — it just moves from place to place. ♻️</p>
-    <button class="follow-btn" id="watchAgainBtn">🔄 Watch Again</button>`;
+  msgEl.innerHTML=`<p>${gl().finishMsg}</p>
+    <button class="follow-btn" id="watchAgainBtn">${gl().watchAgain}</button>`;
   document.getElementById('watchAgainBtn').addEventListener('click',startTracker);
 }
 
 function startTracker(){
   document.getElementById('trackerMsg').classList.add('hidden');
   document.getElementById('trackerControls').classList.remove('hidden');
-  document.getElementById('followBtn').textContent='⏹ Stop';
+  document.getElementById('followBtn').textContent=gl().followStop;
   document.getElementById('followBtn').classList.add('playing');
   trail=[]; extras=[]; trkStop=0; trkT=1;
   trkX=STOPS[0].x; trkY=STOPS[0].y;
@@ -183,16 +215,19 @@ function startTracker(){
 function stopTracker(){
   active=false; trail=[]; extras=[];
   document.getElementById('trackerControls').classList.add('hidden');
-  document.getElementById('followBtn').textContent='▶ Follow the Matter!';
+  document.getElementById('followBtn').textContent=gl().followPlay;
   document.getElementById('followBtn').classList.remove('playing');
   render();
 }
 
 function updateControls(){
   const traveling=trkState==='traveling';
+  const t=gl();
   document.getElementById('prevBtn').disabled=trkStop===0||traveling;
   document.getElementById('nextBtn').disabled=trkStop>=STOPS.length-1||traveling;
-  document.getElementById('stepCount').textContent=`Stop ${trkStop+1} of ${STOPS.length}`;
+  document.getElementById('prevBtn').textContent=t.prevBtn;
+  document.getElementById('nextBtn').textContent=t.nextBtn;
+  document.getElementById('stepCount').textContent=`${t.stopLabel} ${trkStop+1} ${t.of} ${STOPS.length}`;
 }
 
 // ── Init ──────────────────────────────────────────────────────────────────────
