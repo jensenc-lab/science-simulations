@@ -24,7 +24,7 @@ const TT = {
     nextBtn:'Siguiente →',
     stopLabel:'Parada',
     of:'de',
-    finishMsg:'¡La misma materia pasó por <strong>TODO el ciclo!</strong> La materia nunca se crea ni se destruye — solo se mueve de lugar en lugar. ♻️',
+    finishMsg:'¡La misma materia pasó por <strong>TODO el ciclo!</strong> La materia nunca se crea ni se destruye — solo se mueve de un lugar a otro. ♻️',
     watchAgain:'🔄 Ver de Nuevo',
   }
 };
@@ -33,12 +33,12 @@ const gl=()=>TT[document.documentElement.lang]||TT.en;
 // cpx/cpy = bezier control point used when ARRIVING at that stop
 const STOPS = [
   {step:0, x:260, y:110, cpx:260, cpy: 60, msg:{en:'Matter is in the air and soil!',                                                   es:'¡La materia está en el aire y el suelo!'}},
-  {step:1, x:100, y:260, cpx:130, cpy: 55, msg:{en:'The cactus takes in matter from air and water to grow!',                           es:'¡El cactus absorbe materia del aire y el agua para crecer!'}},
+  {step:1, x:100, y:260, cpx:130, cpy: 55, msg:{en:'The cactus takes in matter from air and water to grow!',                           es:'¡El cactus toma materia del aire y agua para crecer!'}},
   {step:2, x:252, y:268, cpx:176, cpy:195, msg:{en:'The rat eats the cactus — matter moves to the rat!',                               es:'¡La rata come el cactus — la materia pasa a la rata!'},         breath:true},
   {step:3, x:372, y:274, cpx:310, cpy:210, msg:{en:'The snake eats the rat — matter moves to the snake!',                              es:'¡La serpiente come la rata — la materia pasa a la serpiente!'},breath:true},
   {step:4, x:182, y:276, cpx:278, cpy:318, msg:{en:'The snake dies — but the matter is still here!',                                   es:'¡La serpiente muere — pero la materia sigue aquí!'}},
   {step:5, x:207, y:318, cpx:192, cpy:293, msg:{en:'Decomposers break down the dead matter!',                                          es:'¡Los descomponedores descomponen la materia muerta!'},          decompose:true},
-  {step:0, x:260, y:110, cpx:160, cpy:210, msg:{en:'Matter returns to the air and soil — the cycle is complete! 🔄',                   es:'¡La materia regresa al aire y al suelo — el ciclo se completa! 🔄'}, celebrate:true},
+  {step:0, x:260, y:110, cpx:160, cpy:210, msg:{en:'Matter returns to the air and soil — the cycle is complete! 🔄',                   es:'¡La materia regresa al aire y al suelo — el ciclo está completo! 🔄'}, celebrate:true},
 ];
 
 let active=false, trkStop=0, trkT=0, trkState='idle';
