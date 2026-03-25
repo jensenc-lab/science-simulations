@@ -6,7 +6,7 @@ const T = {
   title:'🏜️ Ciclo de la Materia en el Desierto: ¡Sigue la Materia!',
   stdTitle:'Estándar Utah SEEd 5.3.3',
   stdDesc:'¡Descubre cómo se mueve la materia entre plantas, animales, descomponedores y el medio ambiente en un ecosistema desértico de Utah!',
-  followPlay:'▶ ¡Sigue la Materia!', followStop:'⏹ Detener',
+  followPlay:'▶ ¡Sigue la Materia!', followPause:'⏸ Pausar', followContinue:'▶ Continuar', startOver:'↺ Empezar de Nuevo',
   matterIn:'Materia ENTRA:', matterOut:'Materia SALE:',
   clearMsg:'👆 ¡Haz clic en un paso arriba o en un organismo en la escena para aprender cómo se mueve la materia!',
   stepLabels:['Aire, Agua\ny Suelo','Productores\n(Plantas)','Consumidor\nPrimario','Consumidor\nSecundario','Materia\nMuerta','Descomponedores'],
@@ -165,7 +165,7 @@ function stopAuto(){
 function startAuto(){
   if(autoTimer){stopAuto(); return;}
   autoIdx=0; activateStep(0);
-  document.getElementById('followBtn').textContent=T.followStop;
+  document.getElementById('followBtn').textContent=T.followPause;
   document.getElementById('followBtn').classList.add('playing');
   autoTimer=setInterval(()=>{ autoIdx=(autoIdx+1)%STEPS.length; activateStep(autoIdx); },3000);
 }

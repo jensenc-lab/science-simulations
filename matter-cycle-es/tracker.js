@@ -6,7 +6,9 @@ const TT = {
   particleLbl:'✨ Materia',
   breathLbl:'exhalada',
   followPlay:'▶ ¡Sigue la Materia!',
-  followStop:'⏹ Detener',
+  followPause:'⏸ Pausar',
+  followContinue:'▶ Continuar',
+  startOver:'↺ Empezar de Nuevo',
   prevBtn:'← Anterior',
   nextBtn:'Siguiente →',
   stopLabel:'Parada',
@@ -26,10 +28,10 @@ const STOPS = [
   {step:0, x:260, y:110, cpx:175, cpy:210, msg:'¡La materia regresa al aire y al suelo — el ciclo está completo! 🔄', celebrate:true},
 ];
 
-let active=false, trkStop=0, trkT=0, trkState='idle';
+let active=false, userPaused=false, trkStop=0, trkT=0, trkState='idle';
 let trkX=260, trkY=110, startX=0, startY=0, cpX=0, cpY=0;
 let pauseStart=0, pulse=0, frameN=0;
-let trail=[], extras=[], rafId=null;
+let trail=[], extras=[], rafId=null, finishTimer=null;
 
 const trkCv=document.getElementById('scene'), trkCx=trkCv.getContext('2d');
 const TW=trkCv.width, TH=trkCv.height;
@@ -105,15 +107,17 @@ function loop(ts){
   if(!active){rafId=null; return;}
   rafId=requestAnimationFrame(loop);
   pulse+=0.07; frameN++;
-  if(trkState==='traveling'){
-    trkT=Math.min(1,trkT+0.016);
-    const e=ease(trkT);
-    trkX=bx(startX,cpX,STOPS[trkStop].x,e);
-    trkY=by(startY,cpY,STOPS[trkStop].y,e);
-    if(frameN%3===0){ trail.push({x:trkX,y:trkY}); if(trail.length>55) trail.shift(); }
-    if(trkT>=1){trkState='paused'; pauseStart=ts; onArrive();}
-  } else if(trkState==='paused'){
-    if(ts-pauseStart>3000) advance();
+  if(!userPaused){
+    if(trkState==='traveling'){
+      trkT=Math.min(1,trkT+0.016);
+      const e=ease(trkT);
+      trkX=bx(startX,cpX,STOPS[trkStop].x,e);
+      trkY=by(startY,cpY,STOPS[trkStop].y,e);
+      if(frameN%3===0){ trail.push({x:trkX,y:trkY}); if(trail.length>55) trail.shift(); }
+      if(trkT>=1){trkState='paused'; pauseStart=ts; onArrive();}
+    } else if(trkState==='paused'){
+      if(ts-pauseStart>3000) advance();
+    }
   }
   extras=extras.filter(p=>{p.x+=p.vx; p.y+=p.vy; p.a-=p.da; return p.a>0;});
   render();       // app.js global — clears canvas and redraws scene each frame
@@ -129,7 +133,7 @@ function onArrive(){
   if(s.breath)    spawnBreath();
   if(s.decompose) spawnDecompose();
   if(s.celebrate) spawnSparkles();
-  if(trkStop===STOPS.length-1) setTimeout(finishCycle,3200);
+  if(trkStop===STOPS.length-1) finishTimer=setTimeout(finishCycle,3200);
   updateControls();
 }
 
@@ -167,10 +171,31 @@ function spawnSparkles(){
   }
 }
 
+// ── Pause / Resume ────────────────────────────────────────────────────────────
+function pauseTracker(){
+  userPaused=true;
+  if(finishTimer){ clearTimeout(finishTimer); finishTimer=null; }
+  document.getElementById('followBtn').textContent=TT.followContinue;
+  document.getElementById('followBtn').classList.remove('playing');
+}
+
+function resumeTracker(){
+  userPaused=false;
+  pauseStart=performance.now();
+  // If already at last stop, reschedule finish
+  if(trkState==='paused' && trkStop===STOPS.length-1){
+    finishTimer=setTimeout(finishCycle,3200);
+  }
+  document.getElementById('followBtn').textContent=TT.followPause;
+  document.getElementById('followBtn').classList.add('playing');
+}
+
 // ── Lifecycle ─────────────────────────────────────────────────────────────────
 function finishCycle(){
-  active=false; trail=[]; extras=[]; render();
+  finishTimer=null;
+  active=false; userPaused=false; trail=[]; extras=[]; render();
   document.getElementById('trackerControls').classList.add('hidden');
+  document.getElementById('startOverBtn').classList.add('hidden');
   document.getElementById('followBtn').textContent=TT.followPlay;
   document.getElementById('followBtn').classList.remove('playing');
   const msgEl=document.getElementById('trackerMsg');
@@ -181,9 +206,12 @@ function finishCycle(){
 }
 
 function startTracker(){
+  if(finishTimer){ clearTimeout(finishTimer); finishTimer=null; }
+  userPaused=false;
   document.getElementById('trackerMsg').classList.add('hidden');
   document.getElementById('trackerControls').classList.remove('hidden');
-  document.getElementById('followBtn').textContent=TT.followStop;
+  document.getElementById('startOverBtn').classList.remove('hidden');
+  document.getElementById('followBtn').textContent=TT.followPause;
   document.getElementById('followBtn').classList.add('playing');
   trail=[]; extras=[]; trkStop=0; trkT=1;
   trkX=STOPS[0].x; trkY=STOPS[0].y;
@@ -192,14 +220,6 @@ function startTracker(){
   activateStep(STOPS[0].step);
   updateControls();
   if(!rafId) rafId=requestAnimationFrame(loop);
-}
-
-function stopTracker(){
-  active=false; trail=[]; extras=[];
-  document.getElementById('trackerControls').classList.add('hidden');
-  document.getElementById('followBtn').textContent=TT.followPlay;
-  document.getElementById('followBtn').classList.remove('playing');
-  render();
 }
 
 function updateControls(){
@@ -217,15 +237,31 @@ document.addEventListener('DOMContentLoaded',()=>{
   const btn=document.getElementById('followBtn');
   const nb=btn.cloneNode(true);
   btn.parentNode.replaceChild(nb,btn);
-  nb.addEventListener('click',()=>{ active?stopTracker():startTracker(); });
+  nb.addEventListener('click',()=>{
+    if(!active) startTracker();
+    else if(userPaused) resumeTracker();
+    else pauseTracker();
+  });
 
   document.getElementById('nextBtn').addEventListener('click',()=>{
-    if(trkState==='paused') advance();
+    if(trkState==='traveling') return;
+    if(trkStop>=STOPS.length-1) return;
+    if(userPaused){
+      // Direct jump — no auto-advance timer
+      trkStop++; trkX=STOPS[trkStop].x; trkY=STOPS[trkStop].y;
+      trail=[]; trkState='paused'; pauseStart=performance.now();
+      activateStep(STOPS[trkStop].step); updateControls();
+    } else {
+      advance();
+    }
   });
   document.getElementById('prevBtn').addEventListener('click',()=>{
     if(trkStop===0||trkState==='traveling') return;
+    if(finishTimer){ clearTimeout(finishTimer); finishTimer=null; }
     trkStop--; trkX=STOPS[trkStop].x; trkY=STOPS[trkStop].y;
     trail=[]; extras=[]; trkState='paused'; pauseStart=performance.now();
     activateStep(STOPS[trkStop].step); updateControls();
   });
+
+  document.getElementById('startOverBtn').addEventListener('click', startTracker);
 });
