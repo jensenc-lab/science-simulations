@@ -141,17 +141,26 @@ function drawLayer(L, i){
   // Hover / selected highlight
   if(isHov||isSel){cx.fillStyle=isSel?'rgba(241,196,15,0.18)':'rgba(255,220,70,0.1)';cx.fillRect(LP,y,CW,LH);}
 
-  // Fossils embedded in rock (shadow recess → emoji on top)
-  const pos=[{x:.20,y:.42},{x:.36,y:.70},{x:.52,y:.33},{x:.66,y:.72},{x:.82,y:.42}];
+  // Fossils: spread across layer (left / center / right), staggered vertically
+  // x fractions of the safe cliff width; y fractions of layer height
+  const pos=[{x:.13,y:.40},{x:.50,y:.68},{x:.78,y:.36},{x:.32,y:.65},{x:.64,y:.42}];
   cx.textAlign='center';
   if(isDis){
+    cx.textBaseline='middle';
     L.fossils.forEach((f,fi)=>{
       if(fi>=pos.length) return;
-      const fx=LP+pos[fi].x*(CW-LP)*.78, fy=y+pos[fi].y*LH;
-      cx.fillStyle='rgba(0,0,0,0.30)'; cx.beginPath(); cx.ellipse(fx+1,fy,13,10,0,0,Math.PI*2); cx.fill();
-      cx.fillStyle='rgba(0,0,0,0.12)'; cx.beginPath(); cx.ellipse(fx,fy-1,17,13,0,0,Math.PI*2); cx.fill();
-      cx.font='20px serif'; cx.fillText(f.emoji,fx,fy+7);
+      // Compute safe x using actual EDGE value at this fossil's y (avoids jagged clip)
+      const ey=Math.min(Math.round(y+pos[fi].y*LH), CH+1);
+      const fw=(EDGE[ey]-LP)*0.80; // 80% of available width keeps fossils away from cliff edge
+      const fx=LP+pos[fi].x*fw, fy=y+pos[fi].y*LH;
+      // Light parchment halo so fossil pops against any rock color/texture
+      cx.fillStyle='rgba(255,248,210,0.90)';
+      cx.beginPath(); cx.arc(fx,fy,20,0,Math.PI*2); cx.fill();
+      cx.strokeStyle='rgba(120,85,30,0.35)'; cx.lineWidth=1.5;
+      cx.beginPath(); cx.arc(fx,fy,21,0,Math.PI*2); cx.stroke();
+      cx.font='30px serif'; cx.fillText(f.emoji,fx,fy);
     });
+    cx.textBaseline='alphabetic';
   } else {
     cx.font='bold 13px Segoe UI,sans-serif'; cx.fillStyle='rgba(255,255,255,0.22)';
     cx.fillText('? ? ?', LP+(CW-LP)*.42, y+LH/2+5);
