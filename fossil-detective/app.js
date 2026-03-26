@@ -141,9 +141,9 @@ function drawLayer(L, i){
   // Hover / selected highlight
   if(isHov||isSel){cx.fillStyle=isSel?'rgba(241,196,15,0.18)':'rgba(255,220,70,0.1)';cx.fillRect(LP,y,CW,LH);}
 
-  // Fossils: spread across layer (left / center / right), staggered vertically
-  // x fractions of the safe cliff width; y fractions of layer height
-  const pos=[{x:.13,y:.40},{x:.50,y:.68},{x:.78,y:.36},{x:.32,y:.65},{x:.64,y:.42}];
+  // Fossils: spread left/center/right, y shifted down to clear label pill at top of layer
+  // Minimum y=0.50 keeps halo tops (y+30) below label bottom (y+27)
+  const pos=[{x:.13,y:.50},{x:.50,y:.74},{x:.78,y:.52},{x:.32,y:.72},{x:.64,y:.60}];
   cx.textAlign='center';
   if(isDis){
     cx.textBaseline='middle';
@@ -166,12 +166,24 @@ function drawLayer(L, i){
     cx.fillText('? ? ?', LP+(CW-LP)*.42, y+LH/2+5);
   }
 
-  // Label pill — left side of cliff face, always inside clip
-  cx.font='bold 9px Segoe UI,sans-serif';
+  // Label pill — warm parchment background, dark brown text, sits at top of layer
+  cx.font='bold 11px Segoe UI,sans-serif';
   const nw=cx.measureText(L.name).width;
-  cx.fillStyle='rgba(0,0,0,0.55)'; cx.beginPath(); cx.roundRect(LP+8,y+7,nw+10,15,4); cx.fill();
-  cx.fillStyle='#fff'; cx.textAlign='left'; cx.fillText(L.name,LP+13,y+17);
-  cx.font='8px Segoe UI,sans-serif'; cx.fillStyle='rgba(255,255,255,0.82)'; cx.fillText(L.age,LP+13,y+29);
+  cx.font='9px Segoe UI,sans-serif';
+  const aw=cx.measureText(L.age).width;
+  const pw=Math.max(nw,aw)+14;
+  // Soft drop shadow for depth
+  cx.shadowColor='rgba(0,0,0,0.25)'; cx.shadowBlur=4; cx.shadowOffsetX=1; cx.shadowOffsetY=1;
+  cx.fillStyle='rgba(252,238,190,0.96)';
+  cx.beginPath(); cx.roundRect(LP+6,y+3,pw,24,5); cx.fill();
+  cx.shadowBlur=0; cx.shadowOffsetX=0; cx.shadowOffsetY=0;
+  cx.strokeStyle='rgba(140,90,20,0.55)'; cx.lineWidth=1;
+  cx.beginPath(); cx.roundRect(LP+6,y+3,pw,24,5); cx.stroke();
+  // Dark brown text — readable on any rock color
+  cx.font='bold 11px Segoe UI,sans-serif'; cx.fillStyle='#3d1f00'; cx.textAlign='left';
+  cx.fillText(L.name, LP+13, y+14);
+  cx.font='9px Segoe UI,sans-serif'; cx.fillStyle='#6a3a10';
+  cx.fillText(L.age, LP+13, y+25);
 
   cx.restore(); // end clip
 
