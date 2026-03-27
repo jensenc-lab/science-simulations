@@ -35,6 +35,8 @@ const T = {
     resBadge: "You're a Master Fossil Detective! 🏅",
     resInsight: 'Look at how this ONE location changed over hundreds of millions of years:<br><br>🌊 Deep ocean → 🐠 Warm shallow ocean → 🌿 River valley → 🏖️ Coastal beach → 🌲 River floodplains<br><br>The rocks right here in Utah recorded all of it — one layer at a time!',
     mysPlay: '🔄 Play Again',
+    finderHint1: '🏜️ <strong>Click a rock layer</strong> on the cliff face to start your investigation!',
+    finderHint2: 'Each layer holds ancient fossils waiting to be discovered. Start at the bottom for the oldest clues!',
     vocabTitle: '📖 Vocabulary',
     factsTitle: '🌟 Fun Facts',
     vocab: [
@@ -72,15 +74,17 @@ const T = {
     popup413p: '¡Usa los fósiles como pistas para descubrir cómo eran los organismos y entornos antiguos!',
     popup414h: 'Estándar Utah SEEd 4.1.4',
     popup414p: '¡Observa los patrones en las capas de roca y los fósiles para descubrir cómo cambiaron los entornos con el tiempo!',
-    mysQ: '🔍 Basándote en estos fósiles, ¿cómo era este lugar hace millones de años?',
+    mysQ: '🔍 Basándote en estos fósiles, ¿cómo era este medio ambiente hace mucho tiempo?',
     mysRound: 'Ronda', mysOf: 'de', mysScore: '⭐ Puntos:',
-    mysCorrect: '🎉 <strong>¡Excelente trabajo de detective!</strong>',
-    mysWrong: '🤔 <strong>¡No exactamente!</strong> Pista:',
+    mysCorrect: '🎉 <strong>¡Gran trabajo de detective!</strong>',
+    mysWrong: '🤔 <strong>¡No del todo!</strong> Mira los fósiles de nuevo...',
     mysNext: 'Siguiente Ronda →', mysFinish: '🏆 ¡Ver Mis Resultados!', mysTry: 'Intentar de Nuevo',
-    resTitle: 'Identificaste', resOf: 'de', resCorrectly: '¡entornos correctamente!',
-    resBadge: '¡Eres un Maestro Detective de Fósiles! 🏅',
-    resInsight: 'Mira cómo este UN lugar cambió durante cientos de millones de años:<br><br>🌊 Océano profundo → 🐠 Océano cálido poco profundo → 🌿 Valle fluvial → 🏖️ Playa costera → 🌲 Llanuras de inundación<br><br>¡Las rocas aquí mismo en Utah lo registraron todo — una capa a la vez!',
+    resTitle: 'Identificaste', resOf: 'de', resCorrectly: '¡ambientes correctamente!',
+    resBadge: '¡Eres un detective de fósiles experto! 🏅',
+    resInsight: '¡Observa cómo esta ÚNICA ubicación pasó de océano profundo → océano poco profundo → valle fluvial → playa costera → llanura de inundación. ¡El medio ambiente CAMBIÓ a lo largo de cientos de millones de años!',
     mysPlay: '🔄 Jugar de Nuevo',
+    finderHint1: '🏜️ <strong>¡Haz clic en una capa de roca</strong> en el acantilado para comenzar tu investigación!',
+    finderHint2: '¡Cada capa tiene fósiles antiguos esperando ser descubiertos. Empieza desde abajo para encontrar las pistas más antiguas!',
     vocabTitle: '📖 Vocabulario',
     factsTitle: '🌟 Datos Curiosos',
     vocab: [
@@ -408,6 +412,12 @@ cv.addEventListener('click', e=>{
 });
 
 // ── Panel: Fossil Finder ──────────────────────────────────────────────────────
+function showFinderPlaceholder() {
+  const t = T[lang];
+  document.getElementById('finderContent').innerHTML =
+    `<div class="placeholder"><p>${t.finderHint1}</p>
+     <p style="margin-top:10px;color:#a07820">${t.finderHint2}</p></div>`;
+}
 function showLayer(i) {
   if (i<0) return;
   const LT = layerT(i);
@@ -494,8 +504,8 @@ function applyLang() {
   // Redraw canvas (layer labels change language)
   draw();
   // Refresh whichever panel is currently visible
-  if (selectedLayer>=0 && !document.getElementById('tab-finder').classList.contains('hidden')) {
-    showLayer(selectedLayer);
+  if (!document.getElementById('tab-finder').classList.contains('hidden')) {
+    if (selectedLayer >= 0) showLayer(selectedLayer); else showFinderPlaceholder();
   }
   if (!document.getElementById('tab-timeline').classList.contains('hidden')) {
     buildTimeline();
@@ -520,5 +530,6 @@ document.addEventListener('DOMContentLoaded', () => {
     lang = lang==='en' ? 'es' : 'en';
     applyLang();
   });
-  updateProgress(); draw();
+  updateProgress();
+  applyLang(); // renders placeholder, tab labels, canvas, vocab/facts in initial language
 });
