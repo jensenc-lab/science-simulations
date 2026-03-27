@@ -282,9 +282,10 @@ function showLayer(i){
   let h=`<div class="layer-hdr" style="background:${L.color}">
     <div class="lhdr-name">${L.name}</div>
     <div class="lhdr-age">📅 ${L.age}</div>
-  </div><div class="fossils-wrap"><h3>🦴 Fossils Found Here:</h3>`;
+  </div><div class="fossils-wrap"><h3>🦴 Fossils Found Here:</h3>
+  <p class="comp-hint">👆 Click any fossil card to see its modern relative!</p>`;
   L.fossils.forEach(f=>{
-    h+=`<div class="fossil-card"><span class="f-emoji">${f.emoji}</span>
+    h+=`<div class="fossil-card" data-fossil-name="${f.name}"><span class="f-emoji">${f.emoji}</span>
       <div class="f-text"><div class="f-name">${f.name}</div>
       <div class="f-desc">${f.desc}</div>
       <div class="f-clue">🔍 ${f.clue}</div></div></div>`;
