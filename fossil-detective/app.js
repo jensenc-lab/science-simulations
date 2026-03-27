@@ -530,6 +530,15 @@ document.addEventListener('DOMContentLoaded', () => {
     lang = lang==='en' ? 'es' : 'en';
     applyLang();
   });
+
+  // Welcome overlay: fade in, then dismiss on button click
+  const welcomeOverlay = document.getElementById('welcomeOverlay');
+  requestAnimationFrame(() => requestAnimationFrame(() => welcomeOverlay.classList.add('visible')));
+  document.getElementById('welcomeBtn').addEventListener('click', () => {
+    welcomeOverlay.classList.remove('visible');
+    welcomeOverlay.addEventListener('transitionend', () => { welcomeOverlay.style.display = 'none'; }, {once: true});
+  });
+
   updateProgress();
   applyLang(); // renders placeholder, tab labels, canvas, vocab/facts in initial language
 });
