@@ -65,7 +65,7 @@ const T = {
     back: '← Volver a la Capa',
     tlNote: '🌟 ¡El entorno de este lugar <strong>CAMBIÓ</strong> dramáticamente a lo largo de millones de años!',
     tlLocked: '🔒 Aún no descubierto — ¡haz clic en esta capa en el acantilado!',
-    cmpHeader: '✨ Entonces vs. Ahora ✨',
+    cmpHeader: '✨ Antes vs. Ahora ✨',
     cmpAncient: '🦴 Fósil Antiguo',
     cmpModern: '🌍 Pariente Moderno',
     popup413h: 'Estándar Utah SEEd 4.1.3',
