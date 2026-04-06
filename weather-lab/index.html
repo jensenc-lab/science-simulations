@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Weather Map Lab — Utah SEEd 6.3.2</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <header class="header">
+    <div class="header-inner">
+      <h1 class="sim-title">🌦️ Weather Map Lab: Air Masses &amp; Pressure</h1>
+      <div class="badge-group">
+        <button class="std-badge" id="stdBadge">6.3.2</button>
+        <div class="std-popup hidden" id="stdPopup">
+          Investigate how air moves from high pressure to low pressure areas and causes changes in weather!
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="controls-bar">
+    <div class="toolbar-section">
+      <span class="toolbar-label">Drag to map:</span>
+      <div class="toolbar-item" id="toolH" draggable="true"
+           title="High pressure = clear, dry, calm weather. Air sinks and spreads outward.">
+        <div class="sys-icon high">H</div>
+        <span>High (H)</span>
+      </div>
+      <div class="toolbar-item" id="toolL" draggable="true"
+           title="Low pressure = cloudy, stormy weather. Air rises and pulls surrounding air inward.">
+        <div class="sys-icon low">L</div>
+        <span>Low (L)</span>
+      </div>
+    </div>
+    <div class="temp-section">
+      <span class="toolbar-label">Selected:</span>
+      <div class="temp-toggle" id="tempToggle">
+        <button class="temp-btn active" data-temp="warm">☀️ Warm</button>
+        <button class="temp-btn" data-temp="cold">❄️ Cold</button>
+      </div>
+    </div>
+    <div class="btn-section">
+      <button class="ctrl-btn primary" id="btnSim">▶ Simulate</button>
+      <button class="ctrl-btn" id="btnTL">⏩ Time-Lapse (3 days)</button>
+      <button class="ctrl-btn danger" id="btnClear">🗑️ Clear Map</button>
+      <select class="ctrl-select" id="presetSel">
+        <option value="">📋 Preset Scenarios</option>
+        <option value="0">Clear Day in Utah</option>
+        <option value="1">Storm Approaching</option>
+        <option value="2">Cold Front Passage</option>
+        <option value="3">Winter Storm</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="map-wrap" id="mapWrap">
+    <canvas id="mapCanvas"></canvas>
+    <div class="map-hint" id="mapHint">← Drag H or L systems onto the map to begin</div>
+  </div>
+
+  <div class="dashboard">
+    <div class="conditions-box">
+      <h3>📍 Utah — Current Conditions</h3>
+      <div class="cond-row"><span class="cond-lbl">Temperature:</span><span id="cTemp">—</span></div>
+      <div class="cond-row"><span class="cond-lbl">Sky:</span><span id="cSky">—</span></div>
+      <div class="cond-row"><span class="cond-lbl">Wind:</span><span id="cWind">—</span></div>
+      <div class="cond-row"><span class="cond-lbl">Pressure:</span><span id="cPres">—</span></div>
+    </div>
+    <div class="info-box">
+      <h3>💡 What's Happening?</h3>
+      <p id="infoText">Place a High (H) or Low (L) pressure system on the map to begin!</p>
+    </div>
+  </div>
+
+  <div class="collapsibles">
+    <details class="col-panel">
+      <summary>📖 Vocabulary</summary>
+      <dl class="vocab-dl">
+        <dt>Air Mass</dt><dd>A large body of air with similar temperature and moisture throughout.</dd>
+        <dt>High Pressure</dt><dd>An area where air sinks and spreads outward, creating clear, dry, calm weather.</dd>
+        <dt>Low Pressure</dt><dd>An area where air rises and pulls surrounding air inward, creating clouds and storms.</dd>
+        <dt>Cold Front</dt><dd>Leading edge of cold air pushing into warmer air — brings storms and temperature drops.</dd>
+        <dt>Warm Front</dt><dd>Leading edge of warm air moving over cold air — brings gradual warming and light rain.</dd>
+        <dt>Precipitation</dt><dd>Water falling from clouds — rain, snow, sleet, or hail.</dd>
+        <dt>Wind</dt><dd>Moving air caused by pressure differences. Air flows from high to low pressure.</dd>
+        <dt>Atmosphere</dt><dd>The layers of gases surrounding Earth where weather occurs.</dd>
+      </dl>
+    </details>
+    <details class="col-panel">
+      <summary>🧠 Key Concepts</summary>
+      <ul class="concept-ul">
+        <li>💨 <strong>Air always flows from HIGH → LOW pressure</strong> — like air escaping a balloon.</li>
+        <li>☀️ <strong>High pressure = sinking air = clear, dry weather.</strong> Sinking air warms up and stops clouds from forming.</li>
+        <li>🌧️ <strong>Low pressure = rising air = clouds and rain.</strong> Rising air cools and water vapor condenses into clouds.</li>
+        <li>⛈️ <strong>Fronts form where different temperature air masses meet</strong>, bringing rapid weather changes and storms.</li>
+      </ul>
+    </details>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
