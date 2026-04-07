@@ -4,7 +4,7 @@ const ctx = canvas.getContext('2d');
 let W = 0, H = 0;
 let systems = [];    // { id, type:'H'|'L', temp:'warm'|'cold', fx, fy }
 let selId = null, dragObj = null, dragType = null;
-let animT = 0, tlRunning = false, showArrows = true;
+let animT = 0, showArrows = true;
 
 const PRESETS = [
   [{ t:'H', tmp:'warm', fx:0.30, fy:0.50 }],
@@ -106,11 +106,15 @@ function drawWindArrows() {
   }));
 }
 function draw() {
-  ctx.clearRect(0, 0, W, H); drawMap(); drawWindArrows();
+  ctx.clearRect(0, 0, W, H); drawMap();
+  if (typeof drawWeatherEffects !== 'undefined') drawWeatherEffects(animT);
+  drawWindArrows();
   systems.filter(s=>s.type==='H').forEach(h => systems.filter(s=>s.type==='L').forEach(l => {
     if (h.temp!==l.temp && Math.hypot((h.fx-l.fx)*W, (h.fy-l.fy)*H) < W*0.7) drawFront(h, l);
   }));
-  systems.forEach(drawSystem); animT += 0.016;
+  systems.forEach(drawSystem);
+  if (typeof drawWeatherHud !== 'undefined') drawWeatherHud();
+  animT += 0.016;
 }
 function calcWeather() {
   if (!systems.length) return null;
@@ -172,6 +176,7 @@ canvas.addEventListener('drop', e => {
   draw(); updateDash(calcWeather());
 });
 canvas.addEventListener('mousedown', e => {
+  if (typeof wxTlRunning !== 'undefined' && wxTlRunning) return;
   const r=canvas.getBoundingClientRect(), mx=e.clientX-r.left, my=e.clientY-r.top, rad=Math.max(24,W*0.037);
   selId=null; dragObj=null;
   systems.forEach(s => { if (Math.hypot(s.fx*W-mx, s.fy*H-my) < rad) { selId=s.id; dragObj={id:s.id, offX:mx-s.fx*W, offY:my-s.fy*H}; } });
@@ -188,16 +193,9 @@ canvas.addEventListener('mouseup', () => dragObj = null);
 document.getElementById('btnSim').addEventListener('click', function() {
   showArrows = !showArrows; this.textContent = showArrows ? '⏸ Pause' : '▶ Simulate'; draw();
 });
-document.getElementById('btnTL').addEventListener('click', () => {
-  if (tlRunning || !systems.length) return;
-  tlRunning = true; let day = 0;
-  const iv = setInterval(() => {
-    systems.filter(s => s.type==='L').forEach(s => { s.fx=Math.min(0.95,s.fx+0.07); s.fy=Math.min(0.85,s.fy+0.02); });
-    draw(); updateDash(calcWeather()); if (++day >= 3) { clearInterval(iv); tlRunning = false; }
-  }, 900);
-});
+document.getElementById('btnTL').addEventListener('click', () => startTimeLapse());
 document.getElementById('btnClear').addEventListener('click', () => {
-  systems=[]; selId=null; tlRunning=false; draw(); updateDash(null);
+  systems=[]; selId=null; draw(); updateDash(null);
   document.getElementById('mapHint').style.display = '';
 });
 document.getElementById('presetSel').addEventListener('change', function() {
