@@ -6,44 +6,65 @@ let systems = [];    // { id, type:'H'|'L', temp:'warm'|'cold', fx, fy }
 let selId = null, dragObj = null, dragType = null;
 let animT = 0, tlRunning = false, showArrows = true;
 
-// Utah centre as fractions of canvas (adjust if map image crops differently)
-const UFX = 0.54, UFY = 0.52;
-
 const PRESETS = [
-  [{ t:'H', tmp:'warm', fx:0.54, fy:0.52 }],
-  [{ t:'H', tmp:'warm', fx:0.54, fy:0.52 }, { t:'L', tmp:'warm', fx:0.07, fy:0.50 }],
-  [{ t:'H', tmp:'warm', fx:0.54, fy:0.72 }, { t:'L', tmp:'cold', fx:0.46, fy:0.22 }],
-  [{ t:'L', tmp:'cold', fx:0.18, fy:0.18 }, { t:'H', tmp:'warm', fx:0.78, fy:0.72 }],
+  [{ t:'H', tmp:'warm', fx:0.30, fy:0.50 }],
+  [{ t:'H', tmp:'warm', fx:0.30, fy:0.50 }, { t:'L', tmp:'warm', fx:0.05, fy:0.45 }],
+  [{ t:'H', tmp:'warm', fx:0.30, fy:0.72 }, { t:'L', tmp:'cold', fx:0.28, fy:0.20 }],
+  [{ t:'L', tmp:'cold', fx:0.12, fy:0.18 }, { t:'H', tmp:'warm', fx:0.60, fy:0.72 }],
 ];
 
 // ── Map Image ──────────────────────────────────────────────────────
 const mapImg = new Image();
-mapImg.src = 'us-map.png';
-mapImg.onerror = () => { mapImg.src = 'us-map.jpg'; }; // try .jpg fallback
+mapImg.src = 'us-map.jpg';
 mapImg.onload = () => { if (W && H) draw(); };
 
-// Utah highlight bounds as fractions — adjust to match your map image
-const UT = { x: 0.438, y: 0.40, w: 0.20, h: 0.25 };
+// Tracks where the image is rendered so Utah coords stay in sync with canvas size
+let imgRect = { dx: 0, dy: 0, dw: 1, dh: 1 };
+
+// Utah's position as fractions of the SOURCE IMAGE (0–1).
+// Tune these if the highlight box drifts — open us-map.jpg and measure Utah's corners.
+// Image is portrait ~511×596 px. Utah ≈ left 26–38%, top 43–56%.
+const UT_IF = { x: 0.255, y: 0.425, w: 0.115, h: 0.135 };
+
+// Return Utah centre as canvas fractions (recalculated each frame via imgRect)
+function utahCanvas() {
+  return [
+    (imgRect.dx + (UT_IF.x + UT_IF.w / 2) * imgRect.dw) / W,
+    (imgRect.dy + (UT_IF.y + UT_IF.h / 2) * imgRect.dh) / H,
+  ];
+}
 
 function drawMap() {
   if (!W || !H) return;
+  ctx.fillStyle = '#b3e5fc'; ctx.fillRect(0, 0, W, H); // ocean fallback bg
   if (mapImg.complete && mapImg.naturalWidth) {
-    ctx.drawImage(mapImg, 0, 0, W, H);          // stretch image to fill canvas
+    // Cover scaling: fill canvas width, crop top/bottom (trims Canada & Mexico)
+    const iw = mapImg.naturalWidth, ih = mapImg.naturalHeight;
+    const scale = Math.max(W / iw, H / ih);
+    const dw = iw * scale, dh = ih * scale;
+    const dx = (W - dw) / 2, dy = (H - dh) / 2;
+    imgRect = { dx, dy, dw, dh };
+    ctx.save(); ctx.beginPath(); ctx.rect(0, 0, W, H); ctx.clip();
+    ctx.drawImage(mapImg, dx, dy, dw, dh);
+    ctx.restore();
   } else {
-    ctx.fillStyle = '#e3f2fd'; ctx.fillRect(0, 0, W, H); // placeholder while loading
+    imgRect = { dx: 0, dy: 0, dw: W, dh: H };
   }
-  // Utah highlight overlay
-  const ux = UT.x*W, uy = UT.y*H, uw = UT.w*W, uh = UT.h*H;
-  ctx.fillStyle = 'rgba(255, 200, 0, 0.20)';
+  // Utah highlight overlay (position derived from image fractions via imgRect)
+  const ux = imgRect.dx + UT_IF.x * imgRect.dw;
+  const uy = imgRect.dy + UT_IF.y * imgRect.dh;
+  const uw = UT_IF.w * imgRect.dw;
+  const uh = UT_IF.h * imgRect.dh;
+  ctx.fillStyle = 'rgba(255, 210, 0, 0.22)';
   ctx.fillRect(ux, uy, uw, uh);
-  ctx.strokeStyle = 'rgba(180, 70, 0, 0.65)';
+  ctx.strokeStyle = 'rgba(160, 60, 0, 0.70)';
   ctx.lineWidth = 2; ctx.setLineDash([5, 3]);
   ctx.strokeRect(ux, uy, uw, uh);
   ctx.setLineDash([]);
-  ctx.fillStyle = 'rgba(160, 50, 0, 0.80)';
-  ctx.font = `bold ${Math.max(11, W*0.018)}px Segoe UI`;
+  ctx.fillStyle = 'rgba(130, 40, 0, 0.85)';
+  ctx.font = `bold ${Math.max(11, W * 0.018)}px Segoe UI`;
   ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-  ctx.fillText('UTAH', ux + uw/2, uy + uh/2);
+  ctx.fillText('UTAH', ux + uw / 2, uy + uh / 2);
   ctx.textBaseline = 'alphabetic';
 }
 function drawSystem(s) {
@@ -109,6 +130,7 @@ function draw() {
 }
 function calcWeather() {
   if (!systems.length) return null;
+  const [UFX, UFY] = utahCanvas();
   let nH=null, nL=null, dH=Infinity, dL=Infinity;
   systems.forEach(s => {
     const d = Math.hypot(s.fx-UFX, s.fy-UFY);
