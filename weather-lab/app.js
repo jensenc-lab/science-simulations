@@ -5,9 +5,9 @@ let W = 0, H = 0;
 let systems = [];    // { id, type:'H'|'L', temp:'warm'|'cold', fx, fy }
 let selId = null, dragObj = null, dragType = null;
 let animT = 0, tlRunning = false, showArrows = true;
-const GF  = (lon, lat) => [(lon + 125) / 25, (50 - lat) / 20]; // geo → [0-1] fractions
-const GXY = (lon, lat) => { const [fx, fy] = GF(lon, lat); return [fx * W, fy * H]; };
-const [UFX, UFY] = GF(-111.5, 39.5); // Utah centre fractions
+
+// Utah centre as fractions of canvas (adjust if map image crops differently)
+const UFX = 0.54, UFY = 0.52;
 
 const PRESETS = [
   [{ t:'H', tmp:'warm', fx:0.54, fy:0.52 }],
@@ -15,62 +15,36 @@ const PRESETS = [
   [{ t:'H', tmp:'warm', fx:0.54, fy:0.72 }, { t:'L', tmp:'cold', fx:0.46, fy:0.22 }],
   [{ t:'L', tmp:'cold', fx:0.18, fy:0.18 }, { t:'H', tmp:'warm', fx:0.78, fy:0.72 }],
 ];
-const BORDERS = [ // [lo1,la1, lo2,la2]
-  [-120,49,-120,42], [-124,42,-120,42], [-117,49,-117,42], [-117,42,-114,42],
-  [-125,46,-117,46], [-114,49,-114,37], [-114,37,-109,37], [-109,49,-109,31],
-  [-104,49,-104,31], [-125,49,-100,49], [-125,30,-100,30],
-];
-const CITIES = [
-  [-111.9,40.8,'Salt Lake City'], [-104.9,39.7,'Denver'],  [-115.1,36.2,'Las Vegas'],
-  [-118.2,34.1,'Los Angeles'],    [-112.1,33.4,'Phoenix'],  [-116.2,43.6,'Boise'],
-];
-const SLBLS = [
-  [-117,38.5,'NV'], [-111.5,39.7,'UT'], [-113.5,34,'AZ'],   [-106.5,34.5,'NM'],
-  [-105.5,39,'CO'], [-121,44,'OR'],      [-119.5,37,'CA'],   [-115,44.5,'ID'],
-  [-110,44.5,'WY'], [-108.5,47,'MT'],
-];
-const RIDGE = [[-115,48],[-113,46],[-111,44],[-109,42],[-107.5,40],[-105.5,38],[-104.5,37]];
+
+// ── Map Image ──────────────────────────────────────────────────────
+const mapImg = new Image();
+mapImg.src = 'us-map.png';
+mapImg.onerror = () => { mapImg.src = 'us-map.jpg'; }; // try .jpg fallback
+mapImg.onload = () => { if (W && H) draw(); };
+
+// Utah highlight bounds as fractions — adjust to match your map image
+const UT = { x: 0.438, y: 0.40, w: 0.20, h: 0.25 };
+
 function drawMap() {
   if (!W || !H) return;
-  ctx.fillStyle = '#b3e5fc'; ctx.fillRect(0, 0, W, H);                      // ocean
-  const cx = GXY(-121, 49)[0];
-  ctx.fillStyle = '#dcedc8'; ctx.fillRect(cx, 0, W - cx, H);                // land
-  const [ux1, uy1] = GXY(-114.05, 42), [ux2, uy2] = GXY(-109.05, 37);
-  ctx.fillStyle = '#fff9c4'; ctx.fillRect(ux1, uy1, ux2-ux1, uy2-uy1);      // Utah
-  // grid
-  ctx.strokeStyle = 'rgba(90,110,130,0.12)'; ctx.lineWidth = 0.5;
-  for (let lo=-125; lo<=-100; lo+=5) { const x=GXY(lo,40)[0]; ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,H); ctx.stroke(); }
-  for (let la=30;  la<=50;  la+=5)  { const y=GXY(-120,la)[1]; ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke(); }
-  // state borders
-  ctx.strokeStyle = '#90a4ae'; ctx.lineWidth = 1;
-  for (const [lo1,la1,lo2,la2] of BORDERS) {
-    const [x1,y1] = GXY(lo1,la1), [x2,y2] = GXY(lo2,la2);
-    ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2); ctx.stroke();
+  if (mapImg.complete && mapImg.naturalWidth) {
+    ctx.drawImage(mapImg, 0, 0, W, H);          // stretch image to fill canvas
+  } else {
+    ctx.fillStyle = '#e3f2fd'; ctx.fillRect(0, 0, W, H); // placeholder while loading
   }
-  // Rocky Mountains ridge
-  ctx.strokeStyle = '#81c784'; ctx.lineWidth = 2.5; ctx.beginPath();
-  RIDGE.forEach(([lo,la], i) => { const [x,y]=GXY(lo,la); i ? ctx.lineTo(x,y) : ctx.moveTo(x,y); });
-  ctx.stroke();
-  // Great Salt Lake
-  const [gx,gy] = GXY(-112.5, 41.2); ctx.fillStyle = '#81d4fa';
-  ctx.beginPath(); ctx.ellipse(gx, gy, W*0.018, H*0.024, 0, 0, Math.PI*2); ctx.fill();
-  // "Pacific Ocean" label
-  ctx.textAlign = 'center'; ctx.fillStyle = '#0277bd';
-  ctx.font = `italic ${Math.max(8, W*0.012)}px Segoe UI`;
-  ctx.fillText('Pacific', cx * 0.5, H * 0.45); ctx.fillText('Ocean', cx * 0.5, H * 0.52);
-  // state labels
-  ctx.fillStyle = '#546e7a'; ctx.font = `${Math.max(10, W*0.017)}px Segoe UI`;
-  for (const [lo,la,n] of SLBLS) { const [x,y]=GXY(lo,la); ctx.fillText(n, x, y); }
-  // UTAH bold label
-  const [ulx, uly] = GXY(-111.5, 39.4);
-  ctx.fillStyle = '#bf360c'; ctx.font = `bold ${Math.max(12, W*0.022)}px Segoe UI`;
-  ctx.fillText('UTAH', ulx, uly);
-  // cities
-  ctx.fillStyle = '#37474f'; ctx.font = `${Math.max(9, W*0.013)}px Segoe UI`;
-  for (const [lo,la,n] of CITIES) {
-    const [x,y] = GXY(lo, la); ctx.beginPath(); ctx.arc(x, y, 3, 0, Math.PI*2); ctx.fill();
-    ctx.fillText(n, x, y - 6);
-  }
+  // Utah highlight overlay
+  const ux = UT.x*W, uy = UT.y*H, uw = UT.w*W, uh = UT.h*H;
+  ctx.fillStyle = 'rgba(255, 200, 0, 0.20)';
+  ctx.fillRect(ux, uy, uw, uh);
+  ctx.strokeStyle = 'rgba(180, 70, 0, 0.65)';
+  ctx.lineWidth = 2; ctx.setLineDash([5, 3]);
+  ctx.strokeRect(ux, uy, uw, uh);
+  ctx.setLineDash([]);
+  ctx.fillStyle = 'rgba(160, 50, 0, 0.80)';
+  ctx.font = `bold ${Math.max(11, W*0.018)}px Segoe UI`;
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillText('UTAH', ux + uw/2, uy + uh/2);
+  ctx.textBaseline = 'alphabetic';
 }
 function drawSystem(s) {
   const [x,y] = [s.fx*W, s.fy*H], r = Math.max(24, W*0.037);
