@@ -50,22 +50,6 @@ function drawMap() {
   } else {
     imgRect = { dx: 0, dy: 0, dw: W, dh: H };
   }
-  // Utah highlight overlay (position derived from image fractions via imgRect)
-  const ux = imgRect.dx + UT_IF.x * imgRect.dw;
-  const uy = imgRect.dy + UT_IF.y * imgRect.dh;
-  const uw = UT_IF.w * imgRect.dw;
-  const uh = UT_IF.h * imgRect.dh;
-  ctx.fillStyle = 'rgba(255, 210, 0, 0.22)';
-  ctx.fillRect(ux, uy, uw, uh);
-  ctx.strokeStyle = 'rgba(160, 60, 0, 0.70)';
-  ctx.lineWidth = 2; ctx.setLineDash([5, 3]);
-  ctx.strokeRect(ux, uy, uw, uh);
-  ctx.setLineDash([]);
-  ctx.fillStyle = 'rgba(130, 40, 0, 0.85)';
-  ctx.font = `bold ${Math.max(11, W * 0.018)}px Segoe UI`;
-  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-  ctx.fillText('UTAH', ux + uw / 2, uy + uh / 2);
-  ctx.textBaseline = 'alphabetic';
 }
 function drawSystem(s) {
   const [x,y] = [s.fx*W, s.fy*H], r = Math.max(24, W*0.037);
