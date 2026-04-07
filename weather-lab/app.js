@@ -259,6 +259,58 @@ function drawWindArrows() {
     }
   }));
 }
+function drawCompass() {
+  const cx = 46, cy = 46, discR = 34;
+  ctx.save();
+
+  // Semi-transparent background disc
+  ctx.beginPath(); ctx.arc(cx, cy, discR, 0, Math.PI * 2);
+  ctx.fillStyle = 'rgba(10, 22, 48, 0.52)'; ctx.fill();
+  ctx.strokeStyle = 'rgba(255,255,255,0.18)'; ctx.lineWidth = 1; ctx.stroke();
+
+  // N highlighted gold; S/E/W white
+  const dirs = [
+    { a: -Math.PI / 2, l: 'N' },
+    { a:  Math.PI / 2, l: 'S' },
+    { a:  0,           l: 'E' },
+    { a:  Math.PI,     l: 'W' },
+  ];
+  dirs.forEach(({ a, l }) => {
+    const isN = l === 'N';
+    const cos = Math.cos(a), sin = Math.sin(a);
+    const shaftColor = isN ? 'rgba(255,235,100,0.95)' : 'rgba(255,255,255,0.68)';
+    const headColor  = isN ? 'rgba(255,235,100,0.95)' : 'rgba(255,255,255,0.72)';
+
+    // Shaft (starts just off-centre so there's a small gap at the hub)
+    ctx.strokeStyle = shaftColor; ctx.lineWidth = isN ? 2.2 : 1.5;
+    ctx.beginPath();
+    ctx.moveTo(cx - cos * 5,  cy - sin * 5);   // base (opposite side of centre)
+    ctx.lineTo(cx + cos * 18, cy + sin * 18);   // tip of shaft
+    ctx.stroke();
+
+    // Arrowhead triangle
+    const px = -sin, py = cos;                  // perpendicular unit vector
+    ctx.fillStyle = headColor;
+    ctx.beginPath();
+    ctx.moveTo(cx + cos * 23, cy + sin * 23);                        // point
+    ctx.lineTo(cx + cos * 15 + px * 4, cy + sin * 15 + py * 4);     // left base
+    ctx.lineTo(cx + cos * 15 - px * 4, cy + sin * 15 - py * 4);     // right base
+    ctx.closePath(); ctx.fill();
+
+    // Label — sits between arrowhead and disc edge
+    ctx.fillStyle    = isN ? 'rgba(255,242,120,1)' : 'rgba(255,255,255,0.88)';
+    ctx.font         = isN ? 'bold 11px Segoe UI' : '10px Segoe UI';
+    ctx.textAlign    = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(l, cx + cos * (discR - 7), cy + sin * (discR - 7));
+  });
+
+  // Small hub dot at centre
+  ctx.fillStyle = 'rgba(255,255,255,0.50)';
+  ctx.beginPath(); ctx.arc(cx, cy, 2.5, 0, Math.PI * 2); ctx.fill();
+
+  ctx.restore();
+}
 function draw() {
   ctx.clearRect(0, 0, W, H); drawMap();
   if (typeof drawWeatherEffects !== 'undefined') drawWeatherEffects(animT);
@@ -267,6 +319,7 @@ function draw() {
     if (h.temp!==l.temp && Math.hypot((h.fx-l.fx)*W, (h.fy-l.fy)*H) < W*0.7) drawFront(h, l);
   }));
   systems.forEach(drawSystem);
+  drawCompass();
   if (typeof drawWeatherHud !== 'undefined') drawWeatherHud();
   animT += 0.016;
 }
