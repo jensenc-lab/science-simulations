@@ -10,34 +10,35 @@
 
   <header class="header">
     <div class="header-inner">
-      <h1 class="sim-title">🌦️ Weather Map Lab: Air Masses &amp; Pressure</h1>
+      <h1 class="sim-title" id="pageTitle">🌦️ Weather Map Lab: Air Masses &amp; Pressure</h1>
       <div class="badge-group">
         <button class="std-badge" id="stdBadge">6.3.2</button>
         <div class="std-popup hidden" id="stdPopup">
           Investigate how air moves from high pressure to low pressure areas and causes changes in weather!
         </div>
       </div>
+      <button class="lang-btn" id="langBtn">🇪🇸 Español</button>
     </div>
   </header>
 
   <div class="controls-bar">
     <div class="toolbar-section">
-      <span class="toolbar-label">Drag to map:</span>
+      <span class="toolbar-label" id="toolbarLabel">Drag to map:</span>
       <div class="toolbar-item" id="toolH" draggable="true"
            title="High pressure = clear, dry, calm weather. Air sinks and spreads outward.">
         <div class="sys-icon high">H</div>
-        <span>High (H)</span>
+        <span id="toolHLabel">High (H)</span>
       </div>
       <div class="toolbar-item" id="toolL" draggable="true"
            title="Low pressure = cloudy, stormy weather. Air rises and pulls surrounding air inward.">
         <div class="sys-icon low">L</div>
-        <span>Low (L)</span>
+        <span id="toolLLabel">Low (L)</span>
       </div>
     </div>
     <div class="temp-section">
-      <span class="toolbar-label">Selected:</span>
+      <span class="toolbar-label">Select system:</span>
       <div class="temp-toggle" id="tempToggle">
-        <button class="temp-btn active" data-temp="warm">☀️ Warm</button>
+        <button class="temp-btn" data-temp="warm">☀️ Warm</button>
         <button class="temp-btn" data-temp="cold">❄️ Cold</button>
       </div>
     </div>
@@ -62,22 +63,22 @@
 
   <div class="dashboard">
     <div class="conditions-box">
-      <h3>📍 Utah — Current Conditions</h3>
-      <div class="cond-row"><span class="cond-lbl">Temperature:</span><span id="cTemp">—</span></div>
-      <div class="cond-row"><span class="cond-lbl">Sky:</span><span id="cSky">—</span></div>
-      <div class="cond-row"><span class="cond-lbl">Wind:</span><span id="cWind">—</span></div>
-      <div class="cond-row"><span class="cond-lbl">Pressure:</span><span id="cPres">—</span></div>
+      <h3 id="dashTitle">📍 Utah — Current Conditions</h3>
+      <div class="cond-row"><span class="cond-lbl" id="lblTemp">Temperature:</span><span id="cTemp">—</span></div>
+      <div class="cond-row"><span class="cond-lbl" id="lblSky">Sky:</span><span id="cSky">—</span></div>
+      <div class="cond-row"><span class="cond-lbl" id="lblWind">Wind:</span><span id="cWind">—</span></div>
+      <div class="cond-row"><span class="cond-lbl" id="lblPres">Pressure:</span><span id="cPres">—</span></div>
     </div>
     <div class="info-box">
-      <h3>💡 What's Happening?</h3>
+      <h3 id="infoTitle">💡 What's Happening?</h3>
       <p id="infoText">Place a High (H) or Low (L) pressure system on the map to begin!</p>
     </div>
   </div>
 
   <div class="collapsibles">
     <details class="col-panel">
-      <summary>📖 Vocabulary</summary>
-      <dl class="vocab-dl">
+      <summary id="vocabSummary">📖 Vocabulary</summary>
+      <dl class="vocab-dl" id="vocabBody">
         <dt>Air Mass</dt><dd>A large body of air with similar temperature and moisture throughout.</dd>
         <dt>High Pressure</dt><dd>An area where air sinks and spreads outward, creating clear, dry, calm weather.</dd>
         <dt>Low Pressure</dt><dd>An area where air rises and pulls surrounding air inward, creating clouds and storms.</dd>
@@ -89,8 +90,8 @@
       </dl>
     </details>
     <details class="col-panel">
-      <summary>🧠 Key Concepts</summary>
-      <ul class="concept-ul">
+      <summary id="conceptsSummary">🧠 Key Concepts</summary>
+      <ul class="concept-ul" id="conceptsBody">
         <li>💨 <strong>Air always flows from HIGH → LOW pressure</strong> — like air escaping a balloon.</li>
         <li>☀️ <strong>High pressure = sinking air = clear, dry weather.</strong> Sinking air warms up and stops clouds from forming.</li>
         <li>🌧️ <strong>Low pressure = rising air = clouds and rain.</strong> Rising air cools and water vapor condenses into clouds.</li>

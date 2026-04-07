@@ -116,7 +116,7 @@ function wxLightning() {
 // ── Day label + progress bar (drawn on top of everything) ───────────
 function drawWeatherHud() {
   if (!wxTlRunning && wxTlDay === 0) return;
-  const lbl  = wxTlRunning ? `Day ${wxTlDay} of 3` : 'Time-Lapse Complete';
+  const lbl  = wxTlRunning ? T[lang].tlDay(wxTlDay) : T[lang].tlDone;
   const barW = Math.min(260, W * 0.32), bx = (W - barW) / 2, by = 10;
   ctx.fillStyle = 'rgba(13,40,80,0.74)';
   ctx.beginPath(); ctx.roundRect(bx - 12, by, barW + 24, 36, 8); ctx.fill();
@@ -163,9 +163,7 @@ function startTimeLapse() {
     if (wxTlDay >= 3) {
       wxTlRunning = false;
       const [d1, d2, d3] = wxTlCond;
-      document.getElementById('infoText').textContent =
-        `Over 3 days, weather systems moved west → east across the US. ` +
-        `Utah: ${d1} → ${d2} → ${d3}. This is how forecasters track weather — by following pressure systems!`;
+      document.getElementById('infoText').textContent = T[lang].tlSummary(d1, d2, d3);
       setTimeout(() => { wxTlDay = 0; }, 4000); // hide HUD after a moment
       return;
     }

@@ -1,4 +1,145 @@
+// ── Translations ──────────────────────────────────────────────────────
+const T = {
+  en: {
+    langBtn: '🇪🇸 Español',
+    pageTitle: '🌦️ Weather Map Lab: Air Masses &amp; Pressure',
+    toolbarLabel: 'Drag to map:',
+    toolHLabel: 'High (H)',
+    toolHTitle: 'High pressure = clear, dry, calm weather. Air sinks and spreads outward.',
+    toolLLabel: 'Low (L)',
+    toolLTitle: 'Low pressure = cloudy, stormy weather. Air rises and pulls surrounding air inward.',
+    tempLabelNone: 'Select system:',
+    tempLabelSet: type => `Set temp (${type}):`,
+    tempWarm: '☀️ Warm',
+    tempCold: '❄️ Cold',
+    canvasWarm: '☀ warm',
+    canvasCold: '❄ cold',
+    btnSim: '▶ Simulate',
+    btnSimPause: '⏸ Pause',
+    btnTL: '⏩ Time-Lapse (3 days)',
+    btnClear: '🗑️ Clear Map',
+    presetLabel: '📋 Preset Scenarios',
+    presets: ['Clear Day in Utah', 'Storm Approaching', 'Cold Front Passage', 'Winter Storm'],
+    mapHint: '← Drag H or L systems onto the map to begin',
+    dashTitle: '📍 Utah — Current Conditions',
+    lblTemp: 'Temperature:',
+    lblSky: 'Sky:',
+    lblWind: 'Wind:',
+    lblPres: 'Pressure:',
+    infoTitle: "💡 What's Happening?",
+    infoInit: 'Place a High (H) or Low (L) pressure system on the map to begin!',
+    noSystems: 'Drag the systems closer to Utah to see its weather change!',
+    tempWarmVal: 'Warm ☀️',
+    tempColdVal: 'Cold ❄️',
+    skyClear: 'Clear ☀️',
+    skyPartly: 'Partly Cloudy ⛅',
+    skyCloudy: 'Cloudy ☁️',
+    skyRainy: 'Rainy 🌧️',
+    skyStormy: 'Stormy ⛈️',
+    windCalm: 'Calm',
+    windStrong: 'Strong winds',
+    windFrom: dir => `Winds from the ${dir}`,
+    presHigh: 'High pressure overhead',
+    presLow: 'Low pressure approaching',
+    presLowHere: 'Low pressure overhead',
+    dirs: ['east','northeast','north','northwest','west','southwest','south','southeast'],
+    infoHighOnly: isWarm => `High pressure over Utah means sinking air, which creates clear skies and calm weather. The ${isWarm?'warm':'cold'} air mass keeps conditions stable.`,
+    infoLowOnly: isWarm => `A low pressure system is pulling air from surrounding high pressure areas. This rising ${isWarm?'warm':'cold'} air creates clouds and possible precipitation.`,
+    infoNoFront: (isWarm, dir) => `Utah is under a ${isWarm?'warm':'cold'} air mass. Wind flows from the high pressure area toward the low — winds from the ${dir}.`,
+    infoFront: isCold => isCold
+      ? `A cold front is approaching. When cold air pushes under warm air, it forces the warm air up quickly, creating thunderstorms.`
+      : `A warm front is approaching. Warm air slides over cooler air, bringing gradual warming and light rain or snow.`,
+    tlDay: d => `Day ${d} of 3`,
+    tlDone: 'Time-Lapse Complete',
+    tlSummary: (d1, d2, d3) => `Over 3 days, weather systems moved west → east across the US. Utah: ${d1} → ${d2} → ${d3}. This is how forecasters track weather — by following pressure systems!`,
+    vocabSummary: '📖 Vocabulary',
+    conceptsSummary: '🧠 Key Concepts',
+    vocabHTML: `<dt>Air Mass</dt><dd>A large body of air with similar temperature and moisture throughout.</dd>
+        <dt>High Pressure</dt><dd>An area where air sinks and spreads outward, creating clear, dry, calm weather.</dd>
+        <dt>Low Pressure</dt><dd>An area where air rises and pulls surrounding air inward, creating clouds and storms.</dd>
+        <dt>Cold Front</dt><dd>Leading edge of cold air pushing into warmer air — brings storms and temperature drops.</dd>
+        <dt>Warm Front</dt><dd>Leading edge of warm air moving over cold air — brings gradual warming and light rain.</dd>
+        <dt>Precipitation</dt><dd>Water falling from clouds — rain, snow, sleet, or hail.</dd>
+        <dt>Wind</dt><dd>Moving air caused by pressure differences. Air flows from high to low pressure.</dd>
+        <dt>Atmosphere</dt><dd>The layers of gases surrounding Earth where weather occurs.</dd>`,
+    conceptsHTML: `<li>💨 <strong>Air always flows from HIGH → LOW pressure</strong> — like air escaping a balloon.</li>
+        <li>☀️ <strong>High pressure = sinking air = clear, dry weather.</strong> Sinking air warms up and stops clouds from forming.</li>
+        <li>🌧️ <strong>Low pressure = rising air = clouds and rain.</strong> Rising air cools and water vapor condenses into clouds.</li>
+        <li>⛈️ <strong>Fronts form where different temperature air masses meet</strong>, bringing rapid weather changes and storms.</li>`,
+    stdPopup: 'Investigate how air moves from high pressure to low pressure areas and causes changes in weather!',
+  },
+  es: {
+    langBtn: '🇺🇸 English',
+    pageTitle: '🌦️ Laboratorio de Mapas del Clima: Masas de Aire y Presión',
+    toolbarLabel: 'Arrastra al mapa:',
+    toolHLabel: 'Alta (H)',
+    toolHTitle: 'Alta presión = clima despejado, seco y tranquilo. El aire desciende y se extiende hacia afuera.',
+    toolLLabel: 'Baja (L)',
+    toolLTitle: 'Baja presión = clima nublado y tormentoso. El aire sube y jala el aire circundante hacia adentro.',
+    tempLabelNone: 'Seleccionar sistema:',
+    tempLabelSet: type => `Ajustar temp (${type}):`,
+    tempWarm: '☀️ Cálido',
+    tempCold: '❄️ Frío',
+    canvasWarm: '☀ cálido',
+    canvasCold: '❄ frío',
+    btnSim: '▶ Simular',
+    btnSimPause: '⏸ Pausar',
+    btnTL: '⏩ Lapso de Tiempo (3 días)',
+    btnClear: '🗑️ Limpiar Mapa',
+    presetLabel: '📋 Escenarios Predefinidos',
+    presets: ['Día Despejado en Utah', 'Tormenta Acercándose', 'Paso de Frente Frío', 'Tormenta Invernal'],
+    mapHint: '← Arrastra sistemas H o L al mapa para comenzar',
+    dashTitle: '📍 Utah — Condiciones Actuales',
+    lblTemp: 'Temperatura:',
+    lblSky: 'Cielo:',
+    lblWind: 'Viento:',
+    lblPres: 'Presión:',
+    infoTitle: '💡 ¿Qué Está Pasando?',
+    infoInit: '¡Coloca un sistema de Alta (H) o Baja (L) presión en el mapa para comenzar!',
+    noSystems: 'Acerca los sistemas a Utah para ver cómo cambia el clima.',
+    tempWarmVal: 'Cálido ☀️',
+    tempColdVal: 'Frío ❄️',
+    skyClear: 'Despejado ☀️',
+    skyPartly: 'Parcialmente Nublado ⛅',
+    skyCloudy: 'Nublado ☁️',
+    skyRainy: 'Lluvioso 🌧️',
+    skyStormy: 'Tormentoso ⛈️',
+    windCalm: 'Calma',
+    windStrong: 'Vientos fuertes',
+    windFrom: dir => `Vientos del ${dir}`,
+    presHigh: 'Alta presión encima',
+    presLow: 'Baja presión acercándose',
+    presLowHere: 'Baja presión encima',
+    dirs: ['este','noreste','norte','noroeste','oeste','suroeste','sur','sureste'],
+    infoHighOnly: isWarm => `Alta presión sobre Utah significa aire descendente, lo que crea cielos despejados y clima calmado. La masa de aire ${isWarm?'cálido':'frío'} mantiene condiciones estables.`,
+    infoLowOnly: isWarm => `Un sistema de baja presión está jalando aire de las áreas de alta presión circundantes. Este aire ${isWarm?'cálido':'frío'} ascendente crea nubes y posible precipitación.`,
+    infoNoFront: (isWarm, dir) => `Utah está bajo una masa de aire ${isWarm?'cálido':'frío'}. El viento fluye del área de alta presión hacia la baja — vientos del ${dir}.`,
+    infoFront: isCold => isCold
+      ? `Un frente frío se acerca. Cuando el aire frío empuja debajo del aire cálido, fuerza al aire cálido a subir rápidamente, creando tormentas eléctricas.`
+      : `Un frente cálido se acerca. El aire cálido se desliza sobre el aire frío, trayendo calentamiento gradual y lluvia ligera o nieve.`,
+    tlDay: d => `Día ${d} de 3`,
+    tlDone: 'Lapso de Tiempo Completo',
+    tlSummary: (d1, d2, d3) => `En 3 días, los sistemas meteorológicos se movieron de oeste → este por los EE.UU. Utah: ${d1} → ${d2} → ${d3}. ¡Así es como los meteorólogos rastrean el clima — siguiendo los sistemas de presión!`,
+    vocabSummary: '📖 Vocabulario',
+    conceptsSummary: '🧠 Conceptos Clave',
+    vocabHTML: `<dt>Masa de Aire</dt><dd>Un gran cuerpo de aire con temperatura y humedad similar en toda su extensión.</dd>
+        <dt>Alta Presión</dt><dd>Un área donde el aire desciende y se extiende hacia afuera, creando clima despejado, seco y tranquilo.</dd>
+        <dt>Baja Presión</dt><dd>Un área donde el aire sube y jala el aire circundante hacia adentro, creando nubes y tormentas.</dd>
+        <dt>Frente Frío</dt><dd>Borde delantero de aire frío que empuja hacia el aire más cálido — trae tormentas y descensos de temperatura.</dd>
+        <dt>Frente Cálido</dt><dd>Borde delantero de aire cálido sobre el aire frío — trae calentamiento gradual y lluvia ligera.</dd>
+        <dt>Precipitación</dt><dd>Agua que cae de las nubes — lluvia, nieve, aguanieve o granizo.</dd>
+        <dt>Viento</dt><dd>Aire en movimiento por diferencias de presión. El aire fluye de alta a baja presión.</dd>
+        <dt>Atmósfera</dt><dd>Las capas de gases que rodean la Tierra donde ocurre el clima.</dd>`,
+    conceptsHTML: `<li>💨 <strong>El aire siempre fluye de ALTA → BAJA presión</strong> — como el aire escapando de un globo.</li>
+        <li>☀️ <strong>Alta presión = aire descendente = clima despejado y seco.</strong> El aire descendente se calienta e impide la formación de nubes.</li>
+        <li>🌧️ <strong>Baja presión = aire ascendente = nubes y lluvia.</strong> El aire ascendente se enfría y el vapor de agua se condensa en nubes.</li>
+        <li>⛈️ <strong>Los frentes se forman donde se encuentran masas de aire de diferente temperatura</strong>, trayendo cambios rápidos en el clima y tormentas.</li>`,
+    stdPopup: '¡Investiga cómo el aire se mueve de áreas de alta presión a áreas de baja presión y causa cambios en el clima!',
+  },
+};
+
 // ── State ──────────────────────────────────────────────────────────
+let lang = 'en';
 const canvas = document.getElementById('mapCanvas');
 const ctx = canvas.getContext('2d');
 let W = 0, H = 0;
@@ -22,8 +163,6 @@ mapImg.onload = () => { if (W && H) draw(); };
 let imgRect = { dx: 0, dy: 0, dw: 1, dh: 1 };
 
 // Utah's position as fractions of the SOURCE IMAGE (0–1).
-// Tune these if the highlight box drifts — open us-map.jpg and measure Utah's corners.
-// Image is portrait ~511×596 px. Utah ≈ left 26–38%, top 43–56%.
 const UT_IF = { x: 0.255, y: 0.425, w: 0.115, h: 0.135 };
 
 // Return Utah centre as canvas fractions (recalculated each frame via imgRect)
@@ -36,9 +175,8 @@ function utahCanvas() {
 
 function drawMap() {
   if (!W || !H) return;
-  ctx.fillStyle = '#b3e5fc'; ctx.fillRect(0, 0, W, H); // ocean fallback bg
+  ctx.fillStyle = '#b3e5fc'; ctx.fillRect(0, 0, W, H);
   if (mapImg.complete && mapImg.naturalWidth) {
-    // Cover scaling: fill canvas width, crop top/bottom (trims Canada & Mexico)
     const iw = mapImg.naturalWidth, ih = mapImg.naturalHeight;
     const scale = Math.max(W / iw, H / ih);
     const dw = iw * scale, dh = ih * scale;
@@ -53,15 +191,31 @@ function drawMap() {
 }
 function drawSystem(s) {
   const [x,y] = [s.fx*W, s.fy*H], r = Math.max(24, W*0.037);
+
+  // Animated dashed selection ring
+  if (s.id === selId) {
+    ctx.save();
+    ctx.setLineDash([7, 4]);
+    ctx.lineDashOffset = -(animT * 12);
+    ctx.beginPath(); ctx.arc(x, y, r + 8, 0, Math.PI*2);
+    ctx.strokeStyle = '#ffeb3b'; ctx.lineWidth = 3;
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.restore();
+  }
+
+  // Circle: H = red family, L = blue family; temp shifts shade slightly
   ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI*2);
-  ctx.fillStyle = s.type==='H' ? (s.temp==='warm'?'#ef9a9a':'#ffcc80') : (s.temp==='warm'?'#90caf9':'#b39ddb');
+  const fills = { H: { warm: '#e57373', cold: '#ef9a9a' }, L: { warm: '#64b5f6', cold: '#7986cb' } };
+  ctx.fillStyle = fills[s.type][s.temp];
   ctx.fill();
-  ctx.strokeStyle = s.id===selId ? '#f57f17' : (s.type==='H' ? '#c62828' : '#1565c0');
-  ctx.lineWidth = s.id===selId ? 3 : 2; ctx.stroke();
+  ctx.strokeStyle = s.type==='H' ? '#c62828' : '#1565c0';
+  ctx.lineWidth = 2; ctx.stroke();
+
   ctx.fillStyle = '#fff'; ctx.textBaseline = 'middle'; ctx.textAlign = 'center';
   ctx.font = `bold ${Math.max(20, W*0.033)}px Segoe UI`; ctx.fillText(s.type, x, y);
   ctx.font = `${Math.max(9, W*0.013)}px Segoe UI`;
-  ctx.fillText(s.temp==='warm' ? '☀️warm' : '❄️cold', x, y + Math.max(16, W*0.024));
+  ctx.fillText(s.temp==='warm' ? T[lang].canvasWarm : T[lang].canvasCold, x, y + Math.max(16, W*0.024));
   ctx.textBaseline = 'alphabetic';
 }
 function drawFront(h, l) {
@@ -118,6 +272,7 @@ function draw() {
 }
 function calcWeather() {
   if (!systems.length) return null;
+  const t = T[lang];
   const [UFX, UFY] = utahCanvas();
   let nH=null, nL=null, dH=Infinity, dL=Infinity;
   systems.forEach(s => {
@@ -126,27 +281,29 @@ function calcWeather() {
     if (s.type==='L' && d<dL) { dL=d; nL=s; }
   });
   const hN=nH&&dH<0.32, lN=nL&&dL<0.32;
-  if (!hN&&!lN) return { temp:'—', sky:'—', wind:'Calm', pres:'No nearby systems', info:'Drag the systems closer to Utah to see its weather change!' };
-  if (hN&&!lN)  return { temp:nH.temp==='warm'?'Warm 🌡️':'Cold 🥶', sky:'Clear ☀️', wind:'Calm', pres:'High pressure overhead', info:'High pressure over Utah means sinking air, which creates clear skies and calm weather.' };
-  if (lN&&!hN)  return { temp:nL.temp==='warm'?'Warm 🌡️':'Cold 🥶', sky:dL<0.15?'Stormy ⛈️':'Cloudy ☁️', wind:'Strong winds', pres:'Low pressure overhead', info:'A low pressure system is pulling air from surrounding areas. This rising air creates clouds and possible precipitation.' };
+  if (!hN&&!lN) return { temp:'—', sky:'—', wind:t.windCalm, pres:'—', info:t.noSystems };
+  if (hN&&!lN)  return { temp:nH.temp==='warm'?t.tempWarmVal:t.tempColdVal, sky:t.skyClear, wind:t.windCalm, pres:t.presHigh, info:t.infoHighOnly(nH.temp==='warm') };
+  if (lN&&!hN)  return { temp:nL.temp==='warm'?t.tempWarmVal:t.tempColdVal, sky:dL<0.15?t.skyStormy:t.skyCloudy, wind:t.windStrong, pres:t.presLowHere, info:t.infoLowOnly(nL.temp==='warm') };
   const hD=dH<dL, hasFront=nH.temp!==nL.temp, wd=windDir(nH, nL);
+  const dominantSys = hD ? nH : nL;
   return {
-    temp: (hD?nH:nL).temp==='warm' ? 'Warm 🌡️' : 'Cold 🥶',
-    sky:  hasFront ? (dH<dL ? 'Rainy 🌧️' : 'Stormy ⛈️') : 'Partly Cloudy ⛅',
-    wind: `Winds from the ${wd}`,
-    pres: hD ? 'High pressure overhead' : 'Low pressure approaching',
+    temp: dominantSys.temp==='warm' ? t.tempWarmVal : t.tempColdVal,
+    sky:  hasFront ? (dH<dL ? t.skyRainy : t.skyStormy) : t.skyPartly,
+    wind: t.windFrom(wd),
+    pres: hD ? t.presHigh : t.presLow,
     info: hasFront
-      ? `A ${nL.temp==='cold'?'cold':'warm'} front is forming. Cold air pushing under warm air forces it upward, creating storms along the front.`
-      : `Wind is flowing from the high pressure area toward the low. Winds coming from the ${wd}.`,
+      ? t.infoFront(nL.temp==='cold')
+      : t.infoNoFront(dominantSys.temp==='warm', wd),
   };
-}function windDir(h, l) {
+}
+function windDir(h, l) {
   const a = Math.atan2(-(l.fy-h.fy), -(l.fx-h.fx)) * 180 / Math.PI;
-  return ['east','northeast','north','northwest','west','southwest','south','southeast'][Math.round(((a%360)+360)%360/45)%8];
+  return T[lang].dirs[Math.round(((a%360)+360)%360/45)%8];
 }
 function updateDash(w) {
   if (!w) {
     ['cTemp','cSky','cWind','cPres'].forEach(id => document.getElementById(id).textContent = '—');
-    document.getElementById('infoText').textContent = 'Place a High (H) or Low (L) pressure system on the map to begin!';
+    document.getElementById('infoText').textContent = T[lang].infoInit;
     return;
   }
   document.getElementById('cTemp').textContent = w.temp;
@@ -156,11 +313,53 @@ function updateDash(w) {
   document.getElementById('infoText').textContent = w.info;
 }
 const refreshTog = () => {
-  const s = systems.find(s => s.id===selId);
-  document.querySelectorAll('.temp-btn').forEach(b => b.classList.toggle('active', !!s && b.dataset.temp===s.temp));
+  const s = systems.find(s => s.id === selId);
+  const has = !!s;
+  document.querySelectorAll('.temp-btn').forEach(b => {
+    b.classList.toggle('active', has && b.dataset.temp === s.temp);
+    b.disabled = !has;
+  });
+  const lbl = document.querySelector('.temp-section .toolbar-label');
+  if (lbl) lbl.textContent = has ? T[lang].tempLabelSet(s.type) : T[lang].tempLabelNone;
 };
+
+// ── Language toggle ────────────────────────────────────────────────
+function applyLang() {
+  const t = T[lang];
+  document.getElementById('pageTitle').innerHTML = t.pageTitle;
+  document.getElementById('langBtn').textContent = t.langBtn;
+  document.getElementById('stdPopup').textContent = t.stdPopup;
+  document.getElementById('toolbarLabel').textContent = t.toolbarLabel;
+  document.getElementById('toolHLabel').textContent = t.toolHLabel;
+  document.getElementById('toolH').title = t.toolHTitle;
+  document.getElementById('toolLLabel').textContent = t.toolLLabel;
+  document.getElementById('toolL').title = t.toolLTitle;
+  document.querySelector('.temp-btn[data-temp="warm"]').textContent = t.tempWarm;
+  document.querySelector('.temp-btn[data-temp="cold"]').textContent = t.tempCold;
+  document.getElementById('btnSim').textContent = showArrows ? t.btnSimPause : t.btnSim;
+  document.getElementById('btnTL').textContent = t.btnTL;
+  document.getElementById('btnClear').textContent = t.btnClear;
+  const sel = document.getElementById('presetSel');
+  sel.options[0].text = t.presetLabel;
+  t.presets.forEach((name, i) => { if (sel.options[i + 1]) sel.options[i + 1].text = name; });
+  document.getElementById('mapHint').textContent = t.mapHint;
+  document.getElementById('dashTitle').textContent = t.dashTitle;
+  document.getElementById('lblTemp').textContent = t.lblTemp;
+  document.getElementById('lblSky').textContent = t.lblSky;
+  document.getElementById('lblWind').textContent = t.lblWind;
+  document.getElementById('lblPres').textContent = t.lblPres;
+  document.getElementById('infoTitle').textContent = t.infoTitle;
+  document.getElementById('vocabSummary').textContent = t.vocabSummary;
+  document.getElementById('vocabBody').innerHTML = t.vocabHTML;
+  document.getElementById('conceptsSummary').textContent = t.conceptsSummary;
+  document.getElementById('conceptsBody').innerHTML = t.conceptsHTML;
+  refreshTog();
+  updateDash(calcWeather());
+}
+
+// ── Event Listeners ────────────────────────────────────────────────
 document.querySelectorAll('.temp-btn').forEach(btn => btn.addEventListener('click', () => {
-  const s = systems.find(s => s.id===selId);
+  const s = systems.find(s => s.id === selId);
   if (s) { s.temp = btn.dataset.temp; draw(); updateDash(calcWeather()); refreshTog(); }
 }));
 ['H','L'].forEach(t => document.getElementById(`tool${t}`).addEventListener('dragstart', e => {
@@ -191,22 +390,30 @@ canvas.addEventListener('mousemove', e => {
 canvas.addEventListener('mouseup', () => dragObj = null);
 // ── Buttons & Presets ─────────────────────────────────────────────
 document.getElementById('btnSim').addEventListener('click', function() {
-  showArrows = !showArrows; this.textContent = showArrows ? '⏸ Pause' : '▶ Simulate'; draw();
+  showArrows = !showArrows;
+  this.textContent = showArrows ? T[lang].btnSimPause : T[lang].btnSim;
+  draw();
 });
 document.getElementById('btnTL').addEventListener('click', () => startTimeLapse());
 document.getElementById('btnClear').addEventListener('click', () => {
-  systems=[]; selId=null; draw(); updateDash(null);
+  systems=[]; selId=null; draw(); updateDash(null); refreshTog();
   document.getElementById('mapHint').style.display = '';
 });
 document.getElementById('presetSel').addEventListener('change', function() {
   const idx = parseInt(this.value); if (isNaN(idx)) return;
   systems = PRESETS[idx].map((s,i) => ({ id:i, type:s.t, temp:s.tmp, fx:s.fx, fy:s.fy }));
   selId=null; this.value=''; document.getElementById('mapHint').style.display = 'none';
-  draw(); updateDash(calcWeather());
+  draw(); updateDash(calcWeather()); refreshTog();
 });
 document.getElementById('stdBadge').addEventListener('click', () => document.getElementById('stdPopup').classList.toggle('hidden'));
 document.addEventListener('click', e => { if (!e.target.closest('.badge-group')) document.getElementById('stdPopup').classList.add('hidden'); });
+document.getElementById('langBtn').addEventListener('click', () => {
+  lang = lang === 'en' ? 'es' : 'en';
+  applyLang();
+});
 function resize() { const c=canvas.parentElement; W=canvas.width=c.clientWidth; H=canvas.height=c.clientHeight; }
 window.addEventListener('resize', resize);
 resize();
+refreshTog();
+applyLang();
 (function loop() { draw(); requestAnimationFrame(loop); })();
