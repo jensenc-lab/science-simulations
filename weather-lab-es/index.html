@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Laboratorio de Mapas del Clima — Utah SEEd 6.3.2</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <header class="header">
+    <div class="header-inner">
+      <h1 class="sim-title">🌦️ Laboratorio de Mapas del Clima: Masas de Aire y Presión</h1>
+      <div class="badge-group">
+        <button class="std-badge" id="stdBadge">6.3.2</button>
+        <div class="std-popup hidden" id="stdPopup">
+          ¡Investiga cómo el aire se mueve de áreas de alta presión a áreas de baja presión y causa cambios en el clima!
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="controls-bar">
+    <div class="toolbar-section">
+      <span class="toolbar-label">Arrastra al mapa:</span>
+      <div class="toolbar-item" id="toolH" draggable="true"
+           title="Alta presión = clima despejado, seco y tranquilo. El aire desciende y se extiende hacia afuera.">
+        <div class="sys-icon high">H</div>
+        <span>Alta (H)</span>
+      </div>
+      <div class="toolbar-item" id="toolL" draggable="true"
+           title="Baja presión = clima nublado y tormentoso. El aire sube y jala el aire circundante hacia adentro.">
+        <div class="sys-icon low">L</div>
+        <span>Baja (L)</span>
+      </div>
+    </div>
+    <div class="temp-section">
+      <span class="toolbar-label" id="tempLabel">Seleccionar sistema:</span>
+      <div class="temp-toggle" id="tempToggle">
+        <button class="temp-btn" data-temp="warm">☀️ Cálido</button>
+        <button class="temp-btn" data-temp="cold">❄️ Frío</button>
+      </div>
+    </div>
+    <div class="btn-section">
+      <button class="ctrl-btn primary" id="btnSim">▶ Simular</button>
+      <button class="ctrl-btn" id="btnTL">⏩ Lapso de Tiempo (3 días)</button>
+      <button class="ctrl-btn danger" id="btnClear">🗑️ Limpiar Mapa</button>
+      <select class="ctrl-select" id="presetSel">
+        <option value="">📋 Escenarios Predefinidos</option>
+        <option value="0">Día Despejado en Utah</option>
+        <option value="1">Tormenta Acercándose</option>
+        <option value="2">Paso de Frente Frío</option>
+        <option value="3">Tormenta Invernal</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="map-wrap" id="mapWrap">
+    <canvas id="mapCanvas"></canvas>
+    <div class="map-hint" id="mapHint">← Arrastra sistemas H o L al mapa para comenzar</div>
+  </div>
+
+  <div class="dashboard">
+    <div class="conditions-box">
+      <h3>📍 Utah — Condiciones Actuales</h3>
+      <div class="cond-row"><span class="cond-lbl">Temperatura:</span><span id="cTemp">—</span></div>
+      <div class="cond-row"><span class="cond-lbl">Cielo:</span><span id="cSky">—</span></div>
+      <div class="cond-row"><span class="cond-lbl">Viento:</span><span id="cWind">—</span></div>
+      <div class="cond-row"><span class="cond-lbl">Presión:</span><span id="cPres">—</span></div>
+    </div>
+    <div class="info-box">
+      <h3>💡 ¿Qué Está Pasando?</h3>
+      <p id="infoText">¡Coloca un sistema de Alta (H) o Baja (L) presión en el mapa para comenzar!</p>
+    </div>
+  </div>
+
+  <div class="collapsibles">
+    <details class="col-panel">
+      <summary>📖 Vocabulario</summary>
+      <dl class="vocab-dl">
+        <dt>Masa de Aire</dt><dd>Un gran cuerpo de aire con temperatura y humedad similar en toda su extensión.</dd>
+        <dt>Alta Presión</dt><dd>Un área donde el aire desciende y se extiende hacia afuera, creando clima despejado, seco y tranquilo.</dd>
+        <dt>Baja Presión</dt><dd>Un área donde el aire sube y jala el aire circundante hacia adentro, creando nubes y tormentas.</dd>
+        <dt>Frente Frío</dt><dd>Borde delantero de aire frío que empuja hacia el aire más cálido — trae tormentas y descensos de temperatura.</dd>
+        <dt>Frente Cálido</dt><dd>Borde delantero de aire cálido sobre el aire frío — trae calentamiento gradual y lluvia ligera.</dd>
+        <dt>Precipitación</dt><dd>Agua que cae de las nubes — lluvia, nieve, aguanieve o granizo.</dd>
+        <dt>Viento</dt><dd>Aire en movimiento por diferencias de presión. El aire fluye de alta a baja presión.</dd>
+        <dt>Atmósfera</dt><dd>Las capas de gases que rodean la Tierra donde ocurre el clima.</dd>
+      </dl>
+    </details>
+    <details class="col-panel">
+      <summary>🧠 Conceptos Clave</summary>
+      <ul class="concept-ul">
+        <li>💨 <strong>El aire siempre fluye de ALTA → BAJA presión</strong> — como el aire escapando de un globo.</li>
+        <li>☀️ <strong>Alta presión = aire descendente = clima despejado y seco.</strong> El aire descendente se calienta e impide la formación de nubes.</li>
+        <li>🌧️ <strong>Baja presión = aire ascendente = nubes y lluvia.</strong> El aire ascendente se enfría y el vapor de agua se condensa en nubes.</li>
+        <li>⛈️ <strong>Los frentes se forman donde se encuentran masas de aire de diferente temperatura</strong>, trayendo cambios rápidos en el clima y tormentas.</li>
+      </ul>
+    </details>
+  </div>
+
+  <script src="weather.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,103 @@
+/* ── Reset & Base ──────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Segoe UI', system-ui, sans-serif; background: #e3f2fd; color: #1a237e; min-height: 100vh; display: flex; flex-direction: column; }
+
+/* ── Header ────────────────────────────────────────────────────── */
+.header { background: linear-gradient(135deg, #1565c0, #0d47a1); border-bottom: 3px solid #29b6f6; padding: 10px 16px; }
+.header-inner { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.sim-title { font-size: clamp(1rem, 2.5vw, 1.4rem); color: #fff; font-weight: 700; flex: 1; }
+.badge-group { position: relative; }
+.std-badge {
+  background: rgba(41,182,246,0.2); color: #b3e5fc; border: 1.5px solid #29b6f6;
+  border-radius: 20px; padding: 3px 12px; font-size: 0.85rem; font-weight: 600;
+  cursor: pointer; font-family: inherit;
+}
+.std-badge:hover { background: rgba(41,182,246,0.35); }
+.std-popup {
+  position: absolute; top: calc(100% + 8px); left: 0; background: #fff;
+  border: 2px solid #29b6f6; border-radius: 10px; padding: 10px 14px;
+  font-size: 0.85rem; color: #0d47a1; width: 260px; z-index: 20;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+}
+.hidden { display: none !important; }
+.lang-btn {
+  background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.4);
+  border-radius: 12px; padding: 4px 12px; font-size: 0.78rem; color: #fff;
+  cursor: pointer; font-family: inherit; font-weight: 600;
+  transition: background 0.2s; margin-left: auto; white-space: nowrap;
+}
+.lang-btn:hover { background: rgba(255,255,255,0.28); }
+
+/* ── Controls Bar ──────────────────────────────────────────────── */
+.controls-bar { background: #fff; border-bottom: 2px solid #bbdefb; padding: 8px 14px; display: flex; align-items: center; flex-wrap: wrap; gap: 14px; }
+.toolbar-section, .temp-section, .btn-section { display: flex; align-items: center; gap: 8px; }
+.toolbar-label { font-size: 0.8rem; color: #546e7a; font-weight: 600; white-space: nowrap; }
+.toolbar-item {
+  display: flex; flex-direction: column; align-items: center; gap: 3px;
+  cursor: grab; font-size: 0.72rem; color: #37474f; padding: 5px 8px;
+  border-radius: 8px; transition: background 0.15s; user-select: none;
+}
+.toolbar-item:hover { background: #e3f2fd; }
+.toolbar-item:active { cursor: grabbing; }
+.sys-icon { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.15rem; font-weight: 900; color: #fff; }
+.sys-icon.high { background: #e53935; box-shadow: 0 2px 6px rgba(229,57,53,0.35); }
+.sys-icon.low  { background: #1e88e5; box-shadow: 0 2px 6px rgba(30,136,229,0.35); }
+.temp-toggle { display: flex; background: #e3f2fd; border-radius: 20px; padding: 3px; gap: 3px; }
+.temp-btn { background: none; border: none; border-radius: 16px; padding: 4px 10px; font-size: 0.8rem; cursor: pointer; color: #546e7a; transition: background 0.15s, color 0.15s, opacity 0.2s; font-family: inherit; }
+.temp-btn.active { background: #fff; color: #0d47a1; font-weight: 600; box-shadow: 0 1px 4px rgba(0,0,0,0.12); }
+.temp-btn:disabled { opacity: 0.38; cursor: not-allowed; }
+.temp-section .toolbar-label { transition: color 0.2s; min-width: 102px; }
+.btn-section { flex-wrap: wrap; }
+.ctrl-btn, .ctrl-select {
+  background: #e3f2fd; border: 1.5px solid #bbdefb; border-radius: 8px;
+  padding: 6px 11px; font-size: 0.8rem; cursor: pointer; color: #0d47a1;
+  font-weight: 500; font-family: inherit;
+}
+.ctrl-btn { transition: background 0.15s; white-space: nowrap; }
+.ctrl-btn:hover { background: #bbdefb; }
+.ctrl-btn.primary { background: #1565c0; color: #fff; border-color: #1565c0; }
+.ctrl-btn.primary:hover { background: #0d47a1; }
+.ctrl-btn.danger { border-color: #ef9a9a; color: #c62828; }
+.ctrl-btn.danger:hover { background: #ffebee; }
+.ctrl-select { padding: 6px 8px; }
+
+/* ── Map ───────────────────────────────────────────────────────── */
+.map-wrap { flex: 1; position: relative; min-height: 280px; max-height: 52vh; overflow: hidden; background: #b3e5fc; }
+#mapCanvas { display: block; width: 100%; height: 100%; cursor: crosshair; }
+.map-hint {
+  position: absolute; top: 12px; left: 50%; transform: translateX(-50%);
+  background: rgba(21,101,192,0.82); color: #fff; padding: 6px 18px;
+  border-radius: 20px; font-size: 0.8rem; pointer-events: none; white-space: nowrap;
+}
+
+/* ── Dashboard ─────────────────────────────────────────────────── */
+.dashboard { display: grid; grid-template-columns: 1fr 1.3fr; gap: 10px; padding: 10px 14px; background: #fff; border-top: 2px solid #bbdefb; }
+.conditions-box, .info-box { background: #f5f9ff; border-radius: 12px; padding: 12px 14px; border: 1.5px solid #bbdefb; }
+.conditions-box h3, .info-box h3 { font-size: 0.88rem; color: #1565c0; margin-bottom: 8px; }
+.cond-row { display: flex; gap: 8px; font-size: 0.84rem; margin-bottom: 4px; align-items: baseline; }
+.cond-lbl { color: #546e7a; font-weight: 600; min-width: 90px; }
+.info-box p { font-size: 0.84rem; color: #37474f; line-height: 1.55; }
+
+/* ── Collapsibles ──────────────────────────────────────────────── */
+.collapsibles { padding: 8px 14px 14px; display: flex; flex-direction: column; gap: 6px; }
+.col-panel { background: #fff; border: 1.5px solid #bbdefb; border-radius: 12px; overflow: hidden; }
+.col-panel summary {
+  padding: 10px 14px; cursor: pointer; font-size: 0.88rem; font-weight: 600;
+  color: #1565c0; list-style: none; display: flex; justify-content: space-between;
+  align-items: center; user-select: none;
+}
+.col-panel summary::-webkit-details-marker { display: none; }
+.col-panel summary::after { content: '▼'; font-size: 0.7rem; opacity: 0.7; transition: transform 0.2s; }
+.col-panel[open] summary::after { transform: rotate(180deg); }
+.vocab-dl { padding: 4px 14px 12px; display: grid; grid-template-columns: auto 1fr; gap: 5px 14px; font-size: 0.82rem; }
+.vocab-dl dt { font-weight: 700; color: #1565c0; }
+.vocab-dl dd { color: #37474f; }
+.concept-ul { padding: 4px 14px 12px 28px; font-size: 0.82rem; color: #37474f; display: flex; flex-direction: column; gap: 6px; line-height: 1.5; }
+
+/* ── Responsive ────────────────────────────────────────────────── */
+@media (max-width: 640px) {
+  .dashboard { grid-template-columns: 1fr; }
+  .controls-bar { gap: 10px; }
+  .sim-title { font-size: 0.95rem; }
+  .map-wrap { max-height: 40vh; }
+}
