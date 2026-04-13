@@ -369,6 +369,7 @@
     .toggle-control input:checked + .toggle-slider { background: #2196F3; }
     .toggle-control input:checked + .toggle-slider::after { transform: translateX(20px); }
     .toggle-label { font-size: 15px; font-weight: 500; }
+    .toggle-control.disabled { opacity: 0.4; pointer-events: none; }
     .info-callout {
       background: #fff8e1; border-left: 4px solid #ffc107;
       padding: 12px 15px; border-radius: 0 8px 8px 0; margin: 5px 0;
@@ -1101,7 +1102,29 @@
       <div class="sim-lower">
 
         <div id="controls-panel">
-          <div id="layer-toggles"></div>
+          <div id="layer-toggles">
+            <div class="controls-heading" data-i18n="mapLayersLabel">🗺️ Map Layers</div>
+            <label class="toggle-control">
+              <input type="checkbox" id="toggle-plates" aria-label="Toggle plate boundaries layer">
+              <span class="toggle-slider"></span>
+              <span class="toggle-label" data-i18n="togglePlates">🟠 Plate Boundaries</span>
+            </label>
+            <label class="toggle-control">
+              <input type="checkbox" id="toggle-earthquakes" aria-label="Toggle earthquakes layer">
+              <span class="toggle-slider"></span>
+              <span class="toggle-label" data-i18n="toggleEq">🔴 Earthquakes</span>
+            </label>
+            <label class="toggle-control">
+              <input type="checkbox" id="toggle-volcanoes" aria-label="Toggle volcanoes layer">
+              <span class="toggle-slider"></span>
+              <span class="toggle-label" data-i18n="toggleVol">🔺 Volcanoes</span>
+            </label>
+            <label class="toggle-control">
+              <input type="checkbox" id="toggle-mountains" aria-label="Toggle mountain chains layer">
+              <span class="toggle-slider"></span>
+              <span class="toggle-label" data-i18n="toggleMtn">⛰️ Mountain Chains</span>
+            </label>
+          </div>
           <div id="mode-controls"></div>
         </div>
 
@@ -1133,29 +1156,6 @@
           <div id="explore-mode" style="display:none;">
             <h3 data-i18n="exploreTitle">🔍 Free Explore</h3>
             <p data-i18n="exploreSubtitle" style="font-size:0.9rem;color:#37474f;">Toggle layers on and off to explore patterns on your own!</p>
-
-            <div id="explore-layer-toggles">
-              <label class="toggle-control">
-                <input type="checkbox" id="toggle-plates" checked aria-label="Toggle plate boundaries layer">
-                <span class="toggle-slider"></span>
-                <span class="toggle-label" data-i18n="togglePlates">🟠 Plate Boundaries</span>
-              </label>
-              <label class="toggle-control">
-                <input type="checkbox" id="toggle-earthquakes" checked aria-label="Toggle earthquakes layer">
-                <span class="toggle-slider"></span>
-                <span class="toggle-label" data-i18n="toggleEq">🔴 Earthquakes</span>
-              </label>
-              <label class="toggle-control">
-                <input type="checkbox" id="toggle-volcanoes" checked aria-label="Toggle volcanoes layer">
-                <span class="toggle-slider"></span>
-                <span class="toggle-label" data-i18n="toggleVol">🔺 Volcanoes</span>
-              </label>
-              <label class="toggle-control">
-                <input type="checkbox" id="toggle-mountains" checked aria-label="Toggle mountain chains layer">
-                <span class="toggle-slider"></span>
-                <span class="toggle-label" data-i18n="toggleMtn">⛰️ Mountain Chains</span>
-              </label>
-            </div>
 
             <div id="explore-info" class="info-callout">
               <p>💡 <strong>Try this:</strong> Turn off everything except earthquakes. Then turn on just plate boundaries. See how they match up?</p>
@@ -1814,8 +1814,13 @@
       const pbCont = document.getElementById('progress-bar-container');
       pbCont.setAttribute('aria-valuenow', stepNum);
 
-      // Reveal this step's layer (layers accumulate — don't hide previous ones)
-      if (layerToShow) showLayer(layerToShow);
+      // Reveal this step's layer — also check the corresponding toggle ON
+      if (layerToShow) {
+        showLayer(layerToShow);
+        const toggleId = { 'plate-boundary-layer': 'toggle-plates', 'earthquake-layer': 'toggle-earthquakes',
+                           'volcano-layer': 'toggle-volcanoes', 'mountain-layer': 'toggle-mountains' }[layerToShow];
+        if (toggleId) document.getElementById(toggleId).checked = true;
+      }
 
       // Render step content
       const isLast = stepNum === 5;
@@ -1869,18 +1874,21 @@
 
     function switchToExplore() {
       showMode('explore-mode');
+      setToggleDisabled(false);
       ['plate-boundary-layer','earthquake-layer','volcano-layer','mountain-layer'].forEach(id => showLayer(id));
       ['toggle-plates','toggle-earthquakes','toggle-volcanoes','toggle-mountains'].forEach(id => {
         document.getElementById(id).checked = true;
       });
       updateExploreTip();
-      // Move focus to first toggle
-      setTimeout(() => document.getElementById('toggle-plates').focus(), 50);
     }
 
     function switchToGuided() {
       showMode('guided-mode');
       ['plate-boundary-layer','earthquake-layer','volcano-layer','mountain-layer'].forEach(id => hideLayer(id));
+      ['toggle-plates','toggle-earthquakes','toggle-volcanoes','toggle-mountains'].forEach(id => {
+        document.getElementById(id).checked = false;
+      });
+      setToggleDisabled(false);
       showGuidedStep(1);
     }
 
@@ -1990,8 +1998,17 @@
       return { hits, total: predictions.length };
     }
 
+    // Helper: disable/enable the 3 data layer toggles (eq/vol/mtn) during prediction phases
+    function setToggleDisabled(disabled) {
+      ['toggle-earthquakes','toggle-volcanoes','toggle-mountains'].forEach(id => {
+        const label = document.getElementById(id).closest('.toggle-control');
+        if (disabled) label.classList.add('disabled');
+        else          label.classList.remove('disabled');
+      });
+    }
+
     function startPredictionChallenge() {
-      // Hide all data layers; show plate boundaries as faint hint
+      // Hide eq/vol/mtn layers; show plate boundaries as faint hint
       ['earthquake-layer','volcano-layer','mountain-layer'].forEach(id => {
         const el = document.getElementById(id);
         el.style.opacity = '0';
@@ -2001,6 +2018,13 @@
       pb.style.display = 'block';
       pb.style.opacity  = '1';
       pb.classList.add('hint-mode');
+
+      // Set toggles: plates ON, others OFF and disabled
+      document.getElementById('toggle-plates').checked = true;
+      ['toggle-earthquakes','toggle-volcanoes','toggle-mountains'].forEach(id => {
+        document.getElementById(id).checked = false;
+      });
+      setToggleDisabled(true);
 
       clearPredictions();
       showMode('prediction-mode');
@@ -2069,6 +2093,10 @@
       pb.style.opacity = '1';
       showLayer('earthquake-layer');
       showLayer('volcano-layer');
+      // Re-enable all toggles and reflect revealed state
+      setToggleDisabled(false);
+      document.getElementById('toggle-earthquakes').checked = true;
+      document.getElementById('toggle-volcanoes').checked   = true;
 
       // Fade prediction dots to half opacity
       document.getElementById('prediction-layer').querySelectorAll('circle, polygon').forEach(el => {
@@ -2136,6 +2164,7 @@
         langBtnLabel: '🇪🇸 Español',
         pageTitle: '🌎 Earth\'s Features Map Lab',
         footer: 'Built for Ogden School District &nbsp;|&nbsp; Aligned to Utah Science with Engineering Education (SEEd) Standards',
+        mapLayersLabel: '🗺️ Map Layers',
         legendEq: 'Earthquakes', legendVol: 'Volcanoes',
         legendMtn: 'Mountain Chains', legendPlate: 'Plate Boundaries',
         progressText: (n) => 'Step ' + n + ' of 5',
@@ -2252,6 +2281,7 @@
         langBtnLabel: '🇺🇸 English',
         pageTitle: '🌎 Laboratorio de Características de la Tierra',
         footer: 'Creado para el Distrito Escolar de Ogden &nbsp;|&nbsp; Alineado con los Estándares Utah SEEd',
+        mapLayersLabel: '🗺️ Capas del mapa',
         legendEq: 'Terremotos', legendVol: 'Volcanes',
         legendMtn: 'Cadenas Montañosas', legendPlate: 'Límites de Placas',
         progressText: (n) => 'Paso ' + n + ' de 5',
