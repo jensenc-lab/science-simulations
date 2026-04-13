@@ -1838,9 +1838,11 @@
         else showGuidedStep(stepNum + 1);
       });
 
-      // Move focus to textarea for keyboard users
-      const ta = document.getElementById('student-response');
-      if (ta) ta.focus();
+      // Move focus to textarea for keyboard users (skip on initial page load)
+      if (pageInitialized) {
+        const ta = document.getElementById('student-response');
+        if (ta) ta.focus();
+      }
     }
 
     // ── Free Explore mode ──────────────────────────────────────────────────
@@ -2436,7 +2438,10 @@
     });
 
     // ── Start in guided mode at step 1 ────────────────────────────────────
+    let pageInitialized = false;
     showGuidedStep(1);
+    pageInitialized = true;
+    window.scrollTo(0, 0);
   </script>
 
 </body>

@@ -1836,9 +1836,11 @@
         else showGuidedStep(stepNum + 1);
       });
 
-      // Move focus to textarea for keyboard users
-      const ta = document.getElementById('student-response');
-      if (ta) ta.focus();
+      // Move focus to textarea for keyboard users (skip on initial page load)
+      if (pageInitialized) {
+        const ta = document.getElementById('student-response');
+        if (ta) ta.focus();
+      }
     }
 
     // ── Free Explore mode ──────────────────────────────────────────────────
@@ -2428,7 +2430,10 @@
     }
 
     // ── Initialize in Spanish ──────────────────────────────────────────────
+    let pageInitialized = false;
     applyTranslations();
+    pageInitialized = true;
+    window.scrollTo(0, 0);
   </script>
 
 </body>
