@@ -103,7 +103,7 @@
     .data-layer { transition: opacity 0.8s ease; }
 
     .earthquake-dot {
-      fill: #e63946; fill-opacity: 0.40; stroke: #c1121f; stroke-width: 1;
+      fill: #e63946; fill-opacity: 0.35; stroke: #c1121f; stroke-width: 1;
       cursor: pointer; transition: fill-opacity 0.15s;
     }
     .earthquake-dot:hover { fill-opacity: 0.90; }
@@ -117,28 +117,28 @@
     .volcano-marker.hidden-layer { display: none; }
 
     .mountain-path {
-      fill: none; stroke: #8b4513; stroke-width: 5;
+      fill: none; stroke: #8b4513; stroke-width: 7;
       stroke-linecap: round; stroke-linejoin: round;
       filter: drop-shadow(0 0 3px rgba(139,69,19,0.5));
     }
     .mountain-path.hidden-layer { display: none; }
     .mountain-path.underwater {
-      stroke: #5B8C6E; stroke-width: 4;
+      stroke: #5B8C6E; stroke-width: 5.5;
       stroke-dasharray: 10 5; filter: none; opacity: 0.7;
     }
 
     .plate-boundary {
-      fill: none; stroke: #e8760a; stroke-width: 3.5;
-      stroke-dasharray: 12 6; opacity: 0.82;
+      fill: none; stroke: #e8760a; stroke-width: 4.5;
+      stroke-dasharray: 14 7; opacity: 0.82;
     }
     .plate-boundary.hidden-layer { display: none; }
     .plate-label {
       font-family: 'Segoe UI', system-ui, sans-serif;
-      font-size: 24px; font-weight: 600;
+      font-size: 36px; font-weight: 700;
       fill: rgba(255,255,255,0.7); text-anchor: middle;
-      pointer-events: none; letter-spacing: 3px;
+      pointer-events: none; letter-spacing: 4px;
       paint-order: stroke;
-      stroke: rgba(0,0,0,0.3); stroke-width: 4px;
+      stroke: rgba(0,0,0,0.3); stroke-width: 6px;
     }
 
     @keyframes dotPop {
@@ -157,7 +157,7 @@
       animation: dotPop 0.3s ease-out;
     }
     .hint-mode { opacity: 0.45 !important; display: block !important; }
-    .hint-mode .plate-boundary { stroke: #f0a050; stroke-width: 3.5; stroke-dasharray: 12 6; }
+    .hint-mode .plate-boundary { stroke: #f0a050; stroke-width: 4.5; stroke-dasharray: 14 7; }
     .phase-label {
       display: inline-block; background: #2196F3; color: white;
       padding: 3px 12px; border-radius: 12px; font-size: 12px;
@@ -465,7 +465,7 @@
       .page-wrap { padding: 0 12px; }
       .map-legend { gap: 4px 14px; }
       .legend-item { font-size: 0.75rem; }
-      .plate-label { font-size: 18px; }
+      .plate-label { font-size: 26px; }
     }
 
     /* ── Small screens (phones, narrow tablets) ──────────────────── */
@@ -488,7 +488,7 @@
       /* Toggle rows: more vertical padding for easier tapping */
       .toggle-control { padding: 12px 4px; }
       /* Plate labels smaller so they don't overlap */
-      .plate-label { font-size: 14px; }
+      .plate-label { font-size: 20px; }
       /* Header: let badge group wrap below title if needed */
       .header-inner { gap: 8px; }
       .header-right { flex-wrap: wrap; gap: 6px; }
@@ -1416,7 +1416,7 @@
         const c = document.createElementNS(ns, 'circle');
         c.setAttribute('cx', x.toFixed(1));
         c.setAttribute('cy', y.toFixed(1));
-        c.setAttribute('r', '7');
+        c.setAttribute('r', '10');
         c.setAttribute('class', 'earthquake-dot');
         g.appendChild(c);
       });
@@ -1532,7 +1532,7 @@
       volcanoData.forEach(([lat, lon]) => {
         const [x, y] = latLonToSVG(lat, lon);
         // Upward-pointing triangle: peak at top, base below centre
-        const pts = `${x.toFixed(1)},${(y - 10).toFixed(1)} ${(x - 8).toFixed(1)},${(y + 8).toFixed(1)} ${(x + 8).toFixed(1)},${(y + 8).toFixed(1)}`;
+        const pts = `${x.toFixed(1)},${(y - 14).toFixed(1)} ${(x - 11).toFixed(1)},${(y + 11).toFixed(1)} ${(x + 11).toFixed(1)},${(y + 11).toFixed(1)}`;
         const tri = document.createElementNS(ns, 'polygon');
         tri.setAttribute('points', pts);
         tri.setAttribute('class', 'volcano-marker');
@@ -1725,7 +1725,7 @@
     ];
 
     const plateLabels = [
-      { name: 'Pacific Plate',            lat:   5, lon: -170 },
+      { name: 'Pacific Plate',            lat:  -5, lon: -155 },
       { name: 'North American\nPlate',    lat:  50, lon:  -95 },
       { name: 'South American\nPlate',    lat: -15, lon:  -50 },
       { name: 'African Plate',            lat:   5, lon:   20 },
@@ -1766,7 +1766,7 @@
           lines.forEach((line, i) => {
             const ts = document.createElementNS(ns, 'tspan');
             ts.setAttribute('x', x.toFixed(1));
-            ts.setAttribute('dy', i === 0 ? '0' : '28');
+            ts.setAttribute('dy', i === 0 ? '0' : '40');
             ts.textContent = line;
             txt.appendChild(ts);
           });
@@ -1962,14 +1962,14 @@
         const c = document.createElementNS(ns, 'circle');
         c.setAttribute('cx', x.toFixed(1));
         c.setAttribute('cy', y.toFixed(1));
-        c.setAttribute('r', '9');
+        c.setAttribute('r', '12');
         c.setAttribute('class', 'prediction-earthquake');
         lyr.appendChild(c);
         earthquakePredictions.push({ x, y, el: c });
         document.getElementById('eq-count').textContent = earthquakePredictions.length;
       } else {
         const cx = x, cy = y;
-        const pts = `${cx.toFixed(1)},${(cy-10).toFixed(1)} ${(cx-8).toFixed(1)},${(cy+8).toFixed(1)} ${(cx+8).toFixed(1)},${(cy+8).toFixed(1)}`;
+        const pts = `${cx.toFixed(1)},${(cy-14).toFixed(1)} ${(cx-11).toFixed(1)},${(cy+11).toFixed(1)} ${(cx+11).toFixed(1)},${(cy+11).toFixed(1)}`;
         const tri = document.createElementNS(ns, 'polygon');
         tri.setAttribute('points', pts);
         tri.setAttribute('class', 'prediction-volcano');
@@ -2268,7 +2268,7 @@
           },
         ],
         plateLabels: [
-          { lat:   5, lon: -170, name: 'Pacific Plate' },
+          { lat:  -5, lon: -155, name: 'Pacific Plate' },
           { lat:  50, lon:  -95, name: 'North American\nPlate' },
           { lat: -15, lon:  -50, name: 'South American\nPlate' },
           { lat:   5, lon:   20, name: 'African Plate' },
@@ -2385,7 +2385,7 @@
           },
         ],
         plateLabels: [
-          { lat:   5, lon: -170, name: 'Placa del\nPacífico' },
+          { lat:  -5, lon: -155, name: 'Placa del\nPacífico' },
           { lat:  50, lon:  -95, name: 'Placa de\nNorteamérica' },
           { lat: -15, lon:  -50, name: 'Placa de\nSudamérica' },
           { lat:   5, lon:   20, name: 'Placa\nAfricana' },
@@ -2417,7 +2417,7 @@
           lines.forEach((line, i) => {
             const ts = document.createElementNS(ns, 'tspan');
             ts.setAttribute('x', x.toFixed(1));
-            ts.setAttribute('dy', i === 0 ? '0' : '28');
+            ts.setAttribute('dy', i === 0 ? '0' : '40');
             ts.textContent = line;
             txt.appendChild(ts);
           });
