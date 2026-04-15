@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Rock Cycle Lab — interactive rock cycle simulation for Utah SEEd Standard 7.2.1. Ogden School District.">
+  <title>Rock Cycle Lab — Utah SEEd 7.2.1</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+
+<body>
+  <!-- Landscape orientation hint (mobile portrait) -->
+  <div class="orientation-hint" aria-hidden="true">
+    <div class="orientation-hint-icon">🔄</div>
+    <p class="orientation-hint-text">For the best experience,<br>please rotate your device to landscape orientation.</p>
+  </div>
+
+  <div class="app-shell">
+
+    <!-- ── HEADER ──────────────────────────────────────────────────────────── -->
+    <header class="app-header" role="banner">
+
+      <div class="header-brand">
+        <h1 class="header-title">⛏️ Rock Cycle Lab</h1>
+        <span class="header-subtitle">Utah SEEd 7.2.1 · Ogden School District</span>
+      </div>
+
+      <!-- Mode tabs -->
+      <nav class="mode-tabs" role="tablist" aria-label="Simulation modes">
+        <button class="mode-tab" data-mode="guided"       role="tab" aria-selected="false">Guided</button>
+        <button class="mode-tab active" data-mode="free-explore"  role="tab" aria-selected="true">Free Explore</button>
+        <button class="mode-tab" data-mode="geo-journey"  role="tab" aria-selected="false">Geo Journey</button>
+        <button class="mode-tab" data-mode="presets"      role="tab" aria-selected="false">Presets</button>
+      </nav>
+
+      <!-- Utility buttons -->
+      <div class="header-utils">
+        <button class="util-btn" id="mute-btn" aria-label="Toggle sound" title="Toggle sound">🔇</button>
+        <button class="util-btn lang-btn" id="lang-btn" aria-label="Switch language" title="Switch to Spanish">EN | ES</button>
+      </div>
+
+    </header>
+
+    <!-- ── MAIN CONTENT ────────────────────────────────────────────────────── -->
+    <main class="app-main" role="main">
+
+      <!-- ── LEFT PANEL: Rock Shelf ────────────────────────────────────────── -->
+      <aside class="left-panel" role="complementary" aria-label="Rock shelf">
+
+        <div class="shelf-heading">Rock Specimens</div>
+
+        <!-- Rock cards (populated by app.js) -->
+        <div id="rock-shelf-cards" class="rock-cards-container" role="list" aria-label="Rock specimens"></div>
+
+        <!-- Utah Connections (collapsible) -->
+        <div class="utah-section" id="utah-section">
+          <button class="utah-toggle" id="utah-toggle" aria-expanded="false" aria-controls="utah-connections-list">
+            <span>🏔️ Utah Connections</span>
+            <span class="utah-toggle-arrow" aria-hidden="true">▼</span>
+          </button>
+          <div class="utah-content" id="utah-connections-list" role="list"></div>
+        </div>
+
+      </aside>
+
+      <!-- ── CENTER STAGE ───────────────────────────────────────────────────── -->
+      <section class="center-stage" aria-label="Rock cycle interaction area">
+
+        <!-- 3-col grid: zones on sides, specimen in center -->
+        <div class="stage-layout">
+
+          <!-- Row 1 Left: Melting -->
+          <div class="process-zone" data-process="melting" role="region" aria-label="Melting process zone">
+            <div class="zone-icon" aria-hidden="true">🌋</div>
+            <div class="zone-name">Melting</div>
+            <div class="zone-energy"></div>
+          </div>
+
+          <!-- Row 1 Center (spans all 3 rows): Specimen Display -->
+          <div class="specimen-display" id="specimen-display" role="region" aria-label="Rock specimen display" aria-live="polite">
+            <div class="specimen-empty" id="specimen-empty">
+              <div class="specimen-empty-icon" aria-hidden="true">🪨</div>
+              <p class="specimen-empty-text">Click a rock on the shelf to examine it here</p>
+            </div>
+            <div class="specimen-content" id="specimen-content"></div>
+          </div>
+
+          <!-- Row 1 Right: Crystallization -->
+          <div class="process-zone" data-process="crystallization" role="region" aria-label="Crystallization process zone">
+            <div class="zone-icon" aria-hidden="true">❄️</div>
+            <div class="zone-name">Crystallization</div>
+            <div class="zone-energy"></div>
+          </div>
+
+          <!-- Row 2 Left: Weathering & Erosion -->
+          <div class="process-zone" data-process="weathering" role="region" aria-label="Weathering and erosion process zone">
+            <div class="zone-icon" aria-hidden="true">🌧️</div>
+            <div class="zone-name">Weathering &amp; Erosion</div>
+            <div class="zone-energy"></div>
+          </div>
+
+          <!-- Row 2 Right: Heat & Pressure -->
+          <div class="process-zone" data-process="heatAndPressure" role="region" aria-label="Heat and pressure process zone">
+            <div class="zone-icon" aria-hidden="true">🔥</div>
+            <div class="zone-name">Heat &amp; Pressure</div>
+            <div class="zone-energy"></div>
+          </div>
+
+          <!-- Row 3 Left: Deposition -->
+          <div class="process-zone" data-process="deposition" role="region" aria-label="Deposition process zone">
+            <div class="zone-icon" aria-hidden="true">📥</div>
+            <div class="zone-name">Deposition</div>
+            <div class="zone-energy"></div>
+          </div>
+
+          <!-- Row 3 Right: Uplift -->
+          <div class="process-zone" data-process="uplift" role="region" aria-label="Uplift and deformation process zone">
+            <div class="zone-icon" aria-hidden="true">🏔️</div>
+            <div class="zone-name">Uplift &amp; Deformation</div>
+            <div class="zone-energy"></div>
+          </div>
+
+        </div>
+        <!-- /stage-layout -->
+
+        <!-- History strip -->
+        <div class="history-strip" role="log" aria-label="Transformation history" aria-live="polite">
+          <span class="history-label">History</span>
+          <div id="history-strip-items">
+            <span class="history-empty">Transformations will appear here</span>
+          </div>
+        </div>
+
+      </section>
+      <!-- /center-stage -->
+
+      <!-- ── RIGHT PANEL ────────────────────────────────────────────────────── -->
+      <aside class="right-panel" id="right-panel" role="complementary" aria-label="Information panels">
+
+        <!-- Drawer handle (visible at ≤1200px) -->
+        <div class="right-panel-handle" id="right-panel-handle" role="button" tabindex="0" aria-label="Open information panel">‹</div>
+
+        <!-- Explanation Panel -->
+        <div class="rp-section">
+          <div class="rp-section-title">What's Happening?</div>
+          <div class="explanation-placeholder" id="explanation-panel">
+            <p>Select a rock and drag it to a process zone — the science will appear here.</p>
+          </div>
+        </div>
+
+        <!-- Energy Flow Tracker -->
+        <div class="rp-section">
+          <div class="rp-section-title">Energy Flow</div>
+          <div class="energy-list" id="energy-list" aria-label="Energy sources"></div>
+        </div>
+
+        <!-- Matter Tracker -->
+        <div class="rp-section">
+          <div class="rp-section-title">Matter Tracker</div>
+          <div class="matter-tracker-placeholder" id="matter-tracker">
+            <div class="matter-rule">
+              <span class="matter-rule-icon">⚛️</span>
+              <span>Atoms are <strong>never</strong> created or destroyed in the rock cycle — they just rearrange.</span>
+            </div>
+            <div class="matter-rule">
+              <span class="matter-rule-icon">🔄</span>
+              <span>Minerals can change form, but the same elements cycle through all three rock types.</span>
+            </div>
+            <div class="matter-rule" style="margin-top:8px; padding-top:8px; border-top:1px solid var(--border-subtle)">
+              <span class="matter-rule-icon">📊</span>
+              <span style="color:var(--text-muted);font-style:italic;">Track your rock's journey through the cycle here.</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Cycle Path Diagram -->
+        <div class="rp-section">
+          <div class="rp-section-title">Cycle Path</div>
+          <div class="cycle-diagram" id="cycle-diagram">
+            <div class="cycle-diagram-empty" id="cycle-diagram-empty">
+              <span style="font-size:1.5rem;opacity:0.4" aria-hidden="true">🔁</span><br>
+              Your exploration path builds here as you make transformations.
+            </div>
+            <div class="cycle-diagram-progress" id="cycle-diagram-progress" style="display:none">
+              <div class="cycle-progress-bar">
+                <div class="cycle-progress-fill" id="cycle-progress-fill" style="width:0%"></div>
+              </div>
+              <div class="cycle-progress-label" id="cycle-progress-label">0 of 8 paths discovered</div>
+            </div>
+          </div>
+        </div>
+
+      </aside>
+      <!-- /right-panel -->
+
+    </main>
+
+    <!-- ── FOOTER ───────────────────────────────────────────────────────────── -->
+    <footer class="app-footer" role="contentinfo">
+      <span class="footer-credit">Ogden School District · Science Simulations</span>
+      <span class="footer-standard">Standard: <span>Utah SEEd 7.2.1</span> — Rock Cycle &amp; Energy Flow</span>
+    </footer>
+
+  </div><!-- /app-shell -->
+
+  <!-- Scripts (rock-data first so ROCKS/TRANSFORMATIONS are available to app.js) -->
+  <script src="js/rock-data.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

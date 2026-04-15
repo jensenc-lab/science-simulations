@@ -1,0 +1,1230 @@
+/* ── styles.css ───────────────────────────────────────────────────────────────
+   Rock Cycle Lab — Utah SEEd 7.2.1
+   Design system: geological museum exhibit aesthetic
+────────────────────────────────────────────────────────────────────────────── */
+
+/* ── Google Fonts ──────────────────────────────────────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Source+Sans+3:wght@300;400;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+/* ── CSS Custom Properties ─────────────────────────────────────────────────── */
+:root {
+  /* Background layers */
+  --bg-primary:         #1a1a2e;
+  --bg-secondary:       #16213e;
+  --bg-surface:         #0f3460;
+  --bg-surface-light:   #f5f0eb;
+  --bg-card:            #1e2a45;
+  --bg-card-hover:      #243352;
+  --bg-panel:           #121929;
+
+  /* Text */
+  --text-primary:       #e8e0d4;
+  --text-secondary:     #a09888;
+  --text-muted:         #6b6258;
+  --text-dark:          #2d2d2d;
+  --text-dark-secondary:#4a4540;
+
+  /* Rock type accents */
+  --accent-igneous:     #E85D3A;
+  --accent-sedimentary: #D4A843;
+  --accent-metamorphic: #7B2D8E;
+  --accent-magma:       #FF4500;
+  --accent-lava:        #FF6B35;
+  --accent-sediment:    #C2B280;
+
+  /* Process colors */
+  --process-melt:       #FF6B35;
+  --process-cool:       #4A90D9;
+  --process-weather:    #5CAB7D;
+  --process-deposit:    #8B7355;
+  --process-heatpress:  #C74B50;
+  --process-uplift:     #6B8E5A;
+
+  /* UI colors */
+  --border-subtle:      rgba(232,224,212,0.08);
+  --border-medium:      rgba(232,224,212,0.15);
+  --border-strong:      rgba(232,224,212,0.30);
+  --shadow-sm:          0 2px 8px rgba(0,0,0,0.3);
+  --shadow-md:          0 4px 16px rgba(0,0,0,0.4);
+  --shadow-lg:          0 8px 32px rgba(0,0,0,0.5);
+
+  /* Typography */
+  --font-heading:       'Playfair Display', Georgia, serif;
+  --font-body:          'Source Sans 3', system-ui, sans-serif;
+  --font-mono:          'JetBrains Mono', 'Courier New', monospace;
+
+  /* Spacing scale */
+  --space-xs:   4px;
+  --space-sm:   8px;
+  --space-md:   14px;
+  --space-lg:   20px;
+  --space-xl:   28px;
+  --space-xxl:  40px;
+
+  /* Border radius */
+  --radius-sm:  4px;
+  --radius-md:  8px;
+  --radius-lg:  14px;
+  --radius-xl:  20px;
+  --radius-pill:999px;
+
+  /* Transitions */
+  --transition-fast:  150ms ease;
+  --transition-base:  220ms ease;
+  --transition-slow:  400ms ease;
+
+  /* Layout */
+  --left-panel-w:   220px;
+  --right-panel-w:  280px;
+  --header-h:       64px;
+  --footer-h:       44px;
+}
+
+/* ── Reset & Base ──────────────────────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: var(--font-body);
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  min-height: 100vh;
+  overflow-x: hidden;
+  /* Subtle grain texture using CSS */
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23noise)' opacity='0.035'/%3E%3C/svg%3E");
+}
+
+/* ── Typography Scale ──────────────────────────────────────────────────────── */
+h1, h2, h3, h4 {
+  font-family: var(--font-heading);
+  line-height: 1.2;
+  letter-spacing: 0.02em;
+}
+
+h1 { font-size: 1.6rem; font-weight: 700; }
+h2 { font-size: 1.25rem; font-weight: 600; }
+h3 { font-size: 1.05rem; font-weight: 600; }
+h4 { font-size: 0.9rem;  font-weight: 600; }
+
+p  { line-height: 1.65; font-size: 0.93rem; }
+
+a  { color: var(--text-primary); text-decoration: none; }
+
+/* ── App Shell ─────────────────────────────────────────────────────────────── */
+.app-shell {
+  display: grid;
+  grid-template-rows: var(--header-h) 1fr var(--footer-h);
+  min-height: 100vh;
+}
+
+/* ── HEADER ────────────────────────────────────────────────────────────────── */
+.app-header {
+  background: linear-gradient(135deg, #0a0e1a 0%, #121929 50%, #0d1e3a 100%);
+  border-bottom: 2px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--space-lg);
+  gap: var(--space-md);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: var(--shadow-md);
+}
+
+.header-brand {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-sm);
+  flex-shrink: 0;
+}
+
+.header-title {
+  font-family: var(--font-heading);
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  white-space: nowrap;
+}
+
+.header-subtitle {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  white-space: nowrap;
+}
+
+/* Mode tabs (pill buttons) */
+.mode-tabs {
+  display: flex;
+  gap: var(--space-xs);
+  background: rgba(0,0,0,0.25);
+  padding: 4px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--border-subtle);
+}
+
+.mode-tab {
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 5px 14px;
+  border-radius: var(--radius-pill);
+  border: none;
+  cursor: pointer;
+  background: transparent;
+  color: var(--text-secondary);
+  transition: background var(--transition-base), color var(--transition-base);
+  white-space: nowrap;
+  min-height: 32px;
+}
+
+.mode-tab:hover {
+  background: rgba(255,255,255,0.07);
+  color: var(--text-primary);
+}
+
+.mode-tab.active {
+  background: var(--bg-surface);
+  color: var(--text-primary);
+  box-shadow: var(--shadow-sm);
+}
+
+.mode-tab[data-mode='guided'].active    { background: var(--accent-igneous); }
+.mode-tab[data-mode='free-explore'].active  { background: var(--process-weather); }
+.mode-tab[data-mode='geo-journey'].active   { background: var(--accent-sedimentary); color: #2d2200; }
+.mode-tab[data-mode='presets'].active   { background: var(--accent-metamorphic); }
+
+/* Header utilities (right side) */
+.header-utils {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  flex-shrink: 0;
+}
+
+.util-btn {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  color: var(--text-secondary);
+  font-size: 0.82rem;
+  font-weight: 600;
+  padding: 5px 10px;
+  cursor: pointer;
+  transition: background var(--transition-fast), color var(--transition-fast), border-color var(--transition-fast);
+  min-height: 32px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.util-btn:hover {
+  background: rgba(255,255,255,0.1);
+  color: var(--text-primary);
+  border-color: var(--border-medium);
+}
+
+.lang-btn {
+  font-family: var(--font-mono);
+  letter-spacing: 0.05em;
+}
+
+/* ── MAIN LAYOUT (3-column) ────────────────────────────────────────────────── */
+.app-main {
+  display: grid;
+  grid-template-columns: var(--left-panel-w) 1fr var(--right-panel-w);
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* ── LEFT PANEL — Rock Shelf ───────────────────────────────────────────────── */
+.left-panel {
+  background: var(--bg-panel);
+  border-right: 1px solid var(--border-subtle);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-medium) transparent;
+}
+
+.left-panel::-webkit-scrollbar { width: 4px; }
+.left-panel::-webkit-scrollbar-track { background: transparent; }
+.left-panel::-webkit-scrollbar-thumb { background: var(--border-medium); border-radius: 2px; }
+
+.shelf-heading {
+  font-family: var(--font-heading);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  padding: var(--space-md) var(--space-md) var(--space-sm);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+/* Rock type group label */
+.rock-group-label {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: var(--space-md) var(--space-md) var(--space-xs);
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+.rock-group-label::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: currentColor;
+  opacity: 0.25;
+}
+
+.rock-group-label.igneous     { color: var(--accent-igneous); }
+.rock-group-label.sedimentary { color: var(--accent-sedimentary); }
+.rock-group-label.metamorphic { color: var(--accent-metamorphic); }
+
+/* Rock shelf card */
+.rock-card {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
+  cursor: pointer;
+  border-left: 3px solid transparent;
+  transition:
+    background var(--transition-fast),
+    border-color var(--transition-fast),
+    transform var(--transition-fast),
+    box-shadow var(--transition-fast);
+  user-select: none;
+  position: relative;
+}
+
+.rock-card:hover {
+  background: var(--bg-card-hover);
+  transform: translateX(2px);
+}
+
+.rock-card.selected {
+  background: var(--bg-card);
+}
+
+.rock-card.dragging {
+  opacity: 0.55;
+  cursor: grabbing;
+}
+
+/* Rock type border colors */
+.rock-card[data-type='igneous']     { border-left-color: var(--accent-igneous); }
+.rock-card[data-type='sedimentary'] { border-left-color: var(--accent-sedimentary); }
+.rock-card[data-type='metamorphic'] { border-left-color: var(--accent-metamorphic); }
+
+.rock-card[data-type='igneous'].selected     { background: rgba(232,93,58,0.10); }
+.rock-card[data-type='sedimentary'].selected { background: rgba(212,168,67,0.10); }
+.rock-card[data-type='metamorphic'].selected { background: rgba(123,45,142,0.10); }
+
+/* Rock SVG icon */
+.rock-icon {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 36px;
+}
+
+.rock-icon svg {
+  width: 44px;
+  height: 36px;
+  filter: drop-shadow(0 1px 3px rgba(0,0,0,0.5));
+  transition: filter var(--transition-fast);
+}
+
+.rock-card:hover .rock-icon svg,
+.rock-card.selected .rock-icon svg {
+  filter: drop-shadow(0 2px 6px rgba(0,0,0,0.7)) brightness(1.1);
+}
+
+/* Rock card text */
+.rock-card-info { flex: 1; min-width: 0; }
+
+.rock-card-name {
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+
+.rock-type-badge {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 1px 5px;
+  border-radius: var(--radius-sm);
+  margin-top: 2px;
+}
+
+.rock-type-badge.igneous {
+  background: rgba(232,93,58,0.18);
+  color: var(--accent-igneous);
+}
+.rock-type-badge.sedimentary {
+  background: rgba(212,168,67,0.18);
+  color: var(--accent-sedimentary);
+}
+.rock-type-badge.metamorphic {
+  background: rgba(123,45,142,0.20);
+  color: #c06dd4;
+}
+
+/* Utah rocks collapsible section */
+.utah-section {
+  margin-top: auto;
+  border-top: 1px solid var(--border-subtle);
+}
+
+.utah-toggle {
+  width: 100%;
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  font-family: var(--font-body);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: var(--space-md);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: color var(--transition-fast), background var(--transition-fast);
+}
+
+.utah-toggle:hover { color: var(--text-primary); background: var(--bg-card-hover); }
+
+.utah-toggle-arrow {
+  font-size: 0.7rem;
+  transition: transform var(--transition-base);
+}
+
+.utah-section.open .utah-toggle-arrow { transform: rotate(180deg); }
+
+.utah-content {
+  display: none;
+  padding: 0 var(--space-md) var(--space-md);
+}
+
+.utah-section.open .utah-content { display: block; }
+
+.utah-item {
+  padding: var(--space-sm) 0;
+  border-bottom: 1px solid var(--border-subtle);
+  cursor: pointer;
+}
+
+.utah-item:last-child { border-bottom: none; }
+
+.utah-item-name {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.utah-item-location {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  margin-top: 1px;
+}
+
+.utah-item-desc {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  margin-top: 3px;
+  line-height: 1.4;
+}
+
+/* ── CENTER STAGE ───────────────────────────────────────────────────────────── */
+.center-stage {
+  background: var(--bg-secondary);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Process zones grid — 6 zones arranged around center */
+.process-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto auto auto;
+  gap: var(--space-sm);
+  padding: var(--space-md);
+  flex: 1;
+  align-items: start;
+}
+
+/* Full-width container that holds the 2-col zone grid and the center specimen */
+.stage-layout {
+  display: grid;
+  grid-template-columns: 1fr 240px 1fr;
+  grid-template-rows: 1fr 1fr 1fr;
+  gap: var(--space-sm);
+  padding: var(--space-md);
+  flex: 1;
+  min-height: 0;
+}
+
+/* Process Zone */
+.process-zone {
+  background: rgba(255,255,255,0.03);
+  border: 2px dashed var(--border-medium);
+  border-radius: var(--radius-lg);
+  padding: var(--space-md);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-xs);
+  cursor: default;
+  transition:
+    background var(--transition-base),
+    border-color var(--transition-base),
+    box-shadow var(--transition-base),
+    transform var(--transition-base);
+  min-height: 100px;
+  text-align: center;
+  position: relative;
+}
+
+.process-zone:hover {
+  background: rgba(255,255,255,0.05);
+  border-style: solid;
+  border-color: var(--border-strong);
+}
+
+/* Zone color theming */
+.process-zone[data-process='melting'] {
+  --zone-color: var(--process-melt);
+}
+.process-zone[data-process='crystallization'] {
+  --zone-color: var(--process-cool);
+}
+.process-zone[data-process='weathering'] {
+  --zone-color: var(--process-weather);
+}
+.process-zone[data-process='deposition'] {
+  --zone-color: var(--process-deposit);
+}
+.process-zone[data-process='heatAndPressure'] {
+  --zone-color: var(--process-heatpress);
+}
+.process-zone[data-process='uplift'] {
+  --zone-color: var(--process-uplift);
+}
+
+.process-zone:hover {
+  border-color: var(--zone-color);
+  box-shadow: 0 0 12px rgba(255,255,255,0.05);
+}
+
+/* Drag state classes (applied by JS later) */
+.process-zone.drop-valid {
+  border-style: solid;
+  border-color: var(--zone-color);
+  background: rgba(255,255,255,0.05);
+  box-shadow: 0 0 20px rgba(255,255,255,0.1);
+  transform: scale(1.02);
+}
+
+/* Per-process drop-valid backgrounds for better color feedback */
+.process-zone[data-process='melting'].drop-valid         { background: rgba(255,107,53,0.10); box-shadow: 0 0 20px rgba(255,107,53,0.25); }
+.process-zone[data-process='crystallization'].drop-valid { background: rgba(74,144,217,0.10); box-shadow: 0 0 20px rgba(74,144,217,0.25); }
+.process-zone[data-process='weathering'].drop-valid      { background: rgba(92,171,125,0.10); box-shadow: 0 0 20px rgba(92,171,125,0.25); }
+.process-zone[data-process='deposition'].drop-valid      { background: rgba(139,115,85,0.10); box-shadow: 0 0 20px rgba(139,115,85,0.25); }
+.process-zone[data-process='heatAndPressure'].drop-valid { background: rgba(199,75,80,0.10);  box-shadow: 0 0 20px rgba(199,75,80,0.25); }
+.process-zone[data-process='uplift'].drop-valid          { background: rgba(107,142,90,0.10); box-shadow: 0 0 20px rgba(107,142,90,0.25); }
+
+.process-zone.drop-invalid {
+  border-color: rgba(255,80,80,0.4);
+  background: rgba(255,80,80,0.05);
+  opacity: 0.6;
+}
+
+.process-zone.drop-active {
+  border-style: solid;
+  border-color: var(--zone-color);
+  background: rgba(255,255,255,0.08);
+  box-shadow: 0 0 30px rgba(255,255,255,0.15);
+  transform: scale(1.04);
+}
+
+.process-zone[data-process='melting'].drop-active         { background: rgba(255,107,53,0.18); box-shadow: 0 0 30px rgba(255,107,53,0.4); }
+.process-zone[data-process='crystallization'].drop-active { background: rgba(74,144,217,0.18); box-shadow: 0 0 30px rgba(74,144,217,0.4); }
+.process-zone[data-process='weathering'].drop-active      { background: rgba(92,171,125,0.18); box-shadow: 0 0 30px rgba(92,171,125,0.4); }
+.process-zone[data-process='deposition'].drop-active      { background: rgba(139,115,85,0.18); box-shadow: 0 0 30px rgba(139,115,85,0.4); }
+.process-zone[data-process='heatAndPressure'].drop-active { background: rgba(199,75,80,0.18);  box-shadow: 0 0 30px rgba(199,75,80,0.4); }
+.process-zone[data-process='uplift'].drop-active          { background: rgba(107,142,90,0.18); box-shadow: 0 0 30px rgba(107,142,90,0.4); }
+
+.zone-icon {
+  font-size: 2rem;
+  line-height: 1;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.4));
+}
+
+.zone-name {
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  transition: color var(--transition-fast);
+}
+
+.process-zone:hover .zone-name { color: var(--text-primary); }
+
+.zone-energy {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  color: var(--text-muted);
+  margin-top: 1px;
+}
+
+/* Grid positioning for the 3-column stage layout */
+/* Row 1: melt (left) + specimen top + crystallize (right) */
+.process-zone[data-process='melting']          { grid-column: 1; grid-row: 1; }
+.process-zone[data-process='crystallization']  { grid-column: 3; grid-row: 1; }
+/* Row 2: weather (left) + specimen middle + heat&pressure (right) */
+.process-zone[data-process='weathering']       { grid-column: 1; grid-row: 2; }
+.process-zone[data-process='heatAndPressure']  { grid-column: 3; grid-row: 2; }
+/* Row 3: deposit (left) + specimen bottom + uplift (right) */
+.process-zone[data-process='deposition']       { grid-column: 1; grid-row: 3; }
+.process-zone[data-process='uplift']           { grid-column: 3; grid-row: 3; }
+
+/* Specimen display — center column, all 3 rows */
+.specimen-display {
+  grid-column: 2;
+  grid-row: 1 / 4;
+  background: rgba(0,0,0,0.25);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-xl);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-md);
+  gap: var(--space-sm);
+  text-align: center;
+  transition: background var(--transition-slow);
+  box-shadow: inset 0 2px 12px rgba(0,0,0,0.3), var(--shadow-sm);
+  position: relative;
+  overflow: hidden;
+}
+
+.specimen-display::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius-xl);
+  background: radial-gradient(ellipse at 50% 30%, rgba(255,255,255,0.03) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+/* Empty state */
+.specimen-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.specimen-empty-icon {
+  font-size: 2.5rem;
+  opacity: 0.4;
+}
+
+.specimen-empty-text {
+  font-size: 0.83rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+  max-width: 170px;
+}
+
+/* Specimen content (populated by JS) */
+.specimen-content { display: none; width: 100%; }
+.specimen-content.visible { display: flex; flex-direction: column; align-items: center; gap: var(--space-sm); }
+
+.specimen-svg-wrap {
+  width: 140px;
+  height: 140px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  filter: drop-shadow(0 4px 12px rgba(0,0,0,0.6));
+}
+
+.specimen-svg-wrap svg { width: 140px; height: 140px; }
+
+.specimen-name {
+  font-family: var(--font-heading);
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.1;
+}
+
+.specimen-type-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.specimen-badge {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border-radius: var(--radius-pill);
+}
+
+.specimen-badge.igneous     { background: rgba(232,93,58,0.2);  color: var(--accent-igneous); }
+.specimen-badge.sedimentary { background: rgba(212,168,67,0.2); color: var(--accent-sedimentary); }
+.specimen-badge.metamorphic { background: rgba(123,45,142,0.22);color: #c06dd4; }
+.specimen-badge.material    { background: rgba(255,69,0,0.18);  color: var(--accent-lava); }
+
+.specimen-desc {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  text-align: center;
+}
+
+.specimen-stats {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+}
+
+.specimen-stat {
+  background: rgba(255,255,255,0.04);
+  border-radius: var(--radius-sm);
+  padding: 4px 6px;
+  text-align: left;
+}
+
+.specimen-stat-label {
+  font-family: var(--font-mono);
+  font-size: 0.56rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+}
+
+.specimen-stat-value {
+  font-size: 0.72rem;
+  color: var(--text-primary);
+  font-weight: 600;
+  margin-top: 1px;
+}
+
+.specimen-minerals {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  color: var(--text-muted);
+  text-align: center;
+  line-height: 1.6;
+}
+
+/* History strip */
+.history-strip {
+  height: 72px;
+  border-top: 1px solid var(--border-subtle);
+  background: var(--bg-panel);
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: 0 var(--space-md);
+  overflow-x: auto;
+  overflow-y: hidden;
+  flex-shrink: 0;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-medium) transparent;
+}
+
+.history-strip::-webkit-scrollbar { height: 3px; }
+.history-strip::-webkit-scrollbar-track { background: transparent; }
+.history-strip::-webkit-scrollbar-thumb { background: var(--border-medium); border-radius: 2px; }
+
+.history-label {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  flex-shrink: 0;
+}
+
+.history-empty {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.history-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-pill);
+  padding: 4px 10px;
+  font-size: 0.72rem;
+  color: var(--text-secondary);
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.history-arrow {
+  color: var(--text-muted);
+  font-size: 0.65rem;
+  flex-shrink: 0;
+}
+
+/* ── RIGHT PANEL ───────────────────────────────────────────────────────────── */
+.right-panel {
+  background: var(--bg-panel);
+  border-left: 1px solid var(--border-subtle);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-medium) transparent;
+  position: relative;
+}
+
+.right-panel::-webkit-scrollbar { width: 4px; }
+.right-panel::-webkit-scrollbar-track { background: transparent; }
+.right-panel::-webkit-scrollbar-thumb { background: var(--border-medium); border-radius: 2px; }
+
+/* Right panel section */
+.rp-section {
+  padding: var(--space-md);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.rp-section:last-child { border-bottom: none; }
+
+.rp-section-title {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: var(--space-sm);
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+.rp-section-title::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border-subtle);
+}
+
+/* Explanation panel */
+.explanation-placeholder {
+  background: rgba(255,255,255,0.02);
+  border: 1px dashed var(--border-medium);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  text-align: center;
+}
+
+.explanation-placeholder p {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  font-style: italic;
+  line-height: 1.5;
+}
+
+/* Energy tracker */
+.energy-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.energy-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--radius-sm);
+  background: rgba(255,255,255,0.02);
+  transition: background var(--transition-fast);
+}
+
+.energy-item.active {
+  background: rgba(255,255,255,0.06);
+}
+
+.energy-item-icon { font-size: 1rem; line-height: 1; flex-shrink: 0; }
+
+.energy-item-info { flex: 1; min-width: 0; }
+
+.energy-item-name {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.energy-item-processes {
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  color: var(--text-muted);
+  margin-top: 1px;
+}
+
+.energy-item-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--border-medium);
+  flex-shrink: 0;
+}
+
+.energy-item.active .energy-item-dot { background: #5CAB7D; }
+
+/* Matter tracker */
+.matter-tracker-placeholder {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+.matter-tracker-placeholder .matter-rule {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-xs);
+  margin-bottom: var(--space-xs);
+}
+
+.matter-rule-icon { font-size: 0.8rem; flex-shrink: 0; margin-top: 1px; }
+
+/* Cycle path diagram */
+.cycle-diagram {
+  background: rgba(0,0,0,0.2);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  min-height: 140px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.cycle-diagram-empty {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  text-align: center;
+  font-style: italic;
+  line-height: 1.5;
+}
+
+.cycle-diagram-progress {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.cycle-progress-bar {
+  height: 4px;
+  background: var(--border-subtle);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.cycle-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--process-weather), var(--process-cool));
+  border-radius: 2px;
+  width: 0%;
+  transition: width var(--transition-slow);
+}
+
+.cycle-progress-label {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+/* Slide-out drawer handle (for ≤1200px) */
+.right-panel-handle {
+  display: none;
+  position: absolute;
+  left: -16px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-medium);
+  border-right: none;
+  border-radius: var(--radius-sm) 0 0 var(--radius-sm);
+  width: 16px;
+  height: 48px;
+  cursor: pointer;
+  z-index: 10;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.6rem;
+  color: var(--text-muted);
+}
+
+/* ── FOOTER ────────────────────────────────────────────────────────────────── */
+.app-footer {
+  background: var(--bg-panel);
+  border-top: 1px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--space-lg);
+  height: var(--footer-h);
+}
+
+.footer-credit {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  color: var(--text-muted);
+  letter-spacing: 0.04em;
+}
+
+.footer-standard {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  color: var(--text-muted);
+  letter-spacing: 0.04em;
+}
+
+.footer-standard span {
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+/* ── SPECIMEN DISPLAY — rock-type glow states ─────────────────────────────── */
+.specimen-display.type-igneous {
+  box-shadow: inset 0 2px 12px rgba(0,0,0,0.3),
+              0 0 24px rgba(232,93,58,0.08),
+              0 0 1px rgba(232,93,58,0.3);
+}
+
+.specimen-display.type-sedimentary {
+  box-shadow: inset 0 2px 12px rgba(0,0,0,0.3),
+              0 0 24px rgba(212,168,67,0.08),
+              0 0 1px rgba(212,168,67,0.3);
+}
+
+.specimen-display.type-metamorphic {
+  box-shadow: inset 0 2px 12px rgba(0,0,0,0.3),
+              0 0 24px rgba(123,45,142,0.08),
+              0 0 1px rgba(123,45,142,0.3);
+}
+
+/* ── DRAG GHOST ────────────────────────────────────────────────────────────── */
+.drag-ghost {
+  position: fixed;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.85;
+  transform: rotate(3deg) scale(0.9);
+  background: var(--bg-card);
+  border-radius: var(--radius-md);
+  padding: var(--space-sm) var(--space-md);
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--border-medium);
+  font-size: 0.8rem;
+  color: var(--text-primary);
+  white-space: nowrap;
+}
+
+/* ── RESPONSIVE ── ≤1200px: right panel slide-out ─────────────────────────── */
+@media (max-width: 1200px) {
+  :root {
+    --right-panel-w: 0px;
+  }
+
+  .app-main {
+    grid-template-columns: var(--left-panel-w) 1fr;
+    position: relative;
+  }
+
+  .right-panel {
+    position: fixed;
+    top: var(--header-h);
+    right: 0;
+    width: 280px;
+    height: calc(100vh - var(--header-h) - var(--footer-h));
+    transform: translateX(100%);
+    transition: transform var(--transition-slow);
+    z-index: 50;
+    border-left: 1px solid var(--border-medium);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .right-panel.open {
+    transform: translateX(0);
+  }
+
+  .right-panel-handle {
+    display: flex;
+  }
+}
+
+/* ── RESPONSIVE ── ≤768px: stacked layout ─────────────────────────────────── */
+@media (max-width: 768px) {
+  :root {
+    --header-h: 56px;
+    --left-panel-w: 100%;
+  }
+
+  .app-main {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr;
+  }
+
+  .left-panel {
+    border-right: none;
+    border-bottom: 1px solid var(--border-subtle);
+    max-height: 160px;
+    overflow-y: hidden;
+    overflow-x: auto;
+    flex-direction: row;
+    align-items: stretch;
+    scrollbar-width: thin;
+  }
+
+  .shelf-heading { display: none; }
+
+  .rock-group-label { display: none; }
+
+  .rock-cards-container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+  }
+
+  .rock-card {
+    flex-direction: column;
+    min-width: 80px;
+    padding: var(--space-sm);
+    border-left: none;
+    border-bottom: 3px solid transparent;
+    text-align: center;
+    gap: 4px;
+  }
+
+  .rock-card[data-type='igneous']     { border-bottom-color: var(--accent-igneous); }
+  .rock-card[data-type='sedimentary'] { border-bottom-color: var(--accent-sedimentary); }
+  .rock-card[data-type='metamorphic'] { border-bottom-color: var(--accent-metamorphic); }
+
+  .rock-card:hover { transform: translateY(-2px) translateX(0); }
+
+  .utah-section { display: none; }
+
+  .right-panel {
+    top: var(--header-h);
+    height: calc(100vh - var(--header-h));
+  }
+
+  .header-subtitle { display: none; }
+
+  .mode-tabs { gap: 2px; }
+  .mode-tab  { padding: 4px 8px; font-size: 0.72rem; }
+
+  .stage-layout {
+    grid-template-columns: 1fr 160px 1fr;
+  }
+
+  .specimen-svg-wrap { width: 100px; height: 100px; }
+  .specimen-svg-wrap svg { width: 100px; height: 100px; }
+
+  .orientation-hint {
+    display: flex;
+  }
+}
+
+/* Landscape hint on mobile */
+.orientation-hint {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: var(--bg-primary);
+  z-index: 9999;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: var(--space-md);
+  text-align: center;
+  padding: var(--space-xl);
+}
+
+@media (max-width: 600px) and (orientation: portrait) {
+  .orientation-hint { display: flex; }
+}
+
+.orientation-hint-icon { font-size: 3rem; opacity: 0.6; }
+.orientation-hint-text {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+/* ── UTILITIES ─────────────────────────────────────────────────────────────── */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0,0,0,0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.divider {
+  height: 1px;
+  background: var(--border-subtle);
+  margin: var(--space-sm) 0;
+}
