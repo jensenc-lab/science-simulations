@@ -1228,3 +1228,313 @@ a  { color: var(--text-primary); text-decoration: none; }
   background: var(--border-subtle);
   margin: var(--space-sm) 0;
 }
+
+/* ── PROMPT 2: Drag-and-Drop, Transformations ─────────────────────────────── */
+
+/* Drag ghost */
+.drag-ghost {
+  position: fixed;
+  z-index: 9999;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-md);
+  padding: 6px 10px 6px 8px;
+  box-shadow: 0 8px 28px rgba(0,0,0,0.55), 0 2px 8px rgba(0,0,0,0.3);
+  opacity: 0.9;
+  transform: rotate(2deg) scale(1.04);
+  user-select: none;
+  white-space: nowrap;
+}
+
+.drag-ghost-svg svg  { width: 36px; height: 30px; display: block; }
+.drag-ghost-emoji    { font-size: 1.4rem; line-height: 1; }
+.drag-ghost-label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+/* Cursor during drag */
+body.dragging,
+body.dragging * { cursor: grabbing !important; user-select: none !important; }
+
+/* Rock card — grab cursor */
+.rock-card           { cursor: pointer; }
+.rock-card:active    { cursor: grabbing; }
+#specimen-display    { cursor: default; }
+#specimen-display .specimen-content.visible { cursor: grab; }
+
+/* Zone drop tooltip */
+.zone-drop-tip {
+  position: absolute;
+  bottom: 6px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.6rem;
+  font-weight: 600;
+  color: #fff;
+  background: rgba(0,0,0,0.72);
+  border-radius: var(--radius-sm);
+  padding: 3px 7px;
+  pointer-events: none;
+  white-space: nowrap;
+  max-width: 130px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  z-index: 2;
+}
+
+/* Drop-valid pulse */
+.process-zone.drop-valid .zone-icon { transform: scale(1.12); }
+.process-zone.drop-valid .zone-name { color: var(--text-primary); }
+.process-zone.drop-valid { animation: pulse-border 1s ease infinite; }
+
+/* Drop-invalid shake */
+.process-zone.drop-invalid { animation: shake 0.38s ease; }
+
+/* Specimen display drag-over */
+#specimen-display.drop-target-hover {
+  border-color: var(--border-strong);
+  box-shadow: inset 0 2px 12px rgba(0,0,0,0.3),
+              0 0 0 2px rgba(232,224,212,0.2);
+}
+
+/* Zone active flash */
+.process-zone.zone-flash { animation: zone-flash 0.5s ease forwards; }
+
+/* Type-material glow (magma, sediment) */
+.specimen-display.type-material {
+  box-shadow: inset 0 2px 12px rgba(0,0,0,0.3),
+              0 0 24px rgba(255,107,53,0.08),
+              0 0 1px rgba(255,107,53,0.35);
+}
+
+/* ── Keyframe Animations ──────────────────────────────────────────────────── */
+
+@keyframes pulse-border {
+  0%, 100% { box-shadow: 0 0 0 0 transparent; }
+  50%       { box-shadow: 0 0 0 3px rgba(255,255,255,0.12); }
+}
+
+@keyframes shake {
+  0%,100% { transform: translateX(0) scale(1); }
+  20%     { transform: translateX(-5px) scale(1); }
+  40%     { transform: translateX(5px)  scale(1); }
+  60%     { transform: translateX(-3px) scale(1); }
+  80%     { transform: translateX(3px)  scale(1); }
+}
+
+@keyframes zone-flash {
+  0%   { filter: brightness(1); }
+  30%  { filter: brightness(1.7); }
+  100% { filter: brightness(1); }
+}
+
+@keyframes pop-in {
+  0%   { transform: scale(0.82); opacity: 0; }
+  65%  { transform: scale(1.04); opacity: 1; }
+  100% { transform: scale(1);    opacity: 1; }
+}
+
+/* ── History Strip — rich chip style ─────────────────────────────────────── */
+
+/* Override old .history-arrow and .history-item — new chips used instead */
+.history-arrow {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  padding: 0 1px;
+  color: var(--text-muted);
+}
+
+.history-process-icon { font-size: 1rem; line-height: 1; }
+
+.history-chip {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-pill);
+  padding: 3px 9px 3px 5px;
+  cursor: pointer;
+  flex-shrink: 0;
+  white-space: nowrap;
+  transition: background var(--transition-fast), border-color var(--transition-fast);
+  min-height: 28px;
+}
+
+.history-chip:hover         { background: var(--bg-card-hover); border-color: var(--border-medium); }
+.history-chip.igneous       { border-color: rgba(232,93,58,0.28); }
+.history-chip.sedimentary   { border-color: rgba(212,168,67,0.28); }
+.history-chip.metamorphic   { border-color: rgba(123,45,142,0.28); }
+.history-chip.material      { border-color: rgba(255,107,53,0.28); }
+
+.chip-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  border: 1px solid rgba(255,255,255,0.12);
+}
+
+.chip-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.chip-uplift {
+  font-size: 0.6rem;
+  color: var(--process-uplift);
+  margin-left: 2px;
+}
+
+/* Clear history button */
+.history-clear-btn {
+  flex-shrink: 0;
+  background: none;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 0.75rem;
+  padding: 3px 7px;
+  transition: color var(--transition-fast), border-color var(--transition-fast),
+              background var(--transition-fast);
+  min-height: 28px;
+}
+.history-clear-btn:hover {
+  color: var(--text-primary);
+  border-color: var(--border-medium);
+  background: rgba(255,255,255,0.04);
+}
+
+/* ── Paths Counter ────────────────────────────────────────────────────────── */
+
+.paths-counter {
+  display: inline-flex;
+  align-items: center;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-pill);
+  font-family: var(--font-mono);
+  font-size: 0.63rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  padding: 1px 7px;
+  margin-left: var(--space-xs);
+  transition: background var(--transition-base), color var(--transition-base),
+              border-color var(--transition-base);
+  cursor: default;
+}
+
+.paths-counter.complete {
+  background: rgba(92,171,125,0.18);
+  border-color: rgba(92,171,125,0.5);
+  color: var(--process-weather);
+}
+
+/* ── Choice Popup Modal ───────────────────────────────────────────────────── */
+
+.choice-popup-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.62);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 9998;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.choice-popup {
+  background: var(--bg-card);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-xl);
+  padding: var(--space-xl) var(--space-lg);
+  max-width: 420px;
+  width: 100%;
+  box-shadow: var(--shadow-lg), 0 0 60px rgba(0,0,0,0.5);
+  text-align: center;
+}
+
+.pop-in { animation: pop-in 0.22s ease both; }
+
+.popup-header  { margin-bottom: var(--space-lg); }
+.popup-icon    { font-size: 2.4rem; line-height: 1; margin-bottom: 10px; }
+.popup-title   {
+  font-family: var(--font-heading);
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+.popup-subtitle {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
+.popup-options {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: var(--space-md);
+}
+
+.choice-option {
+  background: rgba(255,255,255,0.04);
+  border: 1.5px solid var(--border-medium);
+  border-radius: var(--radius-lg);
+  padding: 14px 8px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  text-align: center;
+  transition: background var(--transition-fast), border-color var(--transition-fast),
+              transform var(--transition-fast), box-shadow var(--transition-fast);
+  font-family: var(--font-body);
+  min-height: 100px;
+}
+
+.choice-option:hover {
+  background: rgba(255,255,255,0.09);
+  border-color: var(--border-strong);
+  transform: translateY(-3px);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.3);
+}
+
+.choice-option:focus-visible {
+  outline: 2px solid var(--border-strong);
+  outline-offset: 2px;
+}
+
+.choice-option-icon  { font-size: 1.7rem; line-height: 1; }
+.choice-option-label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+.choice-option-desc {
+  font-size: 0.62rem;
+  color: var(--text-secondary);
+  white-space: pre-line;
+  line-height: 1.35;
+}
+
+.popup-note {
+  font-size: 0.74rem;
+  color: var(--text-muted);
+  line-height: 1.45;
+  border-top: 1px solid var(--border-subtle);
+  padding-top: 12px;
+}

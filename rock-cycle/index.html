@@ -126,6 +126,8 @@
         <!-- History strip -->
         <div class="history-strip" role="log" aria-label="Transformation history" aria-live="polite">
           <span class="history-label">History</span>
+          <button class="history-clear-btn" id="history-clear-btn"
+                  aria-label="Clear transformation history" title="Clear history">🗑️</button>
           <div id="history-strip-items">
             <span class="history-empty">Transformations will appear here</span>
           </div>
@@ -175,7 +177,11 @@
 
         <!-- Cycle Path Diagram -->
         <div class="rp-section">
-          <div class="rp-section-title">Cycle Path</div>
+          <div class="rp-section-title">
+            Cycle Path
+            <span class="paths-counter" id="paths-counter"
+                  aria-label="Paths discovered" title="0 of 8 paths discovered">0/8</span>
+          </div>
           <div class="cycle-diagram" id="cycle-diagram">
             <div class="cycle-diagram-empty" id="cycle-diagram-empty">
               <span style="font-size:1.5rem;opacity:0.4" aria-hidden="true">🔁</span><br>
@@ -203,8 +209,9 @@
 
   </div><!-- /app-shell -->
 
-  <!-- Scripts (rock-data first so ROCKS/TRANSFORMATIONS are available to app.js) -->
+  <!-- Scripts: rock-data → interaction (drag engine) → app (rendering/state) -->
   <script src="js/rock-data.js"></script>
+  <script src="js/interaction.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>

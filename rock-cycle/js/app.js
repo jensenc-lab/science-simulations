@@ -362,6 +362,10 @@ function selectRock(rockId) {
     c.classList.toggle('selected', c.dataset.rock === rockId);
   });
 
+  // Mark display as having a specimen (used by drag engine)
+  const display = document.getElementById('specimen-display');
+  if (display) display.dataset.specimen = rockId;
+
   // Render specimen display
   renderSpecimen(rock);
 }
@@ -478,27 +482,8 @@ function initRightPanelDrawer() {
   });
 }
 
-// ── History Strip ────────────────────────────────────────────────────────────
-
-function updateHistoryStrip() {
-  const strip = document.getElementById('history-strip-items');
-  if (!strip) return;
-
-  if (state.transformationHistory.length === 0) {
-    strip.innerHTML = '<span class="history-empty">Transformations will appear here</span>';
-    return;
-  }
-
-  strip.innerHTML = state.transformationHistory.map(entry => `
-    <div class="history-item">
-      <span>${entry.from}</span>
-      <span class="history-arrow">→ ${entry.process} →</span>
-      <span>${entry.to}</span>
-    </div>
-  `).join('');
-}
-
 // ── Init ─────────────────────────────────────────────────────────────────────
+// Note: updateHistoryStrip is defined in interaction.js (rich version)
 
 document.addEventListener('DOMContentLoaded', () => {
   renderRockShelf();
@@ -508,9 +493,10 @@ document.addEventListener('DOMContentLoaded', () => {
   initModeTabs();
   initUtahToggle();
   initRightPanelDrawer();
-  updateHistoryStrip();
 
-  // Select first rock by default to show specimen display isn't empty
-  // (Users can deselect by clicking elsewhere — for now just show it looks good)
-  // selectRock('granite'); // Uncomment if desired
+  // Initialise drag-and-drop (defined in interaction.js, loaded before app.js)
+  if (typeof initDragDrop === 'function') initDragDrop();
+
+  // Render initial empty history strip
+  if (typeof updateHistoryStrip === 'function') updateHistoryStrip();
 });
