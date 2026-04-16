@@ -360,7 +360,7 @@ function initDragDrop() {
 
 // ── Transformation Logic ──────────────────────────────────────────────────────
 
-function performTransformation(specimenId, processId) {
+async function performTransformation(specimenId, processId) {
   if (state.isAnimating) return;
 
   const transform = TRANSFORMATIONS[processId];
@@ -369,12 +369,14 @@ function performTransformation(specimenId, processId) {
   flashZone(processId);
 
   if (processId === 'melting') {
+    await animateTransformation(specimenId, processId, 'magma');
     finalizeTransformation(specimenId, processId, 'magma');
 
   } else if (processId === 'crystallization') {
     showCrystallizationPopup(specimenId);
 
   } else if (processId === 'weathering') {
+    await animateTransformation(specimenId, processId, 'sediment');
     finalizeTransformation(specimenId, processId, 'sediment');
 
   } else if (processId === 'deposition') {
@@ -382,9 +384,11 @@ function performTransformation(specimenId, processId) {
 
   } else if (processId === 'heatAndPressure') {
     const outputId = transform.metamorphicMap[specimenId] || 'quartzite';
+    await animateTransformation(specimenId, processId, outputId);
     finalizeTransformation(specimenId, processId, outputId);
 
   } else if (processId === 'uplift') {
+    await animateTransformation(specimenId, processId, specimenId);
     finalizeTransformation(specimenId, processId, specimenId, { isUplift: true });
   }
 }
@@ -418,6 +422,11 @@ function finalizeTransformation(fromId, processId, toId, opts = {}) {
   // Update UI
   updateHistoryStrip();
   updatePathsCounter();
+
+  // Update right-panel educational content (panels.js, loaded after this file)
+  if (typeof updatePanelsAfterTransformation === 'function') {
+    updatePanelsAfterTransformation(fromId, processId, toId);
+  }
 }
 
 // ── Specimen Display ──────────────────────────────────────────────────────────
@@ -732,9 +741,11 @@ function showCrystallizationPopup(fromId) {
       { value: 'ultrafast', icon: '⚡', label: 'Ultra-fast', desc: 'Volcanic eruption\n→ No crystals\n→ Obsidian'   }
     ],
     note: '💡 Slow cooling = time for large crystals to grow. Fast cooling = small or no crystals.',
-    onChoose(speed) {
+    async onChoose(speed) {
       const map = { slow: 'granite', fast: 'basalt', ultrafast: 'obsidian' };
-      finalizeTransformation(fromId, 'crystallization', map[speed]);
+      const toId = map[speed];
+      await animateTransformation(fromId, 'crystallization', toId);
+      finalizeTransformation(fromId, 'crystallization', toId);
     }
   });
 }
@@ -750,7 +761,8 @@ function showDepositionPopup(fromId) {
       { value: 'shale',     icon: '💧', label: 'Clay & silt',      desc: 'Calm water\nsettling\n→ Shale'          }
     ],
     note: '💡 Layers pile up, compact under their own weight, and cement together over millions of years.',
-    onChoose(rockId) {
+    async onChoose(rockId) {
+      await animateTransformation(fromId, 'deposition', rockId);
       finalizeTransformation(fromId, 'deposition', rockId);
     }
   });

@@ -145,8 +145,8 @@
         <!-- Explanation Panel -->
         <div class="rp-section">
           <div class="rp-section-title">What's Happening?</div>
-          <div class="explanation-placeholder" id="explanation-panel">
-            <p>Select a rock and drag it to a process zone — the science will appear here.</p>
+          <div class="explanation-panel explanation-idle" id="explanation-panel">
+            <p class="exp-hint">Select a rock specimen from the shelf, then drag it to a process zone to see a transformation.</p>
           </div>
         </div>
 
@@ -209,9 +209,11 @@
 
   </div><!-- /app-shell -->
 
-  <!-- Scripts: rock-data → interaction (drag engine) → app (rendering/state) -->
+  <!-- Scripts: rock-data → interaction → animations → panels → app -->
   <script src="js/rock-data.js"></script>
   <script src="js/interaction.js"></script>
+  <script src="js/animations.js"></script>
+  <script src="js/panels.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>

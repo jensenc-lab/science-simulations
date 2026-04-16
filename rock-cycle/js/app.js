@@ -368,6 +368,11 @@ function selectRock(rockId) {
 
   // Render specimen display
   renderSpecimen(rock);
+
+  // Update explanation panel (panels.js)
+  if (typeof updateExplanationPanelOnSelect === 'function') {
+    updateExplanationPanelOnSelect(rockId);
+  }
 }
 
 // ── Rendering: Specimen Display ──────────────────────────────────────────────
@@ -499,4 +504,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Render initial empty history strip
   if (typeof updateHistoryStrip === 'function') updateHistoryStrip();
+
+  // Initialise educational panels (panels.js)
+  if (typeof initPanels === 'function') initPanels();
 });
