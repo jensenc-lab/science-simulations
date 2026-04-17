@@ -446,7 +446,6 @@ function checkGuidedCompletion(action) {
 // ── Complete Current Step / Sub-Step ──────────────────────────────────────────
 
 function completeGuidedStep() {
-  if (typeof AudioSystem !== 'undefined') AudioSystem.play('guidedStepComplete');
   const step = GUIDED_STEPS[guidedState.currentStep];
   if (!step) return;
 

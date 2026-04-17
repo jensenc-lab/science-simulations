@@ -13,7 +13,6 @@ const state = {
   mode:                   'free-explore',
   guidedStep:             0,
   language:               'en',
-  muted:                  false,
   isAnimating:            false
 };
 
@@ -576,24 +575,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Initialise educational panels (panels.js)
   if (typeof initPanels === 'function') initPanels();
-
-  // Audio: init on first user interaction (browser requirement)
-  if (typeof AudioSystem !== 'undefined') {
-    const initAudio = () => { AudioSystem.init(); document.removeEventListener('click', initAudio); };
-    document.addEventListener('click', initAudio);
-
-    // Mute button
-    const muteBtn = document.getElementById('mute-btn');
-    if (muteBtn) {
-      muteBtn.addEventListener('click', () => {
-        AudioSystem.init(); // ensure context exists
-        AudioSystem.muted = !AudioSystem.muted;
-        state.muted = AudioSystem.muted;
-        muteBtn.textContent = AudioSystem.muted ? '🔇' : '🔊';
-        muteBtn.setAttribute('aria-label', AudioSystem.muted ? 'Unmute sound' : 'Mute sound');
-      });
-    }
-  }
 
   // Update tappable zone hints when specimen changes
   updateTapHints();

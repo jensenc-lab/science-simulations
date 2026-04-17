@@ -189,7 +189,6 @@ function startDrag(specimenId, x, y) {
   dragEng.sourceId = specimenId;
   dragEng.ghost    = createDragGhost(specimenId, x, y);
   document.body.classList.add('dragging');
-  if (typeof AudioSystem !== 'undefined') AudioSystem.play('pickUp');
 }
 
 function onDragMove(x, y) {
@@ -253,11 +252,9 @@ function onDragEnd(x, y) {
         );
       }
     }
-    if (typeof AudioSystem !== 'undefined') AudioSystem.play('dropValid');
     performTransformation(specimenId, processId);
   } else {
     // Brief invalid flash + tip
-    if (typeof AudioSystem !== 'undefined') AudioSystem.play('dropInvalid');
     target.classList.add('drop-invalid');
     showZoneTip(target, getRejectMessage(specimenId, processId));
     setTimeout(() => {
@@ -388,10 +385,8 @@ function initDragDrop() {
       if (state.mode === 'presets' && typeof isPresetPlaying === 'function' && isPresetPlaying()) return;
 
       if (isValidTransformation(specimenId, processId)) {
-        if (typeof AudioSystem !== 'undefined') AudioSystem.play('dropValid');
         performTransformation(specimenId, processId);
       } else {
-        if (typeof AudioSystem !== 'undefined') AudioSystem.play('dropInvalid');
         zone.classList.add('drop-invalid');
         showZoneTip(zone, getRejectMessage(specimenId, processId));
         setTimeout(() => { zone.classList.remove('drop-invalid'); const t = zone.querySelector('.zone-drop-tip'); if (t) t.remove(); }, 1600);
@@ -426,7 +421,6 @@ async function performTransformation(specimenId, processId) {
   const transform = TRANSFORMATIONS[processId];
   if (!transform) return;
 
-  if (typeof AudioSystem !== 'undefined') AudioSystem.play('transformStart');
   flashZone(processId);
 
   if (processId === 'melting') {
@@ -470,9 +464,6 @@ function finalizeTransformation(fromId, processId, toId, opts = {}) {
     isUplift,
     timestamp:   Date.now()
   });
-
-  // Sound: transformation complete
-  if (typeof AudioSystem !== 'undefined') AudioSystem.play('transformComplete');
 
   // Track path discovery
   trackPathDiscovery(fromId, processId, toId);
@@ -643,20 +634,11 @@ function trackPathDiscovery(fromId, processId, toId) {
   if (fromCat === 'igneous'     && processId === 'weathering')      pathsToAdd.push('igneous-weathering-sediment');
   if (fromCat === 'sedimentary' && processId === 'heatAndPressure') pathsToAdd.push('sedimentary-heatAndPressure-metamorphic');
 
-  let anyNew = false;
   pathsToAdd.forEach(p => {
     if (!state.discoveredPaths.has(p)) {
       state.discoveredPaths.add(p);
-      anyNew = true;
     }
   });
-  if (anyNew && typeof AudioSystem !== 'undefined') {
-    if (state.discoveredPaths.size === ALL_PATHS.length) {
-      AudioSystem.play('allPathsComplete');
-    } else {
-      AudioSystem.play('pathDiscovered');
-    }
-  }
 }
 
 function updatePathsCounter() {
