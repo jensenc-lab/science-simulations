@@ -373,6 +373,11 @@ function selectRock(rockId) {
   if (typeof updateExplanationPanelOnSelect === 'function') {
     updateExplanationPanelOnSelect(rockId);
   }
+
+  // Guided mode: check step completion on rock selection
+  if (typeof onGuidedRockSelect === 'function' && state.mode === 'guided') {
+    onGuidedRockSelect(rockId);
+  }
 }
 
 // ── Rendering: Specimen Display ──────────────────────────────────────────────
@@ -450,16 +455,65 @@ function renderRightPanel() {
   }
 }
 
-// ── Mode Tabs ────────────────────────────────────────────────────────────────
+// ── Mode Tabs & Switching ────────────────────────────────────────────────────
 
 function initModeTabs() {
   document.querySelectorAll('.mode-tab').forEach(tab => {
     tab.addEventListener('click', () => {
-      document.querySelectorAll('.mode-tab').forEach(t => t.classList.remove('active'));
+      const newMode = tab.dataset.mode;
+      if (newMode === state.mode) return;
+
+      document.querySelectorAll('.mode-tab').forEach(t => {
+        t.classList.remove('active');
+        t.setAttribute('aria-selected', 'false');
+      });
       tab.classList.add('active');
-      state.mode = tab.dataset.mode;
+      tab.setAttribute('aria-selected', 'true');
+
+      switchMode(newMode);
     });
   });
+}
+
+function switchMode(newMode) {
+  const oldMode = state.mode;
+
+  // Teardown previous mode
+  cleanupModeOverlays();
+  if (oldMode === 'guided'  && typeof exitGuidedMode  === 'function') exitGuidedMode();
+  if (oldMode === 'presets' && typeof exitPresetMode   === 'function') exitPresetMode();
+
+  state.mode = newMode;
+
+  // Setup new mode
+  if (newMode === 'guided'      && typeof startGuidedMode    === 'function') startGuidedMode();
+  else if (newMode === 'presets' && typeof showPresetSelector === 'function') showPresetSelector();
+  else if (newMode === 'geo-journey') showComingSoon('Geo Journey');
+  // 'free-explore' needs no special init
+}
+
+function cleanupModeOverlays() {
+  ['#guided-overlay', '#preset-overlay', '#preset-playback', '#coming-soon-overlay'].forEach(sel => {
+    const el = document.querySelector(sel);
+    if (el) el.remove();
+  });
+  document.querySelectorAll('.process-zone').forEach(z => z.classList.remove('zone-disabled'));
+  document.querySelectorAll('.guided-highlight').forEach(el => el.classList.remove('guided-highlight'));
+}
+
+function showComingSoon(modeName) {
+  const stage = document.querySelector('.center-stage');
+  if (!stage) return;
+  const overlay = document.createElement('div');
+  overlay.id = 'coming-soon-overlay';
+  overlay.className = 'coming-soon-overlay';
+  overlay.innerHTML = `
+    <div class="coming-soon-content">
+      <span class="coming-soon-icon">🚧</span>
+      <h3>${modeName}</h3>
+      <p>Coming soon! Switch to Free Explore to keep experimenting.</p>
+    </div>`;
+  stage.appendChild(overlay);
 }
 
 // ── Utah Section Toggle ──────────────────────────────────────────────────────

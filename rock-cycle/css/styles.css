@@ -1958,3 +1958,370 @@ body.dragging * { cursor: grabbing !important; user-select: none !important; }
 }
 
 .paths-counter.celebrate { animation: counter-celebrate 0.4s ease 3; }
+
+/* ── PROMPT 4: Guided Mode, Presets, Mode Switching ──────────────────────── */
+
+/* ── Zone Disabled (guided mode) ─────────────────────────────────────────── */
+.process-zone.zone-disabled {
+  opacity: 0.25;
+  pointer-events: none;
+  filter: grayscale(0.6);
+}
+
+/* ── Guided Highlight Pulse ──────────────────────────────────────────────── */
+@keyframes guided-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(92,171,125,0); }
+  50%      { box-shadow: 0 0 0 5px rgba(92,171,125,0.35); }
+}
+
+.guided-highlight {
+  animation: guided-pulse 1.4s ease infinite;
+  border-color: var(--process-weather) !important;
+}
+
+.choice-option.guided-highlight {
+  border-color: var(--process-weather) !important;
+  box-shadow: 0 0 12px rgba(92,171,125,0.4);
+}
+
+/* ── Guided Overlay ──────────────────────────────────────────────────────── */
+.guided-overlay {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
+  background: rgba(10,14,26,0.88);
+  border-bottom: 1px solid var(--border-subtle);
+  z-index: 12;
+}
+
+/* ── Guided Progress Dots ────────────────────────────────────────────────── */
+.guided-progress {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.step-dots {
+  display: flex;
+  gap: 6px;
+}
+
+.step-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 2px solid var(--border-medium);
+  background: transparent;
+  transition: background 0.3s ease, border-color 0.3s ease;
+}
+
+.step-dot.completed {
+  background: var(--process-weather);
+  border-color: var(--process-weather);
+}
+
+.step-dot.current {
+  border-color: var(--text-primary);
+  box-shadow: 0 0 6px rgba(232,224,212,0.35);
+}
+
+.step-dot.current.completed {
+  background: var(--process-weather);
+  border-color: var(--process-weather);
+}
+
+.step-label {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  color: var(--text-muted);
+  letter-spacing: 0.05em;
+  margin-left: auto;
+}
+
+/* ── Guided Instruction Card ─────────────────────────────────────────────── */
+.guided-instruction {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+}
+
+.guided-step-title {
+  font-family: var(--font-heading);
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.guided-step-text {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  line-height: 1.55;
+  margin-bottom: 6px;
+}
+
+.guided-step-hint {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+  padding: 4px 8px;
+  background: rgba(255,255,255,0.03);
+  border-radius: var(--radius-sm);
+  border-left: 2px solid var(--process-weather);
+}
+
+.guided-completion {
+  font-size: 0.8rem;
+  color: var(--process-weather);
+  line-height: 1.55;
+  padding: 6px 8px;
+  background: rgba(92,171,125,0.08);
+  border-radius: var(--radius-sm);
+  border-left: 3px solid var(--process-weather);
+  margin-bottom: 8px;
+}
+
+.guided-buttons {
+  display: flex;
+  gap: var(--space-sm);
+  margin-bottom: 6px;
+}
+
+.guided-btn {
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 5px 14px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--border-medium);
+  background: rgba(255,255,255,0.05);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: background var(--transition-fast), color var(--transition-fast);
+}
+
+.guided-btn:hover:not(:disabled) {
+  background: rgba(255,255,255,0.1);
+  color: var(--text-primary);
+}
+
+.guided-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.guided-btn-next:not(:disabled) {
+  background: var(--process-weather);
+  border-color: var(--process-weather);
+  color: #fff;
+}
+
+.guided-skip-link {
+  display: inline-block;
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  cursor: pointer;
+  background: none;
+  border: none;
+  font-family: var(--font-body);
+  padding: 0;
+  transition: color var(--transition-fast);
+}
+
+.guided-skip-link:hover { color: var(--text-primary); text-decoration: underline; }
+
+/* ── Preset Overlay (selector grid) ──────────────────────────────────────── */
+.preset-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 15;
+  background: rgba(10,14,26,0.92);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-lg);
+}
+
+.preset-selector { text-align: center; max-width: 520px; width: 100%; }
+
+.preset-selector-title {
+  font-family: var(--font-heading);
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: var(--space-lg);
+}
+
+.preset-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-md);
+}
+
+.preset-card {
+  background: var(--bg-card);
+  border: 1.5px solid var(--border-medium);
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg) var(--space-md);
+  cursor: pointer;
+  text-align: center;
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast),
+              border-color var(--transition-fast), background var(--transition-fast);
+}
+
+.preset-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+  border-color: var(--border-strong);
+  background: var(--bg-card-hover);
+}
+
+.preset-card:focus-visible {
+  outline: 2px solid var(--border-strong);
+  outline-offset: 2px;
+}
+
+.preset-card .preset-icon {
+  font-size: 1.8rem;
+  display: block;
+  margin-bottom: 8px;
+}
+
+.preset-card h3 {
+  font-family: var(--font-heading);
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.preset-card p {
+  font-size: 0.72rem;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
+/* ── Preset Playback Bar ─────────────────────────────────────────────────── */
+.preset-playback {
+  flex-shrink: 0;
+  background: rgba(10,14,26,0.90);
+  border-bottom: 1px solid var(--border-subtle);
+  padding: var(--space-sm) var(--space-md);
+  z-index: 12;
+}
+
+.preset-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+
+.preset-pb-title {
+  font-family: var(--font-heading);
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.preset-step-label {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  color: var(--text-muted);
+}
+
+.preset-narration {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  font-style: italic;
+  margin-bottom: 8px;
+  min-height: 2.5em;
+  transition: opacity 0.15s ease;
+}
+
+.preset-controls {
+  display: flex;
+  gap: var(--space-sm);
+  flex-wrap: wrap;
+}
+
+.preset-btn {
+  font-family: var(--font-body);
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--border-medium);
+  background: rgba(255,255,255,0.05);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: background var(--transition-fast), color var(--transition-fast);
+}
+
+.preset-btn:hover:not(:disabled) {
+  background: rgba(255,255,255,0.1);
+  color: var(--text-primary);
+}
+
+.preset-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+
+.preset-btn-exit {
+  margin-left: auto;
+  border-color: rgba(255,80,80,0.3);
+  color: rgba(255,80,80,0.7);
+}
+
+.preset-btn-exit:hover { background: rgba(255,80,80,0.1); color: rgba(255,80,80,0.9); }
+
+/* ── Coming Soon Overlay ─────────────────────────────────────────────────── */
+.coming-soon-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 15;
+  background: rgba(10,14,26,0.88);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.coming-soon-content {
+  text-align: center;
+}
+
+.coming-soon-icon {
+  font-size: 2.5rem;
+  display: block;
+  margin-bottom: 10px;
+}
+
+.coming-soon-content h3 {
+  font-family: var(--font-heading);
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 6px;
+}
+
+.coming-soon-content p {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+}
+
+/* ── Utah Highlighted Card ───────────────────────────────────────────────── */
+@keyframes utah-highlight-pulse {
+  0%, 100% { border-color: transparent; background: transparent; }
+  50%      { border-color: var(--accent-sedimentary); background: rgba(212,168,67,0.08); }
+}
+
+.utah-item.utah-highlighted {
+  animation: utah-highlight-pulse 0.8s ease 3;
+  border-radius: var(--radius-sm);
+}

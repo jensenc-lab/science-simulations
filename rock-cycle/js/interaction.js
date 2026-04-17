@@ -156,6 +156,13 @@ function applyDropFeedback(target, specimenId) {
   const processId = target.dataset.process;
   if (!processId) return;
 
+  // Guided mode: zone not enabled → show as invalid
+  if (state.mode === 'guided' && typeof isGuidedZoneEnabled === 'function' && !isGuidedZoneEnabled(processId)) {
+    target.classList.add('drop-invalid');
+    showZoneTip(target, 'Follow the instructions! Look for the highlighted zone.');
+    return;
+  }
+
   if (isValidTransformation(specimenId, processId)) {
     target.classList.add('drop-valid');
     showZoneTip(target, '✓ ' + TRANSFORMATIONS[processId].name);
@@ -216,6 +223,23 @@ function onDragEnd(x, y) {
   // Drop on process zone
   const processId = target.dataset.process;
   if (!processId) return;
+
+  // Guided mode: only allow enabled zones
+  if (state.mode === 'guided' && typeof isGuidedZoneEnabled === 'function' && !isGuidedZoneEnabled(processId)) {
+    target.classList.add('drop-invalid');
+    showZoneTip(target, 'Follow the instructions above! Look for the highlighted zone.');
+    setTimeout(() => {
+      target.classList.remove('drop-invalid');
+      const tip = target.querySelector('.zone-drop-tip');
+      if (tip) tip.remove();
+    }, 1600);
+    return;
+  }
+
+  // Preset mode: block manual drag during playback
+  if (state.mode === 'presets' && typeof isPresetPlaying === 'function' && isPresetPlaying()) {
+    return;
+  }
 
   if (isValidTransformation(specimenId, processId)) {
     // If dragging directly from shelf, update currentSpecimen first
@@ -426,6 +450,11 @@ function finalizeTransformation(fromId, processId, toId, opts = {}) {
   // Update right-panel educational content (panels.js, loaded after this file)
   if (typeof updatePanelsAfterTransformation === 'function') {
     updatePanelsAfterTransformation(fromId, processId, toId);
+  }
+
+  // Guided mode: check step completion
+  if (typeof onGuidedTransformation === 'function' && state.mode === 'guided') {
+    onGuidedTransformation(fromId, processId, toId);
   }
 }
 
@@ -728,6 +757,11 @@ function showChoicePopup(config) {
   // Focus first option for keyboard users
   const firstBtn = popup.querySelector('.choice-option');
   if (firstBtn) setTimeout(() => firstBtn.focus(), 50);
+
+  // Guided mode: highlight recommended choice
+  if (typeof onGuidedPopupShown === 'function' && state.mode === 'guided') {
+    onGuidedPopupShown(popup);
+  }
 }
 
 function showCrystallizationPopup(fromId) {
