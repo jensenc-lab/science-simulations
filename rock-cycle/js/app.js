@@ -374,6 +374,9 @@ function selectRock(rockId) {
     updateExplanationPanelOnSelect(rockId);
   }
 
+  // Update tap-to-transform hints
+  if (typeof updateTapHints === 'function') updateTapHints();
+
   // Guided mode: check step completion on rock selection
   if (typeof onGuidedRockSelect === 'function' && state.mode === 'guided') {
     onGuidedRockSelect(rockId);
@@ -455,6 +458,17 @@ function renderRightPanel() {
   }
 }
 
+// ── Tap Hints: show which zones are tappable ─────────────────────────────────
+
+function updateTapHints() {
+  const specimen = state.currentSpecimen;
+  document.querySelectorAll('.process-zone').forEach(zone => {
+    const processId = zone.dataset.process;
+    const tappable = specimen && processId && isValidTransformation(specimen, processId);
+    zone.classList.toggle('tap-ready', !!tappable);
+  });
+}
+
 // ── Mode Tabs & Switching ────────────────────────────────────────────────────
 
 function initModeTabs() {
@@ -480,20 +494,21 @@ function switchMode(newMode) {
 
   // Teardown previous mode
   cleanupModeOverlays();
-  if (oldMode === 'guided'  && typeof exitGuidedMode  === 'function') exitGuidedMode();
-  if (oldMode === 'presets' && typeof exitPresetMode   === 'function') exitPresetMode();
+  if (oldMode === 'guided'      && typeof exitGuidedMode === 'function') exitGuidedMode();
+  if (oldMode === 'presets'     && typeof exitPresetMode  === 'function') exitPresetMode();
+  if (oldMode === 'geo-journey' && typeof exitJourney     === 'function') exitJourney();
 
   state.mode = newMode;
 
   // Setup new mode
   if (newMode === 'guided'      && typeof startGuidedMode    === 'function') startGuidedMode();
   else if (newMode === 'presets' && typeof showPresetSelector === 'function') showPresetSelector();
-  else if (newMode === 'geo-journey') showComingSoon('Geo Journey');
+  else if (newMode === 'geo-journey' && typeof startJourney   === 'function') startJourney();
   // 'free-explore' needs no special init
 }
 
 function cleanupModeOverlays() {
-  ['#guided-overlay', '#preset-overlay', '#preset-playback', '#coming-soon-overlay'].forEach(sel => {
+  ['#guided-overlay', '#preset-overlay', '#preset-playback', '#coming-soon-overlay', '#journey-overlay'].forEach(sel => {
     const el = document.querySelector(sel);
     if (el) el.remove();
   });
@@ -561,4 +576,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Initialise educational panels (panels.js)
   if (typeof initPanels === 'function') initPanels();
+
+  // Audio: init on first user interaction (browser requirement)
+  if (typeof AudioSystem !== 'undefined') {
+    const initAudio = () => { AudioSystem.init(); document.removeEventListener('click', initAudio); };
+    document.addEventListener('click', initAudio);
+
+    // Mute button
+    const muteBtn = document.getElementById('mute-btn');
+    if (muteBtn) {
+      muteBtn.addEventListener('click', () => {
+        AudioSystem.init(); // ensure context exists
+        AudioSystem.muted = !AudioSystem.muted;
+        state.muted = AudioSystem.muted;
+        muteBtn.textContent = AudioSystem.muted ? '🔇' : '🔊';
+        muteBtn.setAttribute('aria-label', AudioSystem.muted ? 'Unmute sound' : 'Mute sound');
+      });
+    }
+  }
+
+  // Update tappable zone hints when specimen changes
+  updateTapHints();
 });

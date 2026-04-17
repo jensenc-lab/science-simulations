@@ -189,6 +189,7 @@ function startDrag(specimenId, x, y) {
   dragEng.sourceId = specimenId;
   dragEng.ghost    = createDragGhost(specimenId, x, y);
   document.body.classList.add('dragging');
+  if (typeof AudioSystem !== 'undefined') AudioSystem.play('pickUp');
 }
 
 function onDragMove(x, y) {
@@ -252,9 +253,11 @@ function onDragEnd(x, y) {
         );
       }
     }
+    if (typeof AudioSystem !== 'undefined') AudioSystem.play('dropValid');
     performTransformation(specimenId, processId);
   } else {
     // Brief invalid flash + tip
+    if (typeof AudioSystem !== 'undefined') AudioSystem.play('dropInvalid');
     target.classList.add('drop-invalid');
     showZoneTip(target, getRejectMessage(specimenId, processId));
     setTimeout(() => {
@@ -363,6 +366,39 @@ function initDragDrop() {
     }, { passive: true });
   }
 
+  // Tap-to-transform: clicking/Enter on a process zone when a specimen is selected
+  document.querySelectorAll('.process-zone').forEach(zone => {
+    zone.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); zone.click(); }
+    });
+    zone.addEventListener('click', (e) => {
+      // Ignore if we just finished a drag (moved flag) or if animating
+      if (dragEng.moved || state.isAnimating) return;
+      const specimenId = state.currentSpecimen;
+      const processId  = zone.dataset.process;
+      if (!specimenId || !processId) return;
+
+      // Guided mode: only allow enabled zones
+      if (state.mode === 'guided' && typeof isGuidedZoneEnabled === 'function' && !isGuidedZoneEnabled(processId)) {
+        zone.classList.add('drop-invalid');
+        showZoneTip(zone, 'Follow the instructions! Look for the highlighted zone.');
+        setTimeout(() => { zone.classList.remove('drop-invalid'); const t = zone.querySelector('.zone-drop-tip'); if (t) t.remove(); }, 1600);
+        return;
+      }
+      if (state.mode === 'presets' && typeof isPresetPlaying === 'function' && isPresetPlaying()) return;
+
+      if (isValidTransformation(specimenId, processId)) {
+        if (typeof AudioSystem !== 'undefined') AudioSystem.play('dropValid');
+        performTransformation(specimenId, processId);
+      } else {
+        if (typeof AudioSystem !== 'undefined') AudioSystem.play('dropInvalid');
+        zone.classList.add('drop-invalid');
+        showZoneTip(zone, getRejectMessage(specimenId, processId));
+        setTimeout(() => { zone.classList.remove('drop-invalid'); const t = zone.querySelector('.zone-drop-tip'); if (t) t.remove(); }, 1600);
+      }
+    });
+  });
+
   // Clear history button
   const clearBtn = document.getElementById('history-clear-btn');
   if (clearBtn) {
@@ -390,6 +426,7 @@ async function performTransformation(specimenId, processId) {
   const transform = TRANSFORMATIONS[processId];
   if (!transform) return;
 
+  if (typeof AudioSystem !== 'undefined') AudioSystem.play('transformStart');
   flashZone(processId);
 
   if (processId === 'melting') {
@@ -434,6 +471,9 @@ function finalizeTransformation(fromId, processId, toId, opts = {}) {
     timestamp:   Date.now()
   });
 
+  // Sound: transformation complete
+  if (typeof AudioSystem !== 'undefined') AudioSystem.play('transformComplete');
+
   // Track path discovery
   trackPathDiscovery(fromId, processId, toId);
 
@@ -456,6 +496,13 @@ function finalizeTransformation(fromId, processId, toId, opts = {}) {
   if (typeof onGuidedTransformation === 'function' && state.mode === 'guided') {
     onGuidedTransformation(fromId, processId, toId);
   }
+
+  // Update tap-to-transform hints for new specimen
+  if (typeof updateTapHints === 'function') updateTapHints();
+
+  // Zone snap animation
+  const snapZone = document.querySelector(`.process-zone[data-process="${processId}"]`);
+  if (snapZone) { snapZone.classList.add('zone-snap'); setTimeout(() => snapZone.classList.remove('zone-snap'), 350); }
 }
 
 // ── Specimen Display ──────────────────────────────────────────────────────────
@@ -596,12 +643,20 @@ function trackPathDiscovery(fromId, processId, toId) {
   if (fromCat === 'igneous'     && processId === 'weathering')      pathsToAdd.push('igneous-weathering-sediment');
   if (fromCat === 'sedimentary' && processId === 'heatAndPressure') pathsToAdd.push('sedimentary-heatAndPressure-metamorphic');
 
+  let anyNew = false;
   pathsToAdd.forEach(p => {
     if (!state.discoveredPaths.has(p)) {
       state.discoveredPaths.add(p);
-      console.log(`%c✓ Path discovered: ${p}`, 'color:#5CAB7D;font-weight:bold;font-size:12px');
+      anyNew = true;
     }
   });
+  if (anyNew && typeof AudioSystem !== 'undefined') {
+    if (state.discoveredPaths.size === ALL_PATHS.length) {
+      AudioSystem.play('allPathsComplete');
+    } else {
+      AudioSystem.play('pathDiscovered');
+    }
+  }
 }
 
 function updatePathsCounter() {

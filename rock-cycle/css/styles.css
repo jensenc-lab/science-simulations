@@ -2325,3 +2325,360 @@ body.dragging * { cursor: grabbing !important; user-select: none !important; }
   animation: utah-highlight-pulse 0.8s ease 3;
   border-radius: var(--radius-sm);
 }
+
+/* ── PROMPT 5: Journey Mode, Audio, Tap-to-Transform, Polish ─────────────── */
+
+/* ── Journey Overlay ─────────────────────────────────────────────────────── */
+.journey-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 15;
+  background: rgba(10,14,26,0.94);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-lg);
+}
+
+/* ── Journey Setup ───────────────────────────────────────────────────────── */
+.journey-setup { text-align: center; max-width: 520px; width: 100%; }
+
+.journey-setup-title {
+  font-family: var(--font-heading);
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.journey-setup-desc {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  margin-bottom: var(--space-lg);
+}
+
+.journey-rock-picker {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-sm);
+  margin-bottom: var(--space-lg);
+}
+
+.journey-rock-option {
+  background: var(--bg-card);
+  border: 1.5px solid var(--border-medium);
+  border-radius: var(--radius-md);
+  padding: var(--space-sm);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  transition: transform var(--transition-fast), border-color var(--transition-fast),
+              background var(--transition-fast);
+}
+
+.journey-rock-option:hover {
+  background: var(--bg-card-hover);
+  border-color: var(--border-strong);
+  transform: translateY(-2px);
+}
+
+.journey-rock-option.selected {
+  border-color: var(--process-weather);
+  box-shadow: 0 0 0 2px rgba(92,171,125,0.25);
+  background: rgba(92,171,125,0.08);
+}
+
+.journey-rock-option:focus-visible {
+  outline: 2px solid var(--border-strong);
+  outline-offset: 2px;
+}
+
+.jro-svg svg { width: 36px; height: 30px; }
+.jro-name { font-size: 0.72rem; font-weight: 600; color: var(--text-primary); }
+
+.journey-start-btn {
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  font-weight: 600;
+  padding: 8px 24px;
+  border-radius: var(--radius-pill);
+  border: none;
+  background: var(--process-weather);
+  color: #fff;
+  cursor: pointer;
+  transition: opacity var(--transition-fast);
+}
+.journey-start-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+.journey-start-btn:hover:not(:disabled) { opacity: 0.88; }
+
+.journey-back-link {
+  display: block;
+  margin-top: var(--space-sm);
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  cursor: pointer;
+  background: none;
+  border: none;
+  font-family: var(--font-body);
+}
+.journey-back-link:hover { color: var(--text-primary); }
+
+/* ── Journey Playback ────────────────────────────────────────────────────── */
+.journey-playback {
+  position: absolute;
+  inset: 0;
+  z-index: 14;
+  display: flex;
+  flex-direction: column;
+  pointer-events: none; /* children override */
+}
+
+.journey-narration {
+  pointer-events: auto;
+  text-align: center;
+  padding: var(--space-sm) var(--space-md);
+  background: rgba(10,14,26,0.80);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.journey-time-badge {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent-sedimentary);
+  background: rgba(212,168,67,0.12);
+  padding: 2px 8px;
+  border-radius: var(--radius-pill);
+  margin-bottom: 4px;
+}
+
+.journey-narration p,
+#journey-narration-text {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  font-style: italic;
+  transition: opacity 0.15s ease;
+}
+
+/* ── Journey Depth Indicator ─────────────────────────────────────────────── */
+.journey-depth-indicator {
+  pointer-events: none;
+  position: absolute;
+  right: 8px;
+  top: 80px;
+  bottom: 60px;
+  width: 64px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  z-index: 3;
+}
+
+.depth-scale {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+  position: relative;
+}
+
+.depth-level {
+  font-family: var(--font-mono);
+  font-size: 0.52rem;
+  color: var(--text-muted);
+  text-align: right;
+  padding-right: 12px;
+  transition: color 0.3s ease;
+  white-space: nowrap;
+}
+.depth-level.active { color: var(--text-primary); font-weight: 600; }
+
+.depth-marker {
+  position: absolute;
+  right: 2px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--process-weather);
+  box-shadow: 0 0 6px rgba(92,171,125,0.6);
+  transition: top 0.8s ease;
+}
+
+/* ── Journey Timeline ────────────────────────────────────────────────────── */
+.journey-timeline {
+  pointer-events: auto;
+  padding: var(--space-sm) var(--space-md);
+  margin-top: auto;
+  background: rgba(10,14,26,0.80);
+  border-top: 1px solid var(--border-subtle);
+}
+
+.timeline-bar {
+  height: 4px;
+  background: var(--border-subtle);
+  border-radius: 2px;
+  position: relative;
+  overflow: visible;
+}
+
+.timeline-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent-sedimentary), var(--process-weather));
+  border-radius: 2px;
+  width: 0%;
+  transition: width 0.6s ease;
+}
+
+.timeline-playhead {
+  position: absolute;
+  top: -4px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--process-weather);
+  border: 2px solid var(--bg-panel);
+  transform: translateX(-50%);
+  transition: left 0.6s ease;
+  box-shadow: 0 0 4px rgba(92,171,125,0.5);
+}
+
+.timeline-labels {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 4px;
+}
+
+.tl-label {
+  font-family: var(--font-mono);
+  font-size: 0.52rem;
+  color: var(--text-muted);
+}
+
+/* ── Journey Controls ────────────────────────────────────────────────────── */
+.journey-controls {
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-xs) var(--space-md) var(--space-sm);
+  background: rgba(10,14,26,0.80);
+  flex-wrap: wrap;
+}
+
+.jc-btn {
+  font-family: var(--font-body);
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--border-medium);
+  background: rgba(255,255,255,0.05);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: background var(--transition-fast), color var(--transition-fast);
+}
+.jc-btn:hover:not(:disabled) { background: rgba(255,255,255,0.1); color: var(--text-primary); }
+.jc-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+
+.jc-play { background: var(--process-weather); border-color: var(--process-weather); color: #fff; }
+.jc-play:hover { opacity: 0.88; }
+
+.jc-exit { margin-left: auto; border-color: rgba(255,80,80,0.3); color: rgba(255,80,80,0.7); }
+.jc-exit:hover { background: rgba(255,80,80,0.1); color: rgba(255,80,80,0.9); }
+
+.jc-speed {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  background: rgba(255,255,255,0.05);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-sm);
+  padding: 3px 4px;
+}
+
+/* ── Depth Background Context on Specimen Display ────────────────────────── */
+.specimen-display.depth-surface {
+  background: linear-gradient(180deg, rgba(135,206,235,0.08) 0%, rgba(0,0,0,0.25) 100%);
+}
+.specimen-display.depth-shallow {
+  background: linear-gradient(180deg, rgba(139,115,85,0.12) 0%, rgba(100,80,55,0.18) 100%);
+}
+.specimen-display.depth-deep {
+  background: linear-gradient(180deg, rgba(180,60,50,0.10) 0%, rgba(120,30,20,0.18) 100%);
+}
+.specimen-display.depth-mantle {
+  background: linear-gradient(180deg, rgba(255,69,0,0.12) 0%, rgba(180,20,0,0.22) 100%);
+  box-shadow: inset 0 0 30px rgba(255,69,0,0.08), var(--shadow-sm);
+}
+
+/* ── Tap-to-Transform: tappable zone hint ────────────────────────────────── */
+.process-zone.tap-ready {
+  border-style: solid;
+  border-color: var(--zone-color);
+  cursor: pointer;
+}
+.process-zone.tap-ready .zone-icon { filter: drop-shadow(0 0 4px var(--zone-color)); }
+
+/* Zone snap animation on successful drop */
+@keyframes zone-snap {
+  0%   { transform: scale(1); }
+  40%  { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+.process-zone.zone-snap { animation: zone-snap 0.3s ease; }
+
+/* ── Focus-visible for all interactive elements ──────────────────────────── */
+.rock-card:focus-visible,
+.mode-tab:focus-visible,
+.util-btn:focus-visible,
+.process-zone:focus-visible,
+.guided-btn:focus-visible,
+.preset-btn:focus-visible,
+.jc-btn:focus-visible,
+.history-chip:focus-visible,
+.choice-option:focus-visible {
+  outline: 2px solid rgba(92,171,125,0.7);
+  outline-offset: 2px;
+}
+
+/* ── Will-change hints for frequently animated elements ──────────────────── */
+.drag-ghost,
+.anim-overlay,
+.timeline-fill,
+.timeline-playhead,
+.depth-marker { will-change: transform, opacity; }
+
+/* ── Process zones: keyboard navigable ───────────────────────────────────── */
+.process-zone { cursor: pointer; }
+.process-zone[tabindex] { outline: none; }
+
+/* ── Toast message ───────────────────────────────────────────────────────── */
+.toast-message {
+  position: fixed;
+  bottom: 60px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: var(--bg-card);
+  color: var(--text-primary);
+  font-size: 0.78rem;
+  padding: 8px 16px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--border-medium);
+  box-shadow: var(--shadow-md);
+  z-index: 9999;
+  opacity: 0;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  pointer-events: none;
+}
+.toast-message.visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}

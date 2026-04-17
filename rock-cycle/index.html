@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description" content="Rock Cycle Lab — interactive rock cycle simulation for Utah SEEd Standard 7.2.1. Ogden School District.">
   <title>Rock Cycle Lab — Utah SEEd 7.2.1</title>
   <link rel="stylesheet" href="css/styles.css">
@@ -70,7 +70,7 @@
         <div class="stage-layout">
 
           <!-- Row 1 Left: Melting -->
-          <div class="process-zone" data-process="melting" role="region" aria-label="Melting process zone">
+          <div class="process-zone" data-process="melting" role="button" tabindex="0" aria-label="Melting process zone">
             <div class="zone-icon" aria-hidden="true">🌋</div>
             <div class="zone-name">Melting</div>
             <div class="zone-energy"></div>
@@ -86,35 +86,35 @@
           </div>
 
           <!-- Row 1 Right: Crystallization -->
-          <div class="process-zone" data-process="crystallization" role="region" aria-label="Crystallization process zone">
+          <div class="process-zone" data-process="crystallization" role="button" tabindex="0" aria-label="Crystallization process zone">
             <div class="zone-icon" aria-hidden="true">❄️</div>
             <div class="zone-name">Crystallization</div>
             <div class="zone-energy"></div>
           </div>
 
           <!-- Row 2 Left: Weathering & Erosion -->
-          <div class="process-zone" data-process="weathering" role="region" aria-label="Weathering and erosion process zone">
+          <div class="process-zone" data-process="weathering" role="button" tabindex="0" aria-label="Weathering and erosion process zone">
             <div class="zone-icon" aria-hidden="true">🌧️</div>
             <div class="zone-name">Weathering &amp; Erosion</div>
             <div class="zone-energy"></div>
           </div>
 
           <!-- Row 2 Right: Heat & Pressure -->
-          <div class="process-zone" data-process="heatAndPressure" role="region" aria-label="Heat and pressure process zone">
+          <div class="process-zone" data-process="heatAndPressure" role="button" tabindex="0" aria-label="Heat and pressure process zone">
             <div class="zone-icon" aria-hidden="true">🔥</div>
             <div class="zone-name">Heat &amp; Pressure</div>
             <div class="zone-energy"></div>
           </div>
 
           <!-- Row 3 Left: Deposition -->
-          <div class="process-zone" data-process="deposition" role="region" aria-label="Deposition process zone">
+          <div class="process-zone" data-process="deposition" role="button" tabindex="0" aria-label="Deposition process zone">
             <div class="zone-icon" aria-hidden="true">📥</div>
             <div class="zone-name">Deposition</div>
             <div class="zone-energy"></div>
           </div>
 
           <!-- Row 3 Right: Uplift -->
-          <div class="process-zone" data-process="uplift" role="region" aria-label="Uplift and deformation process zone">
+          <div class="process-zone" data-process="uplift" role="button" tabindex="0" aria-label="Uplift and deformation process zone">
             <div class="zone-icon" aria-hidden="true">🏔️</div>
             <div class="zone-name">Uplift &amp; Deformation</div>
             <div class="zone-energy"></div>
@@ -145,7 +145,7 @@
         <!-- Explanation Panel -->
         <div class="rp-section">
           <div class="rp-section-title">What's Happening?</div>
-          <div class="explanation-panel explanation-idle" id="explanation-panel">
+          <div class="explanation-panel explanation-idle" id="explanation-panel" aria-live="polite">
             <p class="exp-hint">Select a rock specimen from the shelf, then drag it to a process zone to see a transformation.</p>
           </div>
         </div>
@@ -209,13 +209,15 @@
 
   </div><!-- /app-shell -->
 
-  <!-- Scripts: rock-data → interaction → animations → panels → guided → presets → app -->
+  <!-- Scripts: rock-data → interaction → animations → panels → guided → presets → journey → audio → app -->
   <script src="js/rock-data.js"></script>
   <script src="js/interaction.js"></script>
   <script src="js/animations.js"></script>
   <script src="js/panels.js"></script>
   <script src="js/guided-mode.js"></script>
   <script src="js/presets.js"></script>
+  <script src="js/journey.js"></script>
+  <script src="js/audio.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>
