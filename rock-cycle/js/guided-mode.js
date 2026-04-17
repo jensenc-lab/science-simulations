@@ -163,7 +163,7 @@ const GUIDED_STEPS = [
     hint: "💡 There's no single correct path — rocks can take many routes!",
     enabledZones: 'all',
     highlight: { rocks: ['granite'] },
-    check: 'cycle:granite:3',
+    check: 'cycle:granite',
     completionMessage: null, // generated dynamically
     autoSelect: 'granite',
     subSteps: null
@@ -323,9 +323,16 @@ function renderGuidedInstruction() {
   let cmpHtml = '';
   if (done) {
     let msg = sub ? sub.completionMessage : step.completionMessage;
-    // Dynamic for the Full Cycle step
+    // Dynamic for the Full Cycle step — tiered response by step count
     if (step.check && step.check.startsWith('cycle:') && guidedState.stepData.cycleCount) {
-      msg = `You completed a full rock cycle in ${guidedState.stepData.cycleCount} step${guidedState.stepData.cycleCount > 1 ? 's' : ''}! The real rock cycle takes millions to hundreds of millions of years. There's no single "correct" path — rocks can take many different routes.`;
+      const n = guidedState.stepData.cycleCount;
+      if (n <= 2) {
+        msg = "You found the shortest path — just melt and re-crystallize! The real rock cycle can take this path too, though it requires extreme heat.";
+      } else if (n <= 5) {
+        msg = `You completed a full rock cycle in ${n} steps! There are many possible paths through the rock cycle.`;
+      } else {
+        msg = `You completed a full rock cycle in ${n} steps — the scenic route! Every path through the rock cycle is valid.`;
+      }
     }
     if (msg) cmpHtml = `<div class="guided-completion">${msg}</div>`;
   }
@@ -424,9 +431,13 @@ function checkGuidedCompletion(action) {
 
   if (chk.startsWith('cycle:')) {
     if (action.type !== 'transform') return false;
-    const [, target, min] = chk.split(':');
+    const target = chk.split(':')[1];
     guidedState.stepData.cycleCount = (guidedState.stepData.cycleCount || 0) + 1;
-    return action.toId === target && guidedState.stepData.cycleCount >= parseInt(min);
+    // Track whether the specimen ever left the target rock
+    if (action.fromId !== target || action.toId !== target) {
+      guidedState.stepData.leftTarget = true;
+    }
+    return action.toId === target && guidedState.stepData.leftTarget;
   }
 
   return false;
