@@ -26,9 +26,7 @@ function setExplanationIdle() {
   const panel = document.getElementById('explanation-panel');
   if (!panel) return;
   panel.className = 'explanation-panel explanation-idle';
-  panel.innerHTML = `
-    <p class="exp-hint">Select a rock specimen from the shelf, then drag it to a process zone to see a transformation.</p>
-  `;
+  panel.innerHTML = `<p class="exp-hint">${t('explanationDefault')}</p>`;
 }
 
 // Called from app.js when a rock/material is selected (not after a transform)
@@ -44,31 +42,32 @@ function updateExplanationPanelOnSelect(specimenId) {
   panel.className = 'explanation-panel explanation-selected';
 
   if (rock) {
-    // List which processes accept this rock
+    // List which processes accept this rock (use `tr` for loop var — `t` is the translation fn)
     const validProcesses = Object.values(TRANSFORMATIONS)
-      .filter(t => t.accepts.includes(rock.type))
-      .map(t => `<span class="exp-process-tag" style="color:${getProcessColor(t.id)}">${t.icon} ${t.name}</span>`)
+      .filter(tr => tr.accepts.includes(rock.type))
+      .map(tr => `<span class="exp-process-tag" style="color:${getProcessColor(tr.id)}">${tr.icon} ${processName(tr.id)}</span>`)
       .join('');
 
     panel.innerHTML = `
-      <div class="exp-rock-name">${rock.name}</div>
-      <p class="exp-desc">${rock.description}</p>
-      <div class="exp-section-label">Available Transformations</div>
+      <div class="exp-rock-name">${rockName(rock.id)}</div>
+      <p class="exp-desc">${t(rock.id + 'Desc')}</p>
+      <div class="exp-section-label">${t('explainAvailTransforms')}</div>
       <div class="exp-process-tags">${validProcesses}</div>
-      <div class="exp-hint-drag">Drag this rock to any highlighted zone →</div>
+      <div class="exp-hint-drag">${t('explainDragHint')}</div>
     `;
   } else {
-    // Material (magma, sediment, lava)
     const validProcesses = Object.values(TRANSFORMATIONS)
-      .filter(t => t.accepts.includes(specimenId))
-      .map(t => `<span class="exp-process-tag" style="color:${getProcessColor(t.id)}">${t.icon} ${t.name}</span>`)
+      .filter(tr => tr.accepts.includes(specimenId))
+      .map(tr => `<span class="exp-process-tag" style="color:${getProcessColor(tr.id)}">${tr.icon} ${processName(tr.id)}</span>`)
       .join('');
 
+    const matDescKey = { magma: 'magmaDesc', lava: 'lavaDesc', sediment: 'sedimentDesc' }[specimenId] || 'magmaDesc';
+
     panel.innerHTML = `
-      <div class="exp-rock-name">${material.name}</div>
-      <p class="exp-desc">${material.description}</p>
+      <div class="exp-rock-name">${rockName(specimenId)}</div>
+      <p class="exp-desc">${t(matDescKey)}</p>
       ${validProcesses ? `
-        <div class="exp-section-label">Next Steps</div>
+        <div class="exp-section-label">${t('explainNextSteps')}</div>
         <div class="exp-process-tags">${validProcesses}</div>
       ` : ''}
     `;
@@ -101,29 +100,32 @@ function updateExplanationPostTransform(fromId, processId, toId, transform) {
   const panel = document.getElementById('explanation-panel');
   if (!panel) return;
 
-  const fromName = getSpecimenName(fromId);
-  const toName   = getSpecimenName(toId);
+  const fromName = rockName(fromId);
+  const toName   = rockName(toId);
   const energySrc = ENERGY_SOURCES[transform.energySource];
+  const energyKeyMap = { sun: 'energySun', 'earth-heat': 'energyEarthHeat', gravity: 'energyGravity', cooling: 'energyCooling', tectonic: 'energyTectonic' };
+  const processDescKey = { melting: 'meltingDesc', crystallization: 'crystallizationDesc', weathering: 'weatheringDesc', deposition: 'depositionDesc', heatAndPressure: 'heatPressureDesc', uplift: 'upliftDesc' }[processId];
+  const matterKey = { melting: 'meltingMatter', crystallization: 'crystallizationMatter', weathering: 'weatheringMatter', deposition: 'depositionMatter', heatAndPressure: 'heatPressureMatter', uplift: 'upliftMatter' }[processId];
 
   panel.className = 'explanation-panel explanation-transform';
   panel.innerHTML = `
     <div class="exp-transform-header">
       <span class="exp-transform-icon">${transform.icon}</span>
       <div>
-        <div class="exp-transform-title">${transform.name}</div>
+        <div class="exp-transform-title">${processName(processId)}</div>
         <div class="exp-transform-path">${fromName} → ${toName}</div>
       </div>
     </div>
-    <p class="exp-desc">${transform.description}</p>
+    <p class="exp-desc">${t(processDescKey || '')}</p>
     ${energySrc ? `
       <div class="exp-energy-row">
         <span class="exp-energy-icon">${energySrc.icon}</span>
-        <span class="exp-energy-label">Energy: <strong>${energySrc.name}</strong></span>
+        <span class="exp-energy-label">${t('explainEnergyLabel')} <strong>${t(energyKeyMap[energySrc.id] || energySrc.id)}</strong></span>
       </div>
     ` : ''}
     <div class="exp-matter-note">
       <span class="exp-matter-icon">⚛️</span>
-      <span>${transform.matterNote}</span>
+      <span>${t(matterKey || '')}</span>
     </div>
   `;
 }
@@ -135,6 +137,7 @@ function renderEnergyTracker(lastUsedId) {
   if (!list) return;
 
   const maxUsage = Math.max(1, ...Object.values(energyUsage));
+  const energyKeyMap = { sun: 'energySun', 'earth-heat': 'energyEarthHeat', gravity: 'energyGravity', cooling: 'energyCooling', tectonic: 'energyTectonic' };
 
   list.innerHTML = Object.values(ENERGY_SOURCES).map(src => {
     const count    = energyUsage[src.id] || 0;
@@ -146,7 +149,7 @@ function renderEnergyTracker(lastUsedId) {
       <div class="energy-item${isActive ? ' active just-used' : isUsed ? ' used' : ''}">
         <span class="energy-item-icon">${src.icon}</span>
         <div class="energy-item-info">
-          <div class="energy-item-name">${src.name}</div>
+          <div class="energy-item-name">${t(energyKeyMap[src.id] || src.id)}</div>
           <div class="energy-bar-row">
             <div class="energy-bar-track">
               <div class="energy-bar-fill" style="width:${barPct}%;background:${src.color}"></div>
@@ -178,38 +181,41 @@ function updateMatterTracker(fromId, processId, toId) {
   const fromMins = fromRock.minerals || [];
   const toMins   = toRock.minerals   || [];
 
+  const matterKey = { melting: 'meltingMatter', crystallization: 'crystallizationMatter', weathering: 'weatheringMatter', deposition: 'depositionMatter', heatAndPressure: 'heatPressureMatter', uplift: 'upliftMatter' }[processId];
+
   tracker.className = 'matter-tracker-active';
   tracker.innerHTML = `
     <div class="matter-conservation">
       <span class="matter-icon">⚛️</span>
-      <span>Same atoms — new arrangement</span>
+      <span>${t('matterConservation')}</span>
     </div>
     <div class="matter-minerals-row">
       <div class="matter-mineral-col">
-        <div class="matter-col-label">${fromRock.name}</div>
+        <div class="matter-col-label">${rockName(fromId)}</div>
         ${fromMins.map(m => `<div class="matter-mineral-dot"><span class="m-dot"></span><span class="m-name">${m}</span></div>`).join('')}
       </div>
       <div class="matter-arrow-col">
         <span class="matter-transform-icon">${TRANSFORMATIONS[processId]?.icon || '→'}</span>
       </div>
       <div class="matter-mineral-col">
-        <div class="matter-col-label">${toRock.name}</div>
+        <div class="matter-col-label">${rockName(toId)}</div>
         ${toMins.map(m => `<div class="matter-mineral-dot"><span class="m-dot"></span><span class="m-name">${m}</span></div>`).join('')}
       </div>
     </div>
-    <p class="matter-note-text">${TRANSFORMATIONS[processId]?.matterNote || ''}</p>
+    <p class="matter-note-text">${t(matterKey || '')}</p>
   `;
 }
 
 // ── Cycle Diagram ─────────────────────────────────────────────────────────────
 
 // Node positions in a 240 × 200 viewBox
+// labelKey = translation key for the node label (resolved via t() at render time)
 const DIAGRAM_NODES = {
-  magma:       { x: 120, y: 24,  r: 18, label: 'Magma',       color: '#FF4500', textColor: '#fff' },
-  igneous:     { x: 196, y: 90,  r: 22, label: 'Igneous',     color: '#E85D3A', textColor: '#fff' },
-  metamorphic: { x: 170, y: 177, r: 22, label: 'Metamorph.',  color: '#7B2D8E', textColor: '#e0c0f0' },
-  sedimentary: { x: 70,  y: 177, r: 22, label: 'Sediment.',   color: '#D4A843', textColor: '#3a2800' },
-  sediment:    { x: 44,  y: 90,  r: 18, label: 'Sediment',    color: '#C2B280', textColor: '#3a2800' }
+  magma:       { x: 120, y: 24,  r: 18, labelKey: 'rockMagma',    color: '#FF4500', textColor: '#fff' },
+  igneous:     { x: 196, y: 90,  r: 22, labelKey: 'typeIgneous',  color: '#E85D3A', textColor: '#fff' },
+  metamorphic: { x: 170, y: 177, r: 22, labelKey: 'typeMetamorphic', color: '#7B2D8E', textColor: '#e0c0f0' },
+  sedimentary: { x: 70,  y: 177, r: 22, labelKey: 'typeSedimentary', color: '#D4A843', textColor: '#3a2800' },
+  sediment:    { x: 44,  y: 90,  r: 18, labelKey: 'rockSediment', color: '#C2B280', textColor: '#3a2800' }
 };
 
 // Each entry links a path key to an arrow between two diagram nodes
@@ -289,7 +295,7 @@ function renderCycleDiagram() {
               stroke="${n.color}" stroke-width="1.5"/>
       <text x="${n.x}" y="${n.y}" text-anchor="middle" dominant-baseline="central"
             font-family="sans-serif" font-size="8" font-weight="600"
-            fill="${n.textColor || '#fff'}" opacity="0.90">${n.label}</text>
+            fill="${n.textColor || '#fff'}" opacity="0.90">${t(n.labelKey)}</text>
     `;
   });
 

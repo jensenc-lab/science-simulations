@@ -17,171 +17,61 @@ const guidedState = {
 
 // ── The 10 Guided Steps ──────────────────────────────────────────────────────
 
+// Each step stores translation keys (titleKey/instructionKey/hintKey/completionKey)
+// instead of hardcoded strings — rendered via t() at display time so language toggle works.
+
 const GUIDED_STEPS = [
-  /* 0 — Meet the Rocks */
-  {
-    title: 'Meet the Rocks',
-    instruction: "Welcome! Let's explore how rocks transform. Click on at least 3 different rocks — try one from each family: Igneous (orange), Sedimentary (gold), and Metamorphic (purple).",
-    hint: '💡 Look for the colored labels on the left shelf.',
-    enabledZones: [],
-    highlight: { shelf: true },
-    check: 'select-types',
-    completionMessage: "Great! You've seen the three rock families. Notice how each type formed in a completely different way.",
-    autoSelect: null,
-    subSteps: null
-  },
+  { titleKey: 'guided1Title', instructionKey: 'guided1Text', hintKey: 'guided1Hint', completionKey: 'guided1Complete',
+    enabledZones: [], highlight: { shelf: true }, check: 'select-types', autoSelect: null, subSteps: null },
 
-  /* 1 — Melting */
-  {
-    title: 'Melting',
-    instruction: 'Drag GRANITE from the shelf into the Melting zone (🌋). Watch what happens!',
-    hint: '💡 Look for the glowing zone on the left!',
-    enabledZones: ['melting'],
-    highlight: { rocks: ['granite'], zones: ['melting'] },
-    check: 'transform:granite:melting:magma',
-    completionMessage: "Granite melted into magma! The energy came from deep inside Earth. The same minerals are still there — they're just liquid now.",
-    autoSelect: 'granite',
-    subSteps: null
-  },
+  { titleKey: 'guided2Title', instructionKey: 'guided2Text', hintKey: 'guided2Hint', completionKey: 'guided2Complete',
+    enabledZones: ['melting'], highlight: { rocks: ['granite'], zones: ['melting'] },
+    check: 'transform:granite:melting:magma', autoSelect: 'granite', subSteps: null },
 
-  /* 2 — Crystallization (two sub-steps) */
-  {
-    title: 'Crystallization',
-    enabledZones: ['crystallization'],
-    highlight: { zones: ['crystallization'] },
-    check: null,
-    completionMessage: null,
-    autoSelect: null,
-    autoLoadSpecimen: 'magma',
+  { titleKey: 'guided3Title',
+    enabledZones: ['crystallization'], highlight: { zones: ['crystallization'] }, check: null,
+    autoSelect: null, autoLoadSpecimen: 'magma',
     subSteps: [
-      {
-        instruction: "Your magma is underground. Drag it into the Crystallization zone (❄️) and choose 'Slow Cooling.'",
-        hint: '💡 Slow cooling = time for big crystals to grow.',
-        check: 'transform:*:crystallization:granite',
-        highlightPopupChoice: 'slow',
-        completionMessage: "Slow cooling deep underground = BIG crystals you can see! That's how granite forms. Now let's try fast cooling...",
-        afterComplete: 'loadMagma'
-      },
-      {
-        instruction: "Try again — drag the magma to Crystallization and choose 'Fast Cooling.'",
-        hint: '💡 Fast cooling = tiny or no crystals.',
-        check: 'transform:*:crystallization:basalt',
-        highlightPopupChoice: 'fast',
-        completionMessage: "Fast cooling on the surface = tiny crystals! Same magma, different rock — because cooling speed matters.",
-        afterComplete: null
-      }
+      { instructionKey: 'guided3aText', hintKey: 'guided3aHint', completionKey: 'guided3aComplete',
+        check: 'transform:*:crystallization:granite', highlightPopupChoice: 'slow', afterComplete: 'loadMagma' },
+      { instructionKey: 'guided3bText', hintKey: 'guided3bHint', completionKey: 'guided3bComplete',
+        check: 'transform:*:crystallization:basalt', highlightPopupChoice: 'fast', afterComplete: null }
     ]
   },
 
-  /* 3 — Weathering & Erosion */
-  {
-    title: 'Weathering & Erosion',
-    instruction: 'Drag any rock from the shelf into the Weathering zone (🌧️). Watch how nature breaks it down.',
-    hint: "💡 The Sun's energy powers wind, water, and ice that break rock apart.",
-    enabledZones: ['weathering'],
-    highlight: { shelf: true, zones: ['weathering'] },
-    check: 'any-transform:weathering',
-    completionMessage: "The rock broke into sediment — tiny pieces carried by wind and water. The Sun's energy powers this process!",
-    autoSelect: null,
-    subSteps: null
-  },
+  { titleKey: 'guided4Title', instructionKey: 'guided4Text', hintKey: 'guided4Hint', completionKey: 'guided4Complete',
+    enabledZones: ['weathering'], highlight: { shelf: true, zones: ['weathering'] },
+    check: 'any-transform:weathering', autoSelect: null, subSteps: null },
 
-  /* 4 — Deposition & Sedimentation */
-  {
-    title: 'Deposition & Sedimentation',
-    instruction: 'Now drag the sediment into the Deposition zone (📥). Choose any sediment type.',
-    hint: '💡 Gravity pulls layers down; weight and time cement them together.',
-    enabledZones: ['deposition'],
-    highlight: { zones: ['deposition'] },
-    check: 'any-transform:deposition',
-    completionMessage: "Layers of sediment were squeezed and cemented into rock! Gravity did the heavy lifting — literally.",
-    autoSelect: null,
-    autoLoadSpecimen: 'sediment',
-    subSteps: null
-  },
+  { titleKey: 'guided5Title', instructionKey: 'guided5Text', hintKey: 'guided5Hint', completionKey: 'guided5Complete',
+    enabledZones: ['deposition'], highlight: { zones: ['deposition'] },
+    check: 'any-transform:deposition', autoSelect: null, autoLoadSpecimen: 'sediment', subSteps: null },
 
-  /* 5 — Heat & Pressure (limestone → marble) */
-  {
-    title: 'Heat & Pressure',
-    instruction: 'Drag LIMESTONE from the shelf into the Heat & Pressure zone (🔥). See what happens when rock is squeezed deep underground.',
-    hint: '💡 The rock changes without melting — minerals rearrange under pressure.',
-    enabledZones: ['heatAndPressure'],
-    highlight: { rocks: ['limestone'], zones: ['heatAndPressure'] },
-    check: 'transform:limestone:heatAndPressure:marble',
-    completionMessage: "Limestone became marble! Same calcite minerals, but heat and pressure rearranged them into interlocking crystals.",
-    autoSelect: 'limestone',
-    subSteps: null
-  },
+  { titleKey: 'guided6Title', instructionKey: 'guided6Text', hintKey: 'guided6Hint', completionKey: 'guided6Complete',
+    enabledZones: ['heatAndPressure'], highlight: { rocks: ['limestone'], zones: ['heatAndPressure'] },
+    check: 'transform:limestone:heatAndPressure:marble', autoSelect: 'limestone', subSteps: null },
 
-  /* 6 — Metamorphic Pairs (two sub-steps) */
-  {
-    title: 'The Metamorphic Pairs',
-    enabledZones: ['heatAndPressure'],
-    highlight: { zones: ['heatAndPressure'] },
-    check: null,
-    completionMessage: null,
-    autoSelect: null,
+  { titleKey: 'guided7Title',
+    enabledZones: ['heatAndPressure'], highlight: { zones: ['heatAndPressure'] }, check: null, autoSelect: null,
     subSteps: [
-      {
-        instruction: 'Every sedimentary rock has a metamorphic partner. Try dragging SHALE into the Heat & Pressure zone.',
-        hint: '💡 Shale is made of thin clay layers — pressure realigns them.',
-        check: 'transform:shale:heatAndPressure:slate',
-        highlightRocks: ['shale'],
-        autoSelect: 'shale',
-        completionMessage: "Shale became slate! Now try SANDSTONE.",
-        afterComplete: null
-      },
-      {
-        instruction: 'Now drag SANDSTONE into the Heat & Pressure zone.',
-        hint: '💡 Sand grains fuse together under extreme heat.',
-        check: 'transform:sandstone:heatAndPressure:quartzite',
-        highlightRocks: ['sandstone'],
-        autoSelect: 'sandstone',
-        completionMessage: "Sandstone became quartzite! Three pairs: Limestone\u2009→\u2009Marble, Shale\u2009→\u2009Slate, Sandstone\u2009→\u2009Quartzite. The parent rock determines the metamorphic rock.",
-        afterComplete: null
-      }
+      { instructionKey: 'guided7aText', hintKey: 'guided7aHint', completionKey: 'guided7aComplete',
+        check: 'transform:shale:heatAndPressure:slate', highlightRocks: ['shale'], autoSelect: 'shale', afterComplete: null },
+      { instructionKey: 'guided7bText', hintKey: 'guided7bHint', completionKey: 'guided7bComplete',
+        check: 'transform:sandstone:heatAndPressure:quartzite', highlightRocks: ['sandstone'], autoSelect: 'sandstone', afterComplete: null }
     ]
   },
 
-  /* 7 — Uplift */
-  {
-    title: 'Uplift',
-    instruction: "Rocks deep underground can't be weathered — they need to reach the surface first. Drag any rock into the Uplift zone (🏔️).",
-    hint: '💡 Tectonic forces push rocks up — completing the cycle!',
-    enabledZones: ['uplift'],
-    highlight: { shelf: true, zones: ['uplift'] },
-    check: 'any-transform:uplift',
-    completionMessage: "Tectonic forces pushed the rock up to the surface! Now it's exposed to wind and rain — and the cycle can continue.",
-    autoSelect: null,
-    subSteps: null
-  },
+  { titleKey: 'guided8Title', instructionKey: 'guided8Text', hintKey: 'guided8Hint', completionKey: 'guided8Complete',
+    enabledZones: ['uplift'], highlight: { shelf: true, zones: ['uplift'] },
+    check: 'any-transform:uplift', autoSelect: null, subSteps: null },
 
-  /* 8 — Complete a Full Cycle */
-  {
-    title: 'Complete a Full Cycle',
-    instruction: "Put it all together! Start with GRANITE and try to turn it back into granite. Use any combination of processes. How many steps does it take?",
-    hint: "💡 There's no single correct path — rocks can take many routes!",
-    enabledZones: 'all',
-    highlight: { rocks: ['granite'] },
-    check: 'cycle:granite',
-    completionMessage: null, // generated dynamically
-    autoSelect: 'granite',
-    subSteps: null
-  },
+  { titleKey: 'guided9Title', instructionKey: 'guided9Text', hintKey: 'guided9Hint',
+    enabledZones: 'all', highlight: { rocks: ['granite'] }, check: 'cycle:granite',
+    autoSelect: 'granite', subSteps: null },
 
-  /* 9 — Check Your Progress */
-  {
-    title: 'Check Your Progress',
-    instruction: null, // generated dynamically
-    hint: null,
-    enabledZones: [],
-    highlight: { rightPanel: true },
-    check: 'auto',
-    completionMessage: null,
-    autoSelect: null,
-    subSteps: null,
-    isFinal: true
-  }
+  { titleKey: 'guided10Title', // instruction + hint generated dynamically via t()
+    enabledZones: [], highlight: { rightPanel: true }, check: 'auto',
+    autoSelect: null, subSteps: null, isFinal: true }
 ];
 
 // ── Start / Exit ──────────────────────────────────────────────────────────────
@@ -290,7 +180,7 @@ function renderProgressDots() {
     html += `<span class="${cls}"></span>`;
   }
   html += '</div>';
-  html += `<span class="step-label">Step ${guidedState.currentStep + 1} of ${total}</span>`;
+  html += `<span class="step-label">${t('guidedStepOf', { current: guidedState.currentStep + 1, total: total })}</span>`;
   container.innerHTML = html;
 }
 
@@ -307,50 +197,49 @@ function renderGuidedInstruction() {
   const isFinal  = !!step.isFinal;
   const isFirst  = guidedState.currentStep === 0;
 
-  // Dynamic instruction for final review step
-  let instruction = sub ? sub.instruction : step.instruction;
-  let hint        = sub ? sub.hint        : step.hint;
+  // Resolve instruction + hint text via translation keys
+  let instruction = sub && sub.instructionKey ? t(sub.instructionKey) : (step.instructionKey ? t(step.instructionKey) : '');
+  let hint        = sub && sub.hintKey        ? t(sub.hintKey)        : (step.hintKey        ? t(step.hintKey)        : '');
   if (isFinal) {
     const cnt = state.discoveredPaths.size;
     const tot = ALL_PATHS.length;
-    instruction = `Look at your Cycle Path Diagram on the right. You've discovered ${cnt} of ${tot} paths! Switch to Free Explore mode to find any paths you missed.`;
+    instruction = t('guided10Text', { cnt: cnt, tot: tot });
     hint = cnt === tot
-      ? '🎉 Amazing — you found every path!'
-      : `💡 ${tot - cnt} path${tot - cnt > 1 ? 's' : ''} still to discover.`;
+      ? t('guided10HintComplete')
+      : t('guided10HintRemaining', { n: tot - cnt, s: (tot - cnt) > 1 ? 's' : '' });
   }
 
   // Completion message
   let cmpHtml = '';
   if (done) {
-    let msg = sub ? sub.completionMessage : step.completionMessage;
+    let msg = '';
+    const completionKey = sub && sub.completionKey ? sub.completionKey : step.completionKey;
+    if (completionKey) msg = t(completionKey);
     // Dynamic for the Full Cycle step — tiered response by step count
     if (step.check && step.check.startsWith('cycle:') && guidedState.stepData.cycleCount) {
       const n = guidedState.stepData.cycleCount;
-      if (n <= 2) {
-        msg = "You found the shortest path — just melt and re-crystallize! The real rock cycle can take this path too, though it requires extreme heat.";
-      } else if (n <= 5) {
-        msg = `You completed a full rock cycle in ${n} steps! There are many possible paths through the rock cycle.`;
-      } else {
-        msg = `You completed a full rock cycle in ${n} steps — the scenic route! Every path through the rock cycle is valid.`;
-      }
+      if (n <= 2)      msg = t('guided9CompleteShort');
+      else if (n <= 5) msg = t('guided9CompleteMed', { n: n });
+      else             msg = t('guided9CompleteLong', { n: n });
     }
     if (msg) cmpHtml = `<div class="guided-completion">${msg}</div>`;
   }
 
-  const nextLabel = isFinal ? 'Switch to Free Explore →' : 'Next →';
+  const nextLabel = isFinal ? t('guidedSwitchFree') : t('guidedNext');
+  const title = step.titleKey ? t(step.titleKey) : '';
 
   container.innerHTML = `
-    <h3 class="guided-step-title">${step.title}</h3>
+    <h3 class="guided-step-title">${title}</h3>
     ${!done ? `
       <p class="guided-step-text">${instruction}</p>
       ${hint ? `<div class="guided-step-hint">${hint}</div>` : ''}
     ` : ''}
     ${cmpHtml}
     <div class="guided-buttons">
-      <button class="guided-btn guided-btn-prev" ${isFirst ? 'disabled' : ''}>← Previous</button>
+      <button class="guided-btn guided-btn-prev" ${isFirst ? 'disabled' : ''}>${t('guidedPrevious')}</button>
       <button class="guided-btn guided-btn-next" ${!done ? 'disabled' : ''}>${nextLabel}</button>
     </div>
-    <button class="guided-skip-link">Skip to Free Explore →</button>
+    <button class="guided-skip-link">${t('guidedSkipLink')}</button>
   `;
 
   // Button wiring

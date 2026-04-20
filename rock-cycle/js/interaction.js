@@ -29,6 +29,7 @@ function getSpecimenCategory(id) {
 }
 
 function getSpecimenName(id) {
+  if (typeof rockName === 'function' && (ROCKS[id] || MATERIALS[id])) return rockName(id);
   if (ROCKS[id])     return ROCKS[id].name;
   if (MATERIALS[id]) return MATERIALS[id].name;
   return id;
@@ -44,42 +45,17 @@ function isValidTransformation(specimenId, processId) {
 
 function getRejectMessage(specimenId, processId) {
   const category = getSpecimenCategory(specimenId);
-  const msgs = {
-    crystallization: {
-      igneous: 'Rock is already solid — melt it first!',
-      sedimentary: 'Rock is already solid — melt it first!',
-      metamorphic: 'Rock is already solid — melt it first!',
-      sediment: 'Sediment must compact into rock, then melt.'
-    },
-    melting: {
-      magma: 'Already magma — it\'s already melted!',
-      lava:  'Already lava — it\'s already melted!',
-      sediment: 'Sediment must compact into rock before melting.'
-    },
-    weathering: {
-      magma:    'Magma must cool and crystallize first!',
-      lava:     'Lava must cool and crystallize first!',
-      sediment: 'Sediment is already broken-down rock!'
-    },
-    deposition: {
-      igneous:     'Rock must weather into sediment first!',
-      sedimentary: 'Rock must weather into sediment first!',
-      metamorphic: 'Rock must weather into sediment first!',
-      magma: 'Magma must cool → weather → sediment first!',
-      lava:  'Lava must cool → weather → sediment first!'
-    },
-    heatAndPressure: {
-      magma:    'Magma must solidify before metamorphism.',
-      lava:     'Lava must solidify before metamorphism.',
-      sediment: 'Sediment must compact into rock first.'
-    },
-    uplift: {
-      magma:    'Magma must solidify before being uplifted.',
-      lava:     'Lava must solidify before being uplifted.',
-      sediment: 'Sediment must compact into rock first.'
-    }
+  // Map (processId, category) → translation key
+  const keyMap = {
+    crystallization: { igneous: 'rejectCrystRock', sedimentary: 'rejectCrystRock', metamorphic: 'rejectCrystRock', sediment: 'rejectCrystSediment' },
+    melting:         { magma: 'rejectMeltMagma', lava: 'rejectMeltLava', sediment: 'rejectMeltSediment' },
+    weathering:      { magma: 'rejectWeatherMagma', lava: 'rejectWeatherLava', sediment: 'rejectWeatherSediment' },
+    deposition:      { igneous: 'rejectDepositRock', sedimentary: 'rejectDepositRock', metamorphic: 'rejectDepositRock', magma: 'rejectDepositMolten', lava: 'rejectDepositMolten' },
+    heatAndPressure: { magma: 'rejectHPMagma', lava: 'rejectHPLava', sediment: 'rejectHPSediment' },
+    uplift:          { magma: 'rejectUpliftMagma', lava: 'rejectUpliftLava', sediment: 'rejectUpliftSediment' }
   };
-  return (msgs[processId] || {})[category] || 'This transformation isn\'t possible here.';
+  const key = (keyMap[processId] || {})[category];
+  return key ? t(key) : t('rejectGeneric');
 }
 
 // ── Drag Ghost ────────────────────────────────────────────────────────────────
@@ -159,13 +135,13 @@ function applyDropFeedback(target, specimenId) {
   // Guided mode: zone not enabled → show as invalid
   if (state.mode === 'guided' && typeof isGuidedZoneEnabled === 'function' && !isGuidedZoneEnabled(processId)) {
     target.classList.add('drop-invalid');
-    showZoneTip(target, 'Follow the instructions! Look for the highlighted zone.');
+    showZoneTip(target, t('guidedFollowShort'));
     return;
   }
 
   if (isValidTransformation(specimenId, processId)) {
     target.classList.add('drop-valid');
-    showZoneTip(target, '✓ ' + TRANSFORMATIONS[processId].name);
+    showZoneTip(target, '✓ ' + processName(processId));
   } else {
     target.classList.add('drop-invalid');
     showZoneTip(target, getRejectMessage(specimenId, processId));
@@ -227,7 +203,7 @@ function onDragEnd(x, y) {
   // Guided mode: only allow enabled zones
   if (state.mode === 'guided' && typeof isGuidedZoneEnabled === 'function' && !isGuidedZoneEnabled(processId)) {
     target.classList.add('drop-invalid');
-    showZoneTip(target, 'Follow the instructions above! Look for the highlighted zone.');
+    showZoneTip(target, t('guidedFollowInstructions'));
     setTimeout(() => {
       target.classList.remove('drop-invalid');
       const tip = target.querySelector('.zone-drop-tip');
@@ -378,7 +354,7 @@ function initDragDrop() {
       // Guided mode: only allow enabled zones
       if (state.mode === 'guided' && typeof isGuidedZoneEnabled === 'function' && !isGuidedZoneEnabled(processId)) {
         zone.classList.add('drop-invalid');
-        showZoneTip(zone, 'Follow the instructions! Look for the highlighted zone.');
+        showZoneTip(zone, t('guidedFollowShort'));
         setTimeout(() => { zone.classList.remove('drop-invalid'); const t = zone.querySelector('.zone-drop-tip'); if (t) t.remove(); }, 1600);
         return;
       }
@@ -451,16 +427,13 @@ async function performTransformation(specimenId, processId) {
 function finalizeTransformation(fromId, processId, toId, opts = {}) {
   const { isUplift = false } = opts;
 
-  // Update state
+  // Update state (store IDs only — names resolved at render time for language support)
   state.currentSpecimen = toId;
   state.transformationHistory.push({
     fromId,
-    fromName:    getSpecimenName(fromId),
     processId,
-    processName: TRANSFORMATIONS[processId].name,
     processIcon: TRANSFORMATIONS[processId].icon,
     toId,
-    toName:      getSpecimenName(toId),
     isUplift,
     timestamp:   Date.now()
   });
@@ -522,30 +495,26 @@ function renderMaterialDisplay(material, prevRockId) {
   display.classList.remove('type-igneous', 'type-sedimentary', 'type-metamorphic');
   display.classList.add('type-material');
 
-  const prevRockName = prevRockId ? getSpecimenName(prevRockId) : null;
-
-  const hints = {
-    magma:    'Drag to <strong>Crystallization</strong> — cooling speed determines crystal size and rock type.',
-    lava:     'Drag to <strong>Crystallization</strong> — fast surface cooling forms basalt or obsidian.',
-    sediment: 'Drag to <strong>Deposition &amp; Sedimentation</strong> — layers compact into sedimentary rock.'
-  };
+  const prevRockName = prevRockId ? rockName(prevRockId) : null;
+  const hintKeys = { magma: 'hintMagma', lava: 'hintLava', sediment: 'hintSediment' };
+  const descKeys = { magma: 'magmaDesc', lava: 'lavaDesc', sediment: 'sedimentDesc' };
 
   contentEl.innerHTML = `
     <div class="specimen-svg-wrap"
          style="filter:drop-shadow(0 4px 20px ${material.color}66)">
       ${getMaterialSVG(material.id)}
     </div>
-    <div class="specimen-name">${material.name}</div>
+    <div class="specimen-name">${rockName(material.id)}</div>
     <div class="specimen-type-row">
-      <span class="specimen-badge material">intermediate material</span>
-      ${prevRockName ? `<span class="specimen-badge material" style="opacity:0.65">from ${prevRockName}</span>` : ''}
+      <span class="specimen-badge material">${t('specimenIntermediate')}</span>
+      ${prevRockName ? `<span class="specimen-badge material" style="opacity:0.65">${t('specimenFrom')} ${prevRockName}</span>` : ''}
     </div>
-    <p class="specimen-desc">${material.description}</p>
+    <p class="specimen-desc">${t(descKeys[material.id] || 'magmaDesc')}</p>
     <div class="specimen-stat" style="width:100%">
-      <div class="specimen-stat-label">🔬 What's next?</div>
+      <div class="specimen-stat-label">🔬 ${t('propWhatsNext')}</div>
       <div class="specimen-stat-value"
            style="font-size:0.68rem;font-weight:400;line-height:1.5">
-        ${hints[material.id] || ''}
+        ${hintKeys[material.id] ? t(hintKeys[material.id]) : ''}
       </div>
     </div>
   `;
@@ -650,8 +619,8 @@ function updatePathsCounter() {
     counter.textContent = `${count}/${total}`;
     counter.className = 'paths-counter' + (count === total ? ' complete' : '');
     counter.title = count === total
-      ? 'All paths discovered!'
-      : `${total - count} paths remaining`;
+      ? t('cycleAllFound')
+      : t('cyclePathsRemaining', { n: total - count });
   }
 
   // Update cycle diagram progress bar
@@ -664,7 +633,7 @@ function updatePathsCounter() {
     if (emptyDiv)    emptyDiv.style.display = 'none';
     if (progressDiv) progressDiv.style.display = 'flex';
     if (fill)        fill.style.width = (count / total * 100) + '%';
-    if (label)       label.textContent = `${count} of ${total} paths discovered`;
+    if (label)       label.textContent = `${count} / ${total} — ${t('cyclePathsDiscovered')}`;
   }
 }
 
@@ -685,7 +654,7 @@ function updateHistoryStrip() {
   if (!strip) return;
 
   if (state.transformationHistory.length === 0) {
-    strip.innerHTML = '<span class="history-empty">Transformations will appear here</span>';
+    strip.innerHTML = `<span class="history-empty">${t('historyEmpty')}</span>`;
     return;
   }
 
@@ -697,7 +666,7 @@ function updateHistoryStrip() {
 
   for (let i = 0; i < history.length; i++) {
     const entry = history[i];
-    html += `<div class="history-arrow" title="${entry.processName}">
+    html += `<div class="history-arrow" title="${processName(entry.processId)}">
                <span class="history-process-icon">${entry.processIcon}</span>
              </div>`;
     html += buildHistoryChip(entry.toId, entry.isUplift);
@@ -729,14 +698,14 @@ function updateHistoryStrip() {
 function buildHistoryChip(id, isUplift = false) {
   const rock     = ROCKS[id];
   const material = MATERIALS[id];
-  const name     = rock ? rock.name : material ? material.name : id;
+  const name     = rockName(id);
   const color    = rock ? rock.color : material ? material.color : '#888';
   const typeClass = rock ? rock.type : 'material';
 
   return `<div class="history-chip ${typeClass}"
                data-specimen-id="${id}"
                role="button" tabindex="0"
-               title="${name}${isUplift ? ' (uplifted to surface)' : ''}">
+               title="${name}${isUplift ? t('historyUplifted') : ''}">
     <div class="chip-dot" style="background:${color}"></div>
     <span class="chip-label">${name}${isUplift ? '<span class="chip-uplift">↑</span>' : ''}</span>
   </div>`;
@@ -804,14 +773,14 @@ function showChoicePopup(config) {
 function showCrystallizationPopup(fromId) {
   showChoicePopup({
     icon: '❄️',
-    title: 'How fast did the magma cool?',
-    subtitle: 'Cooling speed determines crystal size and the rock that forms.',
+    title: t('crystChoiceTitle'),
+    subtitle: t('crystChoiceSubtitle'),
     options: [
-      { value: 'slow',      icon: '🐌', label: 'Slow',       desc: 'Deep underground\n→ Large crystals\n→ Granite'   },
-      { value: 'fast',      icon: '🏃', label: 'Fast',       desc: 'Surface lava flow\n→ Tiny crystals\n→ Basalt'   },
-      { value: 'ultrafast', icon: '⚡', label: 'Ultra-fast', desc: 'Volcanic eruption\n→ No crystals\n→ Obsidian'   }
+      { value: 'slow',      icon: '🐌', label: t('crystSlow'),  desc: t('crystSlowDesc')  },
+      { value: 'fast',      icon: '🏃', label: t('crystFast'),  desc: t('crystFastDesc')  },
+      { value: 'ultrafast', icon: '⚡', label: t('crystUltra'), desc: t('crystUltraDesc') }
     ],
-    note: '💡 Slow cooling = time for large crystals to grow. Fast cooling = small or no crystals.',
+    note: t('crystChoiceHint'),
     async onChoose(speed) {
       const map = { slow: 'granite', fast: 'basalt', ultrafast: 'obsidian' };
       const toId = map[speed];
@@ -824,14 +793,14 @@ function showCrystallizationPopup(fromId) {
 function showDepositionPopup(fromId) {
   showChoicePopup({
     icon: '📥',
-    title: 'What settled in the layers?',
-    subtitle: 'The type of sediment determines which rock forms.',
+    title: t('depoChoiceTitle'),
+    subtitle: t('depoChoiceSubtitle'),
     options: [
-      { value: 'sandstone', icon: '🏖️', label: 'Sand grains',     desc: 'Wind or water\ntransport\n→ Sandstone'   },
-      { value: 'limestone', icon: '🐚', label: 'Shells & fossils', desc: 'Marine organisms\non ocean floor\n→ Limestone' },
-      { value: 'shale',     icon: '💧', label: 'Clay & silt',      desc: 'Calm water\nsettling\n→ Shale'          }
+      { value: 'sandstone', icon: '🏖️', label: t('depoSand'),   desc: t('depoSandDesc')   },
+      { value: 'limestone', icon: '🐚', label: t('depoShells'), desc: t('depoShellsDesc') },
+      { value: 'shale',     icon: '💧', label: t('depoClay'),   desc: t('depoClayDesc')   }
     ],
-    note: '💡 Layers pile up, compact under their own weight, and cement together over millions of years.',
+    note: t('depoChoiceHint'),
     async onChoose(rockId) {
       await animateTransformation(fromId, 'deposition', rockId);
       finalizeTransformation(fromId, 'deposition', rockId);

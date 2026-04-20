@@ -17,128 +17,52 @@ const presetState = {
 
 // ── Preset Data ───────────────────────────────────────────────────────────────
 
+// Preset data — each step uses a narrationKey (resolved via t()) + utahKey for Utah names
 const PRESETS = {
   'volcano-to-beach': {
-    id:    'volcano-to-beach',
-    title: 'From Volcano to Beach',
-    icon:  '🌋→🏖️',
-    desc:  'Follow a rock from eruption to canyon wall',
+    id:    'volcano-to-beach', icon: '🌋→🏖️',
+    titleKey: 'presetVolcanoTitle', descKey: 'presetVolcanoDesc',
     steps: [
-      {
-        narration: "Deep beneath a volcano, magma churns at over 1,000\u00b0C. This molten rock contains the same minerals that will eventually become a canyon wall in Utah.",
-        specimen: 'magma', process: null
-      },
-      {
-        narration: "The volcano erupts! Lava flows across the surface and cools quickly in the open air.",
-        specimen: 'magma', process: 'crystallization', coolingSpeed: 'fast'
-      },
-      {
-        narration: "For millions of years, wind and rain pound the basalt. Piece by piece, it crumbles into sand and sediment.",
-        specimen: 'basalt', process: 'weathering'
-      },
-      {
-        narration: "Rivers carry the sand to a shallow sea. Layer after layer piles up on the seafloor.",
-        specimen: 'sediment', process: 'deposition', sedimentType: 'sandstone'
-      },
-      {
-        narration: "250 million years later, this sandstone forms the canyon walls at Arches National Park in Utah. The same atoms that were once magma now form the famous arches!",
-        specimen: 'sandstone', process: null, utahConnection: 'Arches National Park'
-      }
+      { narrationKey: 'volcanoN1', specimen: 'magma',     process: null },
+      { narrationKey: 'volcanoN2', specimen: 'magma',     process: 'crystallization', coolingSpeed: 'fast' },
+      { narrationKey: 'volcanoN3', specimen: 'basalt',    process: 'weathering' },
+      { narrationKey: 'volcanoN4', specimen: 'sediment',  process: 'deposition', sedimentType: 'sandstone' },
+      { narrationKey: 'volcanoN5', specimen: 'sandstone', process: null, utahKey: 'utahArches' }
     ]
   },
-
   'mountain-maker': {
-    id:    'mountain-maker',
-    title: 'The Mountain Maker',
-    icon:  '📥→🏔️',
-    desc:  'See how sea-floor mud becomes a mountain',
+    id:    'mountain-maker', icon: '📥→🏔️',
+    titleKey: 'presetMountainTitle', descKey: 'presetMountainDesc',
     steps: [
-      {
-        narration: "On the floor of an ancient ocean, layers of clay and silt settle quietly. Tiny particles, washed in by rivers, blanket the seabed.",
-        specimen: 'sediment', process: null
-      },
-      {
-        narration: "Over millions of years, the layers compress into shale — thin, dark sheets of stone.",
-        specimen: 'sediment', process: 'deposition', sedimentType: 'shale'
-      },
-      {
-        narration: "The shale gets buried deeper and deeper. Miles underground, heat and pressure build. The clay minerals rearrange into hard, flat sheets.",
-        specimen: 'shale', process: 'heatAndPressure'
-      },
-      {
-        narration: "Tectonic forces — the same forces that move continents — push the slate upward. What was once ocean floor rises into mountains.",
-        specimen: 'slate', process: 'uplift'
-      },
-      {
-        narration: "Today, the Raft River Mountains in Utah contain slate like this — ancient sea-floor mud transformed by heat, pressure, and time into mountain rock.",
-        specimen: 'slate', process: null, utahConnection: 'Raft River Mountains'
-      }
+      { narrationKey: 'mountainN1', specimen: 'sediment', process: null },
+      { narrationKey: 'mountainN2', specimen: 'sediment', process: 'deposition', sedimentType: 'shale' },
+      { narrationKey: 'mountainN3', specimen: 'shale',    process: 'heatAndPressure' },
+      { narrationKey: 'mountainN4', specimen: 'slate',    process: 'uplift' },
+      { narrationKey: 'mountainN5', specimen: 'slate',    process: null, utahKey: 'utahFarmington' }
     ]
   },
-
   'full-circle': {
-    id:    'full-circle',
-    title: 'Going in Circles',
-    icon:  '🔄',
-    desc:  'A complete trip around the entire rock cycle',
+    id:    'full-circle', icon: '🔄',
+    titleKey: 'presetCircleTitle', descKey: 'presetCircleDesc',
     steps: [
-      {
-        narration: "Our journey starts with granite — formed deep underground from slowly cooling magma, full of visible crystals.",
-        specimen: 'granite', process: null
-      },
-      {
-        narration: "Exposed at the surface, wind and water slowly grind the granite into sand over millions of years.",
-        specimen: 'granite', process: 'weathering'
-      },
-      {
-        narration: "Rivers carry the sand to a basin where it settles in layers. Weight from above compresses it into sandstone.",
-        specimen: 'sediment', process: 'deposition', sedimentType: 'sandstone'
-      },
-      {
-        narration: "The sandstone gets buried miles deep. Intense heat and pressure fuse the sand grains together into extremely hard quartzite.",
-        specimen: 'sandstone', process: 'heatAndPressure'
-      },
-      {
-        narration: "Even deeper, the temperature rises past the melting point. The solid rock becomes liquid magma once again.",
-        specimen: 'quartzite', process: 'melting'
-      },
-      {
-        narration: "The magma slowly cools in an underground chamber. Large crystals grow over thousands of years. Granite is reborn.",
-        specimen: 'magma', process: 'crystallization', coolingSpeed: 'slow'
-      },
-      {
-        narration: "One complete rock cycle — granite to granite — takes 200 to 500 million years. The same atoms have been cycling like this since Earth formed 4.5 billion years ago!",
-        specimen: 'granite', process: null
-      }
+      { narrationKey: 'circleN1', specimen: 'granite',   process: null },
+      { narrationKey: 'circleN2', specimen: 'granite',   process: 'weathering' },
+      { narrationKey: 'circleN3', specimen: 'sediment',  process: 'deposition', sedimentType: 'sandstone' },
+      { narrationKey: 'circleN4', specimen: 'sandstone', process: 'heatAndPressure' },
+      { narrationKey: 'circleN5', specimen: 'quartzite', process: 'melting' },
+      { narrationKey: 'circleN6', specimen: 'magma',     process: 'crystallization', coolingSpeed: 'slow' },
+      { narrationKey: 'circleN7', specimen: 'granite',   process: null }
     ]
   },
-
   'fossils': {
-    id:    'fossils',
-    title: 'Fossils Trapped in Time',
-    icon:  '🐚→💎',
-    desc:  'Why fossils survive in limestone but vanish in marble',
+    id:    'fossils', icon: '🐚→💎',
+    titleKey: 'presetFossilsTitle', descKey: 'presetFossilsDesc',
     steps: [
-      {
-        narration: "In a warm, shallow sea, tiny organisms live and die. Their shells — made of calcite — drift to the ocean floor and pile up.",
-        specimen: 'sediment', process: null
-      },
-      {
-        narration: "Over millions of years, the shells compact and cement into limestone. Some shells are preserved perfectly — these are fossils!",
-        specimen: 'sediment', process: 'deposition', sedimentType: 'limestone'
-      },
-      {
-        narration: "This is why scientists find ocean fossils in limestone on mountaintops — the rock formed on the sea floor and was later pushed up. Timpanogos Cave in Utah is carved from limestone like this!",
-        specimen: 'limestone', process: null, utahConnection: 'Timpanogos Cave'
-      },
-      {
-        narration: "Now watch what happens when limestone is buried deep underground. Heat and pressure recrystallize the calcite...",
-        specimen: 'limestone', process: 'heatAndPressure'
-      },
-      {
-        narration: "The limestone becomes marble. It's beautiful — but the fossils are GONE. The recrystallization destroyed them. This is why you find fossils in sedimentary rocks but almost never in metamorphic rocks.",
-        specimen: 'marble', process: null
-      }
+      { narrationKey: 'fossilsN1', specimen: 'sediment',  process: null },
+      { narrationKey: 'fossilsN2', specimen: 'sediment',  process: 'deposition', sedimentType: 'limestone' },
+      { narrationKey: 'fossilsN3', specimen: 'limestone', process: null, utahKey: 'utahTimp' },
+      { narrationKey: 'fossilsN4', specimen: 'limestone', process: 'heatAndPressure' },
+      { narrationKey: 'fossilsN5', specimen: 'marble',    process: null }
     ]
   }
 };
@@ -160,14 +84,14 @@ function showPresetSelector() {
     cards += `
       <div class="preset-card" data-preset="${p.id}" role="button" tabindex="0">
         <span class="preset-icon">${p.icon}</span>
-        <h3>${p.title}</h3>
-        <p>${p.desc}</p>
+        <h3>${t(p.titleKey)}</h3>
+        <p>${t(p.descKey)}</p>
       </div>`;
   });
 
   overlay.innerHTML = `
     <div class="preset-selector">
-      <h2 class="preset-selector-title">Choose a Scenario</h2>
+      <h2 class="preset-selector-title">${t('presetSelectTitle')}</h2>
       <div class="preset-grid">${cards}</div>
     </div>`;
 
@@ -219,15 +143,15 @@ function createPlaybackUI(preset) {
   el.className = 'preset-playback';
   el.innerHTML = `
     <div class="preset-header">
-      <h3 class="preset-pb-title">${preset.icon} ${preset.title}</h3>
+      <h3 class="preset-pb-title">${preset.icon} ${t(preset.titleKey)}</h3>
       <span class="preset-step-label" id="preset-step-label"></span>
     </div>
     <p class="preset-narration" id="preset-narration"></p>
     <div class="preset-controls">
-      <button class="preset-btn" id="preset-btn-prev">← Back</button>
-      <button class="preset-btn" id="preset-btn-auto">▶ Auto-Play</button>
-      <button class="preset-btn" id="preset-btn-next">Next →</button>
-      <button class="preset-btn preset-btn-exit" id="preset-btn-exit">✕ Exit</button>
+      <button class="preset-btn" id="preset-btn-prev">${t('presetPrev')}</button>
+      <button class="preset-btn" id="preset-btn-auto">${t('presetAutoPlay')}</button>
+      <button class="preset-btn" id="preset-btn-next">${t('presetNext')}</button>
+      <button class="preset-btn preset-btn-exit" id="preset-btn-exit">${t('presetExit')}</button>
     </div>`;
 
   stage.insertBefore(el, stage.firstChild);
@@ -263,15 +187,15 @@ async function advancePresetTo(stepIndex) {
 
   // Update UI chrome
   const label = document.getElementById('preset-step-label');
-  if (label) label.textContent = `Step ${stepIndex + 1} of ${preset.steps.length}`;
+  if (label) label.textContent = t('presetStepOf', { current: stepIndex + 1, total: preset.steps.length });
 
   const narEl = document.getElementById('preset-narration');
-  if (narEl) { narEl.style.opacity = 0; setTimeout(() => { narEl.textContent = step.narration; narEl.style.opacity = 1; }, 120); }
+  if (narEl) { narEl.style.opacity = 0; setTimeout(() => { narEl.textContent = t(step.narrationKey); narEl.style.opacity = 1; }, 120); }
 
   const prevBtn = document.getElementById('preset-btn-prev');
   const nextBtn = document.getElementById('preset-btn-next');
   if (prevBtn) prevBtn.disabled = stepIndex === 0;
-  if (nextBtn) { nextBtn.disabled = false; nextBtn.textContent = stepIndex === preset.steps.length - 1 ? 'Finish' : 'Next →'; }
+  if (nextBtn) { nextBtn.disabled = false; nextBtn.textContent = stepIndex === preset.steps.length - 1 ? t('presetFinish') : t('presetNext'); }
 
   // Play the step
   if (step.process && !presetState.playedSteps.has(stepIndex)) {
@@ -284,8 +208,8 @@ async function advancePresetTo(stepIndex) {
     displayPresetSpecimen(resultId);
   }
 
-  // Utah connection highlight
-  if (step.utahConnection) highlightUtahCard(step.utahConnection);
+  // Utah connection highlight (utahKey is a translation key for the Utah place name)
+  if (step.utahKey) highlightUtahCard(t(step.utahKey));
 
   // Auto-play scheduling
   if (presetState.autoPlay) scheduleAutoAdvance();
@@ -345,7 +269,7 @@ function toggleAutoPlay() {
     stopAutoPlay();
   } else {
     presetState.autoPlay = true;
-    if (btn) btn.textContent = '⏸ Pause';
+    if (btn) btn.textContent = t('presetPause');
     scheduleAutoAdvance();
   }
 }
@@ -367,7 +291,7 @@ function stopAutoPlay() {
   if (presetState.autoTimer) { clearTimeout(presetState.autoTimer); presetState.autoTimer = null; }
   presetState.autoPlay = false;
   const btn = document.getElementById('preset-btn-auto');
-  if (btn) btn.textContent = '▶ Auto-Play';
+  if (btn) btn.textContent = t('presetAutoPlay');
 }
 
 // ── Completion / Status ───────────────────────────────────────────────────────
@@ -376,7 +300,7 @@ function showPresetComplete() {
   stopAutoPlay();
   const narEl  = document.getElementById('preset-narration');
   const nextBtn = document.getElementById('preset-btn-next');
-  if (narEl)  narEl.textContent = 'Scenario complete! Choose another preset or switch to Free Explore.';
+  if (narEl)  narEl.textContent = t('presetComplete');
   if (nextBtn) nextBtn.disabled = true;
 }
 

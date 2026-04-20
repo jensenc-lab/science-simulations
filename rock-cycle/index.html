@@ -208,7 +208,8 @@
 
   </div><!-- /app-shell -->
 
-  <!-- Scripts: rock-data → interaction → animations → panels → guided → presets → journey → audio → app -->
+  <!-- Scripts: translations FIRST so t() is globally available, then data, then features -->
+  <script src="js/translations.js"></script>
   <script src="js/rock-data.js"></script>
   <script src="js/interaction.js"></script>
   <script src="js/animations.js"></script>

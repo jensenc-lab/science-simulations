@@ -28,16 +28,16 @@ function animateTransformation(fromId, processId, toId) {
     const overlay = document.createElement('div');
     overlay.className = 'anim-overlay';
 
-    const processName = TRANSFORMATIONS[processId]
-      ? TRANSFORMATIONS[processId].name
-      : processId;
+    const procNameStr = (typeof processName === 'function')
+      ? processName(processId)
+      : (TRANSFORMATIONS[processId] ? TRANSFORMATIONS[processId].name : processId);
 
     overlay.innerHTML = `
       <div class="anim-stage" aria-hidden="true">
         ${buildAnimContent(fromId, processId, toId)}
       </div>
-      <div class="anim-label">${processName}</div>
-      <button class="anim-skip-btn" type="button" aria-label="Skip animation">Skip ▶</button>
+      <div class="anim-label">${procNameStr}</div>
+      <button class="anim-skip-btn" type="button" aria-label="Skip animation">${typeof t === 'function' ? t('animSkip') : 'Skip ▶'}</button>
     `;
 
     display.appendChild(overlay);

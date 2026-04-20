@@ -264,14 +264,13 @@ function renderRockShelf() {
   let html = '';
 
   for (const [groupType, ids] of Object.entries(groups)) {
-    const labels = { igneous: 'Igneous', sedimentary: 'Sedimentary', metamorphic: 'Metamorphic' };
-    html += `<div class="rock-group-label ${groupType}">${labels[groupType]}</div>`;
+    html += `<div class="rock-group-label ${groupType}">${typeName(groupType)}</div>`;
     html += `<div class="rock-group-cards">`;
 
     for (const id of ids) {
       const rock = ROCKS[id];
       if (!rock) continue;
-      const subtypeLabel = rock.subtype || rock.parentRock ? `· ${rock.subtype || 'from ' + rock.parentRock}` : '';
+      const nm = rockName(id);
 
       html += `
         <div class="rock-card"
@@ -279,11 +278,11 @@ function renderRockShelf() {
              data-type="${rock.type}"
              tabindex="0"
              role="button"
-             aria-label="${rock.name}, ${rock.type} rock. Click to view details.">
+             aria-label="${nm}, ${typeName(rock.type)}. Click to view details.">
           <div class="rock-icon">${getRockSVG(id, 'small')}</div>
           <div class="rock-card-info">
-            <div class="rock-card-name">${rock.name}</div>
-            <span class="rock-type-badge ${rock.type}">${rock.type}</span>
+            <div class="rock-card-name">${nm}</div>
+            <span class="rock-type-badge ${rock.type}">${typeName(rock.type)}</span>
           </div>
         </div>`;
     }
@@ -311,14 +310,28 @@ function renderUtahConnections() {
   const container = document.getElementById('utah-connections-list');
   if (!container) return;
 
-  container.innerHTML = UTAH_CONNECTIONS.map(conn => `
+  // Map rock id → translation keys for Utah connection
+  const utahKeys = {
+    sandstone:  { name: 'utahArches',      desc: 'utahArchesDesc',      loc: 'utahArchesLoc' },
+    granite:    { name: 'utahLCC',         desc: 'utahLCCDesc',         loc: 'utahLCCLoc' },
+    limestone:  { name: 'utahTimp',        desc: 'utahTimpDesc',        loc: 'utahTimpLoc' },
+    shale:      { name: 'utahGreenRiver',  desc: 'utahGreenRiverDesc',  loc: 'utahGreenRiverLoc' },
+    quartzite:  { name: 'utahFarmington',  desc: 'utahFarmingtonDesc',  loc: 'utahFarmingtonLoc' }
+  };
+
+  container.innerHTML = UTAH_CONNECTIONS.map(conn => {
+    const k = utahKeys[conn.rockId];
+    const nm = k ? t(k.name) : conn.name;
+    const loc = k ? t(k.loc) : conn.location;
+    const desc = k ? t(k.desc) : conn.description;
+    return `
     <div class="utah-item" data-rock="${conn.rockId}" role="button" tabindex="0"
-         aria-label="Utah connection: ${conn.name}">
-      <div class="utah-item-name">${conn.name}</div>
-      <div class="utah-item-location">📍 ${conn.location}</div>
-      <div class="utah-item-desc">${conn.description}</div>
-    </div>
-  `).join('');
+         aria-label="${nm}">
+      <div class="utah-item-name">${nm}</div>
+      <div class="utah-item-location">📍 ${loc}</div>
+      <div class="utah-item-desc">${desc}</div>
+    </div>`;
+  }).join('');
 
   container.querySelectorAll('.utah-item').forEach(item => {
     item.addEventListener('click', () => selectRock(item.dataset.rock));
@@ -334,16 +347,21 @@ function renderUtahConnections() {
 // ── Rendering: Process Zones ─────────────────────────────────────────────────
 
 function renderProcessZones() {
-  // Zones are in the HTML — just ensure energy labels render correctly
+  // Zone name + energy label translation
+  const energyKeyMap = { sun: 'energySun', 'earth-heat': 'energyEarthHeat', gravity: 'energyGravity', cooling: 'energyCooling', tectonic: 'energyTectonic' };
   document.querySelectorAll('.process-zone').forEach(zone => {
     const processId = zone.dataset.process;
     const transform = TRANSFORMATIONS[processId];
     if (!transform) return;
 
+    // Zone name
+    const nameEl = zone.querySelector('.zone-name');
+    if (nameEl) nameEl.textContent = processName(processId);
+
     const energySrc = ENERGY_SOURCES[transform.energySource];
     const energyEl = zone.querySelector('.zone-energy');
     if (energyEl && energySrc) {
-      energyEl.textContent = energySrc.icon + ' ' + energySrc.name;
+      energyEl.textContent = energySrc.icon + ' ' + t(energyKeyMap[energySrc.id] || energySrc.id);
     }
   });
 }
@@ -398,42 +416,41 @@ function renderSpecimen(rock) {
   display.classList.add(`type-${rock.type}`);
 
   // Subtype / parent info
-  const subtypeStr = rock.subtype
-    ? rock.subtype.charAt(0).toUpperCase() + rock.subtype.slice(1)
+  const subtypeKey = { intrusive: 'subtypeIntrusive', extrusive: 'subtypeExtrusive', clastic: 'subtypeClastic', 'chemical/organic': 'subtypeChemOrg' }[rock.subtype];
+  const subtypeStr = subtypeKey
+    ? t(subtypeKey)
     : rock.parentRock
-      ? `from ${ROCKS[rock.parentRock]?.name || rock.parentRock}`
+      ? `${t('specimenFrom')} ${rockName(rock.parentRock)}`
       : '';
 
-  // Minerals list
   const mineralsStr = rock.minerals.join(' · ');
-
-  // Stats rows
-  const stats = [
-    { label: 'Texture',    value: rock.texture },
-    { label: 'Grain Size', value: rock.grainSize || '—' },
-    { label: 'Formation',  value: rock.formation },
-    { label: 'Utah',       value: rock.utahConnection }
-  ];
+  const textureT    = t(rock.id + 'Texture');
+  const formationT  = t(rock.id + 'Formation');
+  const utahT       = t(rock.id + 'Utah');
+  const descT       = t(rock.id + 'Desc');
 
   contentEl.innerHTML = `
     <div class="specimen-svg-wrap">${getRockSVG(rock.id, 'large')}</div>
-    <div class="specimen-name">${rock.name}</div>
+    <div class="specimen-name">${rockName(rock.id)}</div>
     <div class="specimen-type-row">
-      <span class="specimen-badge ${rock.type}">${rock.type}</span>
+      <span class="specimen-badge ${rock.type}">${typeName(rock.type)}</span>
       ${subtypeStr ? `<span class="specimen-badge ${rock.type}" style="opacity:0.7">${subtypeStr}</span>` : ''}
     </div>
-    <p class="specimen-desc">${rock.description}</p>
+    <p class="specimen-desc">${descT}</p>
     <div class="specimen-stats">
-      ${stats.slice(0,2).map(s => `
-        <div class="specimen-stat">
-          <div class="specimen-stat-label">${s.label}</div>
-          <div class="specimen-stat-value">${s.value}</div>
-        </div>`).join('')}
+      <div class="specimen-stat">
+        <div class="specimen-stat-label">${t('propTexture')}</div>
+        <div class="specimen-stat-value">${textureT}</div>
+      </div>
+      <div class="specimen-stat">
+        <div class="specimen-stat-label">${t('propGrainSize')}</div>
+        <div class="specimen-stat-value">${rock.grainSize ? t({'large':'grainLarge','small':'grainSmall','none':'grainNone','medium':'grainMedium','fine':'grainFine','very fine':'grainVeryFine'}[rock.grainSize] || rock.grainSize) : '—'}</div>
+      </div>
     </div>
-    <p class="specimen-minerals"><strong style="font-family:var(--font-mono);font-size:0.58rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted)">Minerals</strong><br>${mineralsStr}</p>
+    <p class="specimen-minerals"><strong style="font-family:var(--font-mono);font-size:0.58rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted)">${t('propMinerals')}</strong><br>${mineralsStr}</p>
     <div class="specimen-stat" style="width:100%">
-      <div class="specimen-stat-label">🏔️ Utah Connection</div>
-      <div class="specimen-stat-value" style="font-size:0.68rem;font-weight:400;line-height:1.4">${rock.utahConnection}</div>
+      <div class="specimen-stat-label">🏔️ ${t('propUtah')}</div>
+      <div class="specimen-stat-value" style="font-size:0.68rem;font-weight:400;line-height:1.4">${utahT}</div>
     </div>
   `;
 }
@@ -442,19 +459,148 @@ function renderSpecimen(rock) {
 
 function renderRightPanel() {
   // Energy tracker — populate items
+  const energyKeyMap = { sun: 'energySun', 'earth-heat': 'energyEarthHeat', gravity: 'energyGravity', cooling: 'energyCooling', tectonic: 'energyTectonic' };
   const energyList = document.getElementById('energy-list');
   if (energyList) {
     energyList.innerHTML = Object.values(ENERGY_SOURCES).map(src => `
       <div class="energy-item" data-energy="${src.id}">
         <span class="energy-item-icon">${src.icon}</span>
         <div class="energy-item-info">
-          <div class="energy-item-name">${src.name}</div>
-          <div class="energy-item-processes">${src.processes.map(p => TRANSFORMATIONS[p]?.name || p).join(', ')}</div>
+          <div class="energy-item-name">${t(energyKeyMap[src.id] || src.id)}</div>
+          <div class="energy-item-processes">${src.processes.map(p => processName(p)).join(', ')}</div>
         </div>
         <div class="energy-item-dot"></div>
       </div>
     `).join('');
   }
+}
+
+// ── Language Toggle ──────────────────────────────────────────────────────────
+
+function switchLanguage() {
+  state.language = state.language === 'en' ? 'es' : 'en';
+  reRenderAll();
+}
+
+function reRenderAll() {
+  // Static header / footer / labels
+  updateStaticTextContent();
+
+  // Rock shelf
+  renderRockShelf();
+
+  // Utah connections
+  renderUtahConnections();
+
+  // Process zones (names + energy labels)
+  renderProcessZones();
+
+  // Right panel
+  renderRightPanel();
+
+  // Re-select current specimen (triggers renderSpecimen with new language)
+  const currentId = state.currentSpecimen;
+  if (currentId) {
+    if (ROCKS[currentId]) {
+      renderSpecimen(ROCKS[currentId]);
+      if (typeof updateExplanationPanelOnSelect === 'function') updateExplanationPanelOnSelect(currentId);
+    } else if (typeof updateSpecimenDisplay === 'function') {
+      updateSpecimenDisplay(currentId);
+    }
+  }
+
+  // History strip
+  if (typeof updateHistoryStrip === 'function') updateHistoryStrip();
+
+  // Cycle diagram / paths counter
+  if (typeof renderCycleDiagram === 'function') renderCycleDiagram();
+  if (typeof updatePathsCounter === 'function') updatePathsCounter();
+
+  // Update tap hints
+  if (typeof updateTapHints === 'function') updateTapHints();
+
+  // Mode-specific UI
+  if (state.mode === 'guided' && typeof renderGuidedInstruction === 'function') {
+    if (typeof renderProgressDots === 'function') renderProgressDots();
+    renderGuidedInstruction();
+  }
+  // Preset / journey UIs re-render on next state change; full re-render would disrupt playback
+}
+
+function updateStaticTextContent() {
+  // Header title + subtitle
+  const title = document.querySelector('.header-title');
+  const sub   = document.querySelector('.header-subtitle');
+  if (title) title.innerHTML = '⛏️ ' + t('appTitle');
+  if (sub)   sub.textContent = t('appSubtitle');
+
+  // Mode tabs
+  document.querySelectorAll('.mode-tab').forEach(tab => {
+    const m = tab.dataset.mode;
+    const keyMap = { guided: 'modeGuided', 'free-explore': 'modeFreeExplore', 'geo-journey': 'modeGeoJourney', presets: 'modePresets' };
+    if (keyMap[m]) tab.textContent = t(keyMap[m]);
+  });
+
+  // Lang button
+  const lang = document.getElementById('lang-btn');
+  if (lang) lang.textContent = t('btnLanguage');
+
+  // Shelf heading
+  const shelfHeading = document.querySelector('.shelf-heading');
+  if (shelfHeading) shelfHeading.textContent = t('shelfTitle');
+
+  // Utah section toggle
+  const utahToggle = document.querySelector('.utah-toggle span:first-child');
+  if (utahToggle) utahToggle.textContent = t('utahSectionTitle');
+
+  // Specimen empty text
+  const specEmpty = document.querySelector('.specimen-empty-text');
+  if (specEmpty) specEmpty.textContent = t('specimenEmptyText');
+
+  // History strip label + clear button + empty message
+  const histLabel = document.querySelector('.history-label');
+  if (histLabel) histLabel.textContent = t('historyLabel');
+  const histClear = document.getElementById('history-clear-btn');
+  if (histClear) histClear.setAttribute('title', t('historyClear'));
+  const histEmpty = document.querySelector('.history-empty');
+  if (histEmpty) histEmpty.textContent = t('historyEmpty');
+
+  // Right panel section titles
+  const rpTitles = document.querySelectorAll('.rp-section-title');
+  if (rpTitles[0]) rpTitles[0].childNodes[0].nodeValue = t('explanationTitle');
+  if (rpTitles[1]) rpTitles[1].childNodes[0].nodeValue = t('energyTitle');
+  if (rpTitles[2]) rpTitles[2].childNodes[0].nodeValue = t('matterTitle');
+  if (rpTitles[3]) rpTitles[3].childNodes[0].nodeValue = t('cycleTitle') + ' ';
+
+  // Matter tracker default rules
+  const matterTracker = document.getElementById('matter-tracker');
+  if (matterTracker && !matterTracker.classList.contains('matter-tracker-active')) {
+    const spans = matterTracker.querySelectorAll('.matter-rule span:not(.matter-rule-icon)');
+    if (spans[0]) spans[0].innerHTML = t('matterRuleAtoms');
+    if (spans[1]) spans[1].innerHTML = t('matterRuleMinerals');
+    if (spans[2]) spans[2].innerHTML = `<span style="color:var(--text-muted);font-style:italic;">${t('matterRulePrompt')}</span>`;
+  }
+
+  // Cycle diagram empty message
+  const cycleEmpty = document.getElementById('cycle-diagram-empty');
+  if (cycleEmpty) {
+    const textNode = Array.from(cycleEmpty.childNodes).find(n => n.nodeType === 3 && n.textContent.trim());
+    if (textNode) textNode.textContent = '\n    ' + t('cycleEmpty') + '\n  ';
+    else {
+      // Rebuild with icon
+      cycleEmpty.innerHTML = `<span style="font-size:1.5rem;opacity:0.4" aria-hidden="true">🔁</span><br>${t('cycleEmpty')}`;
+    }
+  }
+
+  // Footer
+  const footerCredit = document.querySelector('.footer-credit');
+  if (footerCredit) footerCredit.textContent = t('footerCredit');
+  const footerStd = document.querySelector('.footer-standard');
+  if (footerStd) footerStd.innerHTML = `${t('footerStandard')} <span>${t('footerStandardName')}</span> ${t('footerSubject')}`;
+
+  // Orientation hint
+  const orient = document.querySelector('.orientation-hint-text');
+  if (orient) orient.innerHTML = t('orientationHint');
 }
 
 // ── Tap Hints: show which zones are tappable ─────────────────────────────────
@@ -578,4 +724,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Update tappable zone hints when specimen changes
   updateTapHints();
+
+  // Language toggle
+  const langBtn = document.getElementById('lang-btn');
+  if (langBtn) {
+    langBtn.addEventListener('click', switchLanguage);
+  }
 });

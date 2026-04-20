@@ -20,10 +20,10 @@ const journeyState = {
 
 const DEPTH_ORDER = ['surface', 'shallow', 'deep', 'mantle'];
 const DEPTH_META = {
-  surface: { label: 'Surface', icon: '☀️',  pct: 5  },
-  shallow: { label: 'Shallow', icon: '🪨', pct: 33 },
-  deep:    { label: 'Deep',    icon: '🌡️', pct: 66 },
-  mantle:  { label: 'Mantle',  icon: '🌋',  pct: 95 }
+  surface: { labelKey: 'depthSurface', icon: '☀️',  pct: 5  },
+  shallow: { labelKey: 'depthShallow', icon: '🪨', pct: 33 },
+  deep:    { labelKey: 'depthDeep',    icon: '🌡️', pct: 66 },
+  mantle:  { labelKey: 'depthMantle',  icon: '🌋',  pct: 95 }
 };
 
 // ── Journey Templates ─────────────────────────────────────────────────────────
@@ -31,94 +31,84 @@ const DEPTH_META = {
 // time from the starting rock or previous step output.
 // Fields: narration, process (null = display only), depth, extra (coolingSpeed, etc.)
 
+// Templates use narrationKey references into translations.js (resolved via t() at render time)
 const JOURNEY_TEMPLATES = {
   igneous: [
-    // Template A: surface weathering → sedimentary → metamorphic → melt → re-crystallize
     [
-      { narration: "Your {rock} sits exposed on a mountainside, baked by sun and pounded by rain.", depth: 'surface' },
-      { narration: "Over 100 million years, wind, ice, and water break {rock} into sand and silt.", process: 'weathering', depth: 'surface' },
-      { narration: "Rivers carry the sediment to a vast inland sea. Layer upon layer settles on the ocean floor.", process: 'deposition', extra: { sedimentType: 'sandstone' }, depth: 'shallow' },
-      { narration: "The seafloor sinks deeper as tectonic plates collide. Heat and pressure fuse the sand grains together.", process: 'heatAndPressure', depth: 'deep' },
-      { narration: "Deeper still, the temperature crosses the melting point. Solid rock becomes liquid magma.", process: 'melting', depth: 'mantle' },
-      { narration: "The magma cools slowly in a vast underground chamber over thousands of years. Large crystals grow.", process: 'crystallization', extra: { coolingSpeed: 'slow' }, depth: 'deep' },
-      { narration: "Tectonic forces uplift the new granite to the surface. A new chapter in the rock cycle begins.", process: 'uplift', depth: 'surface' }
+      { narrationKey: 'jrnIgnA0', depth: 'surface' },
+      { narrationKey: 'jrnIgnA1', process: 'weathering', depth: 'surface' },
+      { narrationKey: 'jrnIgnA2', process: 'deposition', extra: { sedimentType: 'sandstone' }, depth: 'shallow' },
+      { narrationKey: 'jrnIgnA3', process: 'heatAndPressure', depth: 'deep' },
+      { narrationKey: 'jrnIgnA4', process: 'melting', depth: 'mantle' },
+      { narrationKey: 'jrnIgnA5', process: 'crystallization', extra: { coolingSpeed: 'slow' }, depth: 'deep' },
+      { narrationKey: 'jrnIgnA6', process: 'uplift', depth: 'surface' }
     ],
-    // Template B: melt → fast cool → weather → deposit limestone → H&P
     [
-      { narration: "Your {rock} lies deep underground, surrounded by rising temperatures.", depth: 'deep' },
-      { narration: "The heat overwhelms the rock's structure. It melts into glowing magma at over 1,000°C.", process: 'melting', depth: 'mantle' },
-      { narration: "A volcanic eruption pushes the magma to the surface. It cools rapidly in the open air.", process: 'crystallization', extra: { coolingSpeed: 'fast' }, depth: 'surface' },
-      { narration: "Millions of years of rain and frost slowly crumble the basalt into fine particles.", process: 'weathering', depth: 'surface' },
-      { narration: "Marine organisms incorporate the minerals. Their shells pile up on the ocean floor for eons.", process: 'deposition', extra: { sedimentType: 'limestone' }, depth: 'shallow' },
-      { narration: "The limestone is buried miles deep. Heat and pressure transform it into sparkling marble.", process: 'heatAndPressure', depth: 'deep' }
+      { narrationKey: 'jrnIgnB0', depth: 'deep' },
+      { narrationKey: 'jrnIgnB1', process: 'melting', depth: 'mantle' },
+      { narrationKey: 'jrnIgnB2', process: 'crystallization', extra: { coolingSpeed: 'fast' }, depth: 'surface' },
+      { narrationKey: 'jrnIgnB3', process: 'weathering', depth: 'surface' },
+      { narrationKey: 'jrnIgnB4', process: 'deposition', extra: { sedimentType: 'limestone' }, depth: 'shallow' },
+      { narrationKey: 'jrnIgnB5', process: 'heatAndPressure', depth: 'deep' }
     ],
-    // Template C: uplift → weather → shale → slate
     [
-      { narration: "Your {rock} formed deep underground, locked beneath miles of overlying rock.", depth: 'deep' },
-      { narration: "Over tens of millions of years, tectonic forces push the rock toward the surface.", process: 'uplift', depth: 'surface' },
-      { narration: "Exposed to the elements, the rock slowly disintegrates into fine clay and silt.", process: 'weathering', depth: 'surface' },
-      { narration: "The fine particles settle in a calm lake. Layer after paper-thin layer accumulates.", process: 'deposition', extra: { sedimentType: 'shale' }, depth: 'shallow' },
-      { narration: "Continents collide. The shale is buried and squeezed into smooth, hard slate.", process: 'heatAndPressure', depth: 'deep' },
-      { narration: "Mountain-building forces push the slate upward. Ancient ocean floor becomes a mountain peak.", process: 'uplift', depth: 'surface' }
+      { narrationKey: 'jrnIgnC0', depth: 'deep' },
+      { narrationKey: 'jrnIgnC1', process: 'uplift', depth: 'surface' },
+      { narrationKey: 'jrnIgnC2', process: 'weathering', depth: 'surface' },
+      { narrationKey: 'jrnIgnC3', process: 'deposition', extra: { sedimentType: 'shale' }, depth: 'shallow' },
+      { narrationKey: 'jrnIgnC4', process: 'heatAndPressure', depth: 'deep' },
+      { narrationKey: 'jrnIgnC5', process: 'uplift', depth: 'surface' }
     ]
   ],
-
   sedimentary: [
-    // Template A: H&P → melt → crystallize → weather → re-deposit
     [
-      { narration: "Your {rock} rests in a quiet layer of earth, undisturbed for millions of years.", depth: 'shallow' },
-      { narration: "As tectonic plates converge, the rock is buried deeper. Heat and pressure transform its minerals.", process: 'heatAndPressure', depth: 'deep' },
-      { narration: "Still deeper, the temperature exceeds the melting point. The rock dissolves into magma.", process: 'melting', depth: 'mantle' },
-      { narration: "The magma rises through cracks in the crust, cooling rapidly as it reaches the surface.", process: 'crystallization', extra: { coolingSpeed: 'fast' }, depth: 'surface' },
-      { narration: "Wind and rain attack the new basalt. Over millions of years, it crumbles to sand.", process: 'weathering', depth: 'surface' },
-      { narration: "The sand is carried to a desert basin and cemented into sandstone once again.", process: 'deposition', extra: { sedimentType: 'sandstone' }, depth: 'shallow' }
+      { narrationKey: 'jrnSedA0', depth: 'shallow' },
+      { narrationKey: 'jrnSedA1', process: 'heatAndPressure', depth: 'deep' },
+      { narrationKey: 'jrnSedA2', process: 'melting', depth: 'mantle' },
+      { narrationKey: 'jrnSedA3', process: 'crystallization', extra: { coolingSpeed: 'fast' }, depth: 'surface' },
+      { narrationKey: 'jrnSedA4', process: 'weathering', depth: 'surface' },
+      { narrationKey: 'jrnSedA5', process: 'deposition', extra: { sedimentType: 'sandstone' }, depth: 'shallow' }
     ],
-    // Template B: weather → re-deposit shale → H&P → uplift
     [
-      { narration: "Your {rock} sits exposed on a riverbank, battered by seasonal floods.", depth: 'surface' },
-      { narration: "The river grinds the rock into clay and silt, carrying it downstream.", process: 'weathering', depth: 'surface' },
-      { narration: "The fine sediment settles in a delta. Centuries of layers compress into thin sheets.", process: 'deposition', extra: { sedimentType: 'shale' }, depth: 'shallow' },
-      { narration: "Plate collision buries the shale miles underground. Pressure aligns the clay minerals into slate.", process: 'heatAndPressure', depth: 'deep' },
-      { narration: "Mountain-building uplifts the slate to a high ridge.", process: 'uplift', depth: 'surface' },
-      { narration: "Frost wedging and rain break the slate into rubble. The cycle is ready to begin again.", process: 'weathering', depth: 'surface' }
+      { narrationKey: 'jrnSedB0', depth: 'surface' },
+      { narrationKey: 'jrnSedB1', process: 'weathering', depth: 'surface' },
+      { narrationKey: 'jrnSedB2', process: 'deposition', extra: { sedimentType: 'shale' }, depth: 'shallow' },
+      { narrationKey: 'jrnSedB3', process: 'heatAndPressure', depth: 'deep' },
+      { narrationKey: 'jrnSedB4', process: 'uplift', depth: 'surface' },
+      { narrationKey: 'jrnSedB5', process: 'weathering', depth: 'surface' }
     ],
-    // Template C: uplift → weather → deposit limestone → marble
     [
-      { narration: "Your {rock} was formed at the bottom of an ancient sea, rich with fossils.", depth: 'shallow' },
-      { narration: "Tectonic uplift raises the rock high above sea level.", process: 'uplift', depth: 'surface' },
-      { narration: "Centuries of rain dissolve and fragment the rock into mineral-rich sediment.", process: 'weathering', depth: 'surface' },
-      { narration: "In a warm tropical sea, organisms build shells from the dissolved minerals. Shells pile up.", process: 'deposition', extra: { sedimentType: 'limestone' }, depth: 'shallow' },
-      { narration: "A continent collides. The limestone is pushed deep underground and recrystallized into marble.", process: 'heatAndPressure', depth: 'deep' }
+      { narrationKey: 'jrnSedC0', depth: 'shallow' },
+      { narrationKey: 'jrnSedC1', process: 'uplift', depth: 'surface' },
+      { narrationKey: 'jrnSedC2', process: 'weathering', depth: 'surface' },
+      { narrationKey: 'jrnSedC3', process: 'deposition', extra: { sedimentType: 'limestone' }, depth: 'shallow' },
+      { narrationKey: 'jrnSedC4', process: 'heatAndPressure', depth: 'deep' }
     ]
   ],
-
   metamorphic: [
-    // Template A: melt → crystallize slow → weather → sandstone → H&P
     [
-      { narration: "Your {rock} endures immense heat deep in the Earth's crust.", depth: 'deep' },
-      { narration: "The heat finally overcomes the rock. It melts into magma.", process: 'melting', depth: 'mantle' },
-      { narration: "The magma slowly crystallizes in a vast underground pluton.", process: 'crystallization', extra: { coolingSpeed: 'slow' }, depth: 'deep' },
-      { narration: "Millions of years of erosion strip away the overlying rock, exposing the granite.", process: 'uplift', depth: 'surface' },
-      { narration: "Wind and water break the granite into coarse sand.", process: 'weathering', depth: 'surface' },
-      { narration: "The sand is deposited in a river delta, compacting into sandstone over time.", process: 'deposition', extra: { sedimentType: 'sandstone' }, depth: 'shallow' }
+      { narrationKey: 'jrnMetA0', depth: 'deep' },
+      { narrationKey: 'jrnMetA1', process: 'melting', depth: 'mantle' },
+      { narrationKey: 'jrnMetA2', process: 'crystallization', extra: { coolingSpeed: 'slow' }, depth: 'deep' },
+      { narrationKey: 'jrnMetA3', process: 'uplift', depth: 'surface' },
+      { narrationKey: 'jrnMetA4', process: 'weathering', depth: 'surface' },
+      { narrationKey: 'jrnMetA5', process: 'deposition', extra: { sedimentType: 'sandstone' }, depth: 'shallow' }
     ],
-    // Template B: uplift → weather → limestone → H&P back to metamorphic
     [
-      { narration: "Your {rock} sits deep in a mountain root, transformed long ago by heat and pressure.", depth: 'deep' },
-      { narration: "The mountain erodes away over hundreds of millions of years, exposing the rock.", process: 'uplift', depth: 'surface' },
-      { narration: "Rain and frost shatter the rock. Rivers carry the fragments to the coast.", process: 'weathering', depth: 'surface' },
-      { narration: "In a warm sea, calcium carbonate from dissolved minerals forms limestone.", process: 'deposition', extra: { sedimentType: 'limestone' }, depth: 'shallow' },
-      { narration: "A new tectonic collision buries the limestone. Heat and pressure create marble.", process: 'heatAndPressure', depth: 'deep' },
-      { narration: "Uplift brings the marble near the surface. A mountain of metamorphic rock is reborn.", process: 'uplift', depth: 'surface' }
+      { narrationKey: 'jrnMetB0', depth: 'deep' },
+      { narrationKey: 'jrnMetB1', process: 'uplift', depth: 'surface' },
+      { narrationKey: 'jrnMetB2', process: 'weathering', depth: 'surface' },
+      { narrationKey: 'jrnMetB3', process: 'deposition', extra: { sedimentType: 'limestone' }, depth: 'shallow' },
+      { narrationKey: 'jrnMetB4', process: 'heatAndPressure', depth: 'deep' },
+      { narrationKey: 'jrnMetB5', process: 'uplift', depth: 'surface' }
     ],
-    // Template C: uplift → weather → shale → slate → melt → obsidian
     [
-      { narration: "Your {rock} formed under extreme conditions, but now sits deep and stable.", depth: 'deep' },
-      { narration: "Tectonic forces push the rock up through layers of younger sediment.", process: 'uplift', depth: 'surface' },
-      { narration: "Exposed at the surface, freeze-thaw cycles crack the rock into fine clay.", process: 'weathering', depth: 'surface' },
-      { narration: "The clay settles in a quiet lake, building paper-thin layers of shale.", process: 'deposition', extra: { sedimentType: 'shale' }, depth: 'shallow' },
-      { narration: "The shale is buried deep again by a new mountain-building event. It melts completely.", process: 'melting', depth: 'mantle' },
-      { narration: "A violent eruption flings the magma into the air. It cools almost instantly into volcanic glass.", process: 'crystallization', extra: { coolingSpeed: 'ultrafast' }, depth: 'surface' }
+      { narrationKey: 'jrnMetC0', depth: 'deep' },
+      { narrationKey: 'jrnMetC1', process: 'uplift', depth: 'surface' },
+      { narrationKey: 'jrnMetC2', process: 'weathering', depth: 'surface' },
+      { narrationKey: 'jrnMetC3', process: 'deposition', extra: { sedimentType: 'shale' }, depth: 'shallow' },
+      { narrationKey: 'jrnMetC4', process: 'melting', depth: 'mantle' },
+      { narrationKey: 'jrnMetC5', process: 'crystallization', extra: { coolingSpeed: 'ultrafast' }, depth: 'surface' }
     ]
   ]
 };
@@ -135,32 +125,27 @@ function generateJourney(startingRockId) {
   // Pick a random template
   const template = templates[Math.floor(Math.random() * templates.length)];
 
-  // Walk the template, resolving specimens at each step
+  // Walk the template, resolving specimens at each step.
+  // Keep narrationKey + {rock} replacement data on each step so we can re-resolve at render time.
   const steps = [];
   let currentSpecimen = startingRockId;
   const totalSteps = template.length;
   const myaPerStep = Math.floor(500 / totalSteps);
 
   for (let i = 0; i < totalSteps; i++) {
-    const t = template[i];
+    const tpl = template[i];
     const timeMya = 500 - i * myaPerStep;
-    const timeLabel = timeMya > 0 ? `${timeMya} Million Years Ago` : 'Present Day';
 
-    const narration = t.narration.replace(/\{rock\}/g, rock.name);
+    const stepBase = { timeMya, narrationKey: tpl.narrationKey, narrationRock: startingRockId, depth: tpl.depth };
 
-    if (!t.process) {
-      // Display-only step
-      steps.push({ timeLabel, timeMya, narration, specimen: currentSpecimen, process: null, depth: t.depth });
+    if (!tpl.process) {
+      steps.push(Object.assign(stepBase, { specimen: currentSpecimen, process: null }));
     } else {
-      // Resolve the transformation output
       const fromId = currentSpecimen;
-      const toId = resolveOutput(fromId, t.process, t.extra);
-      steps.push({
-        timeLabel, timeMya, narration,
-        specimen: fromId, process: t.process, depth: t.depth,
-        extra: t.extra || {},
-        resultSpecimen: toId
-      });
+      const toId = resolveOutput(fromId, tpl.process, tpl.extra);
+      steps.push(Object.assign(stepBase, {
+        specimen: fromId, process: tpl.process, extra: tpl.extra || {}, resultSpecimen: toId
+      }));
       currentSpecimen = toId;
     }
   }
@@ -168,15 +153,18 @@ function generateJourney(startingRockId) {
   // Final "present day" step if the template doesn't end with one
   const last = steps[steps.length - 1];
   if (last.timeMya > 0) {
-    const finalRock = ROCKS[currentSpecimen];
-    const utah = finalRock ? (finalRock.utahConnection || '') : '';
+    // Map rockId → Utah place translation key (rocks with a Utah connection)
+    const utahKeyMap = {
+      granite: 'utahLCC', sandstone: 'utahArches',
+      limestone: 'utahTimp', shale: 'utahGreenRiver',
+      quartzite: 'utahFarmington'
+    };
     steps.push({
-      timeLabel: 'Present Day', timeMya: 0,
-      narration: utah
-        ? `Today, this ${finalRock.name.toLowerCase()} can be found at ${utah.split('—')[0].trim()} in Utah.`
-        : `Today, this ${(finalRock || {}).name || 'rock'} waits at the surface — ready for the next chapter.`,
-      specimen: currentSpecimen, process: null, depth: 'surface',
-      utahConnection: utah ? (UTAH_CONNECTIONS.find(c => c.rockId === currentSpecimen) || {}).name : null
+      timeMya: 0,
+      isFinal: true,
+      narrationRock: currentSpecimen,
+      utahPlaceKey: utahKeyMap[currentSpecimen] || null,
+      specimen: currentSpecimen, process: null, depth: 'surface'
     });
   }
 
@@ -232,18 +220,18 @@ function showJourneySetup() {
     const r = ROCKS[id];
     return `<div class="journey-rock-option" data-rock="${id}" role="button" tabindex="0">
       <div class="jro-svg">${getRockSVG(id, 'small')}</div>
-      <span class="jro-name">${r.name}</span>
-      <span class="rock-type-badge ${r.type}">${r.type}</span>
+      <span class="jro-name">${rockName(id)}</span>
+      <span class="rock-type-badge ${r.type}">${typeName(r.type)}</span>
     </div>`;
   }).join('');
 
   overlay.innerHTML = `
     <div class="journey-setup">
-      <h2 class="journey-setup-title">🕰️ Geological Journey</h2>
-      <p class="journey-setup-desc">Pick a starting rock and watch its journey through millions of years.</p>
+      <h2 class="journey-setup-title">${t('journeyTitle')}</h2>
+      <p class="journey-setup-desc">${t('journeySubtitle')}</p>
       <div class="journey-rock-picker">${cards}</div>
-      <button class="journey-start-btn" id="journey-start-btn" disabled>Start Journey →</button>
-      <button class="journey-back-link" id="journey-back-link">← Back to Free Explore</button>
+      <button class="journey-start-btn" id="journey-start-btn" disabled>${t('journeyStartBtn')}</button>
+      <button class="journey-back-link" id="journey-back-link">${t('journeyBackLink')}</button>
     </div>`;
 
   stage.appendChild(overlay);
@@ -305,7 +293,7 @@ function showPlaybackUI(journey) {
       </div>
       <div class="journey-depth-indicator" id="journey-depth-ind">
         <div class="depth-scale">
-          ${DEPTH_ORDER.map(d => `<span class="depth-level" data-depth="${d}">${DEPTH_META[d].icon} ${DEPTH_META[d].label}</span>`).join('')}
+          ${DEPTH_ORDER.map(d => `<span class="depth-level" data-depth="${d}">${DEPTH_META[d].icon} ${t(DEPTH_META[d].labelKey)}</span>`).join('')}
         </div>
         <div class="depth-marker" id="depth-marker"></div>
       </div>
@@ -315,21 +303,21 @@ function showPlaybackUI(journey) {
           <div class="timeline-playhead" id="timeline-playhead"></div>
         </div>
         <div class="timeline-labels" id="timeline-labels">
-          ${journey.map((s, i) => `<span class="tl-label${i === 0 ? ' first' : ''}${i === journey.length - 1 ? ' last' : ''}">${s.timeMya > 0 ? s.timeMya + 'M' : 'Today'}</span>`).join('')}
+          ${journey.map((s, i) => `<span class="tl-label${i === 0 ? ' first' : ''}${i === journey.length - 1 ? ' last' : ''}">${s.timeMya > 0 ? s.timeMya + 'M' : t('journeyToday')}</span>`).join('')}
         </div>
       </div>
       <div class="journey-controls">
         <button class="jc-btn" id="jc-prev" aria-label="Previous step">⏮</button>
-        <button class="jc-btn jc-play" id="jc-play" aria-label="Play">▶ Play</button>
+        <button class="jc-btn jc-play" id="jc-play" aria-label="Play">${t('journeyPlay')}</button>
         <button class="jc-btn" id="jc-next" aria-label="Next step">⏭</button>
         <select class="jc-speed" id="jc-speed" aria-label="Playback speed">
-          <option value="1">1× Speed</option>
-          <option value="2">2× Speed</option>
-          <option value="4">4× Speed</option>
+          <option value="1">${t('journeySpeed1')}</option>
+          <option value="2">${t('journeySpeed2')}</option>
+          <option value="4">${t('journeySpeed4')}</option>
         </select>
-        <button class="jc-btn" id="jc-new" aria-label="New journey">🔄 New</button>
-        <button class="jc-btn" id="jc-change" aria-label="Change rock">🪨 Change</button>
-        <button class="jc-btn jc-exit" id="jc-exit" aria-label="Exit journey">✕ Exit</button>
+        <button class="jc-btn" id="jc-new" aria-label="New journey">${t('journeyNew')}</button>
+        <button class="jc-btn" id="jc-change" aria-label="Change rock">${t('journeyChange')}</button>
+        <button class="jc-btn jc-exit" id="jc-exit" aria-label="Exit journey">${t('journeyExit')}</button>
       </div>
     </div>`;
 
@@ -360,11 +348,24 @@ async function showJourneyStep(index) {
   if (fill) fill.style.width = pct + '%';
   if (head) head.style.left = pct + '%';
 
-  // Update narration
+  // Update narration (resolve via t() each render so language toggle works)
   const badge = document.getElementById('journey-time-badge');
   const narText = document.getElementById('journey-narration-text');
-  if (badge) badge.textContent = step.timeLabel;
-  if (narText) { narText.style.opacity = 0; setTimeout(() => { narText.textContent = step.narration; narText.style.opacity = 1; }, 120); }
+  const timeLabel = step.timeMya > 0
+    ? step.timeMya + ' ' + t('journeyMya')
+    : t('journeyToday');
+  if (badge) badge.textContent = timeLabel;
+
+  let narration;
+  if (step.isFinal) {
+    const rockStr = rockName(step.narrationRock);
+    narration = step.utahPlaceKey
+      ? t('journeyUtahSummary', { rock: rockStr.toLowerCase(), place: t(step.utahPlaceKey) })
+      : t('journeyCloseSummary', { rock: rockStr.toLowerCase() });
+  } else {
+    narration = t(step.narrationKey).replace(/\{rock\}/g, rockName(step.narrationRock));
+  }
+  if (narText) { narText.style.opacity = 0; setTimeout(() => { narText.textContent = narration; narText.style.opacity = 1; }, 120); }
 
   // Update depth
   updateJourneyDepth(step.depth);
@@ -394,9 +395,9 @@ async function showJourneyStep(index) {
     displayJourneySpecimen(step.specimen);
   }
 
-  // Utah highlight
-  if (step.utahConnection && typeof highlightUtahCard === 'function') {
-    highlightUtahCard(step.utahConnection);
+  // Utah highlight (utahPlaceKey is a translation key)
+  if (step.utahPlaceKey && typeof highlightUtahCard === 'function') {
+    highlightUtahCard(t(step.utahPlaceKey));
   }
 }
 
@@ -436,7 +437,7 @@ function toggleJourneyPlay() {
   } else {
     journeyState.playing = true;
     const btn = document.getElementById('jc-play');
-    if (btn) btn.textContent = '⏸ Pause';
+    if (btn) btn.textContent = t('journeyPause');
     scheduleJourneyAdvance();
   }
 }
@@ -445,7 +446,7 @@ function stopJourneyPlay() {
   journeyState.playing = false;
   if (journeyState.timer) { clearTimeout(journeyState.timer); journeyState.timer = null; }
   const btn = document.getElementById('jc-play');
-  if (btn) btn.textContent = '▶ Play';
+  if (btn) btn.textContent = t('journeyPlay');
 }
 
 function scheduleJourneyAdvance() {
@@ -479,10 +480,10 @@ function showJourneyComplete() {
 
   const narText = document.getElementById('journey-narration-text');
   const badge   = document.getElementById('journey-time-badge');
-  if (badge)   badge.textContent = 'Journey Complete';
+  if (badge)   badge.textContent = t('journeyComplete');
   if (narText) {
-    const startName = ROCKS[journeyState.startRock]?.name || 'rock';
+    const startName = rockName(journeyState.startRock);
     const steps = journey.filter(s => s.process).length;
-    narText.textContent = `Your ${startName} traveled through ${steps} transformations over 500 million years. Every atom is still here — just rearranged.`;
+    narText.textContent = t('journeySummary', { rock: startName, steps: steps });
   }
 }
