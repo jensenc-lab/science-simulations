@@ -507,6 +507,9 @@ function reRenderAll() {
     } else if (typeof updateSpecimenDisplay === 'function') {
       updateSpecimenDisplay(currentId);
     }
+  } else if (typeof setExplanationIdle === 'function') {
+    // No specimen selected — retranslate the idle explanation text
+    setExplanationIdle();
   }
 
   // History strip
