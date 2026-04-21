@@ -186,34 +186,44 @@ function resolveOutput(fromId, processId, extra) {
 
 // ── Start / Exit ──────────────────────────────────────────────────────────────
 
+// Teardown the overlay + transient state WITHOUT leaving journey mode.
+// Used by showJourneySetup() so "Change Rock" / re-entry doesn't restore the
+// normal Free-Explore layout between setup screens.
+function teardownJourneyOverlay() {
+  stopJourneyPlay();
+  journeyState.journey = null;
+  const overlay = document.getElementById('journey-overlay');
+  if (overlay) { overlay.classList.remove('journey-playback-active'); overlay.remove(); }
+  const disp = document.getElementById('specimen-display');
+  if (disp) disp.className = disp.className.replace(/\bdepth-\S+/g, '').trim();
+}
+
 function startJourney() {
+  document.body.classList.add('journey-mode');
   journeyState.active = true;
   showJourneySetup();
 }
 
 function exitJourney() {
-  stopJourneyPlay();
+  teardownJourneyOverlay();
   journeyState.active = false;
-  journeyState.journey = null;
-  const overlay = document.getElementById('journey-overlay');
-  if (overlay) overlay.remove();
-  // Remove depth class from specimen display
-  const disp = document.getElementById('specimen-display');
-  if (disp) disp.className = disp.className.replace(/\bdepth-\S+/g, '').trim();
+  document.body.classList.remove('journey-mode');
 }
 
 // ── Setup Screen ──────────────────────────────────────────────────────────────
 
 function showJourneySetup() {
-  exitJourney();
+  teardownJourneyOverlay();
   journeyState.active = true;
+  // "Change Rock" re-enters setup during playback — make sure journey-mode stays on
+  document.body.classList.add('journey-mode');
 
   const stage = document.querySelector('.center-stage');
   if (!stage) return;
 
   const overlay = document.createElement('div');
   overlay.id = 'journey-overlay';
-  overlay.className = 'journey-overlay';
+  overlay.className = 'journey-overlay'; // setup mode (no journey-playback-active)
 
   const rockIds = Object.keys(ROCKS);
   const cards = rockIds.map(id => {
@@ -279,11 +289,8 @@ function showPlaybackUI(journey) {
   const overlay = document.getElementById('journey-overlay');
   if (!overlay) return;
 
-  // Timeline labels
-  const labels = journey.map(s => {
-    if (s.timeMya === 0) return 'Today';
-    return `${s.timeMya}M`;
-  }).join('');
+  // Playback mode: let specimen + zones show through with a dimmed frame
+  overlay.classList.add('journey-playback-active');
 
   overlay.innerHTML = `
     <div class="journey-playback" id="journey-playback">
@@ -291,33 +298,37 @@ function showPlaybackUI(journey) {
         <span class="journey-time-badge" id="journey-time-badge"></span>
         <p id="journey-narration-text"></p>
       </div>
-      <div class="journey-depth-indicator" id="journey-depth-ind">
-        <div class="depth-scale">
-          ${DEPTH_ORDER.map(d => `<span class="depth-level" data-depth="${d}">${DEPTH_META[d].icon} ${t(DEPTH_META[d].labelKey)}</span>`).join('')}
-        </div>
-        <div class="depth-marker" id="depth-marker"></div>
-      </div>
-      <div class="journey-timeline" id="journey-timeline">
-        <div class="timeline-bar">
-          <div class="timeline-fill" id="timeline-fill"></div>
-          <div class="timeline-playhead" id="timeline-playhead"></div>
-        </div>
-        <div class="timeline-labels" id="timeline-labels">
-          ${journey.map((s, i) => `<span class="tl-label${i === 0 ? ' first' : ''}${i === journey.length - 1 ? ' last' : ''}">${s.timeMya > 0 ? s.timeMya + 'M' : t('journeyToday')}</span>`).join('')}
+      <div class="journey-stage" id="journey-stage">
+        <div class="journey-depth-indicator" id="journey-depth-ind">
+          <div class="depth-scale">
+            ${DEPTH_ORDER.map(d => `<span class="depth-level" data-depth="${d}">${DEPTH_META[d].icon} ${t(DEPTH_META[d].labelKey)}</span>`).join('')}
+          </div>
+          <div class="depth-marker" id="depth-marker"></div>
         </div>
       </div>
-      <div class="journey-controls">
-        <button class="jc-btn" id="jc-prev" aria-label="Previous step">⏮</button>
-        <button class="jc-btn jc-play" id="jc-play" aria-label="Play">${t('journeyPlay')}</button>
-        <button class="jc-btn" id="jc-next" aria-label="Next step">⏭</button>
-        <select class="jc-speed" id="jc-speed" aria-label="Playback speed">
-          <option value="1">${t('journeySpeed1')}</option>
-          <option value="2">${t('journeySpeed2')}</option>
-          <option value="4">${t('journeySpeed4')}</option>
-        </select>
-        <button class="jc-btn" id="jc-new" aria-label="New journey">${t('journeyNew')}</button>
-        <button class="jc-btn" id="jc-change" aria-label="Change rock">${t('journeyChange')}</button>
-        <button class="jc-btn jc-exit" id="jc-exit" aria-label="Exit journey">${t('journeyExit')}</button>
+      <div class="journey-footer">
+        <div class="journey-timeline" id="journey-timeline">
+          <div class="timeline-bar">
+            <div class="timeline-fill" id="timeline-fill"></div>
+            <div class="timeline-playhead" id="timeline-playhead"></div>
+          </div>
+          <div class="timeline-labels" id="timeline-labels">
+            ${journey.map((s, i) => `<span class="tl-label${i === 0 ? ' first' : ''}${i === journey.length - 1 ? ' last' : ''}">${s.timeMya > 0 ? s.timeMya + 'M' : t('journeyToday')}</span>`).join('')}
+          </div>
+        </div>
+        <div class="journey-controls">
+          <button class="jc-btn" id="jc-prev" aria-label="Previous step">⏮</button>
+          <button class="jc-btn jc-play" id="jc-play" aria-label="Play">${t('journeyPlay')}</button>
+          <button class="jc-btn" id="jc-next" aria-label="Next step">⏭</button>
+          <select class="jc-speed" id="jc-speed" aria-label="Playback speed">
+            <option value="1">${t('journeySpeed1')}</option>
+            <option value="2">${t('journeySpeed2')}</option>
+            <option value="4">${t('journeySpeed4')}</option>
+          </select>
+          <button class="jc-btn" id="jc-new" aria-label="New journey">${t('journeyNew')}</button>
+          <button class="jc-btn" id="jc-change" aria-label="Change rock">${t('journeyChange')}</button>
+          <button class="jc-btn jc-exit" id="jc-exit" aria-label="Exit journey">${t('journeyExit')}</button>
+        </div>
       </div>
     </div>`;
 
@@ -365,7 +376,8 @@ async function showJourneyStep(index) {
   } else {
     narration = t(step.narrationKey).replace(/\{rock\}/g, rockName(step.narrationRock));
   }
-  if (narText) { narText.style.opacity = 0; setTimeout(() => { narText.textContent = narration; narText.style.opacity = 1; }, 120); }
+  // Narration persists through each step — replace content directly (no auto-fade)
+  if (narText) { narText.textContent = narration; }
 
   // Update depth
   updateJourneyDepth(step.depth);

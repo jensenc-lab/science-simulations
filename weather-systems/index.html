@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pressure Systems Simulator</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header>
+        <h1 id="titleText">High & Low Pressure Simulator</h1>
+        <button id="langToggle">Cambiar a Español</button>
+    </header>
+
+    <main>
+        <section class="simulation-area">
+            <div id="mapContainer">
+                <img src="map.png" alt="US Map" id="usMap">
+                
+                <div id="dayCounter" style="display: none;">Day 1</div>
+                
+                <canvas id="weatherCanvas" width="700" height="450"></canvas>
+            </div>
+            
+            <div class="toolbox">
+                <div class="toolbox-header">
+                    <p id="instructionText">Drag the systems onto the map!</p>
+                    <div class="btn-group">
+                        <button id="playBtn" class="action-btn play">▶ Forecast</button>
+                        <button id="resetBtn" class="action-btn reset">Reset Map</button>
+                    </div>
+                </div>
+                
+                <div class="token-dock">
+                    <div class="draggable high-pressure" id="tokenH1">H</div>
+                    <div class="draggable high-pressure" id="tokenH2">H</div>
+                    <div class="draggable high-pressure" id="tokenH3">H</div>
+                    
+                    <div class="draggable low-pressure" id="tokenL1">L</div>
+                    <div class="draggable low-pressure" id="tokenL2">L</div>
+                    <div class="draggable low-pressure" id="tokenL3">L</div>
+                </div>
+            </div>
+        </section>
+
+        <section class="info-area">
+            <div class="card">
+                <h2 id="mainIdeasTitle">Main Ideas (SEEd 6.3.2)</h2>
+                <ul id="mainIdeasList">
+                    <li>Air always moves from areas of High pressure to Low pressure.</li>
+                    <li>Low pressure (L) air rises, cools, and forms clouds and storms.</li>
+                    <li>High pressure (H) air sinks, bringing clear, calm skies.</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h2 id="vocabTitle">Vocabulary</h2>
+                <div class="vocab-grid">
+                    <div class="vocab-word" id="v1Word">High Pressure</div>
+                    <div class="vocab-def" id="v1Def">Heavy, sinking air. Usually means fair weather.</div>
+                    
+                    <div class="vocab-word" id="v2Word">Low Pressure</div>
+                    <div class="vocab-def" id="v2Def">Light, rising air. Usually means cloudy or rainy weather.</div>
+                    
+                    <div class="vocab-word" id="v3Word">Cold Front</div>
+                    <div class="vocab-def" id="v3Def">The leading edge of a cooler air mass (blue line with spikes).</div>
+                    
+                    <div class="vocab-word" id="v4Word">Wind</div>
+                    <div class="vocab-def" id="v4Def">The movement of air from high to low pressure.</div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="app.js"></script>
+</body>
+</html>

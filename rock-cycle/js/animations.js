@@ -4,14 +4,15 @@
 
 'use strict';
 
-// Duration (ms) each animation auto-plays before resolving
+// Duration (ms) each animation auto-plays before resolving.
+// Minimum 2000ms so short labels stay on-screen long enough to read.
 const ANIM_DURATION = {
-  melting:        1900,
-  crystallization:1900,
-  weathering:     1700,
-  deposition:     1900,
-  heatAndPressure:1900,
-  uplift:         1700
+  melting:        2200,
+  crystallization:2200,
+  weathering:     2000,
+  deposition:     2200,
+  heatAndPressure:2200,
+  uplift:         2000
 };
 
 // ── Main entry point ──────────────────────────────────────────────────────────

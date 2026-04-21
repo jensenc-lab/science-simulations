@@ -1574,8 +1574,13 @@ body.dragging * { cursor: grabbing !important; user-select: none !important; }
   font-family: var(--font-heading);
   font-size: 0.9rem;
   font-weight: 600;
-  color: var(--text-primary);
+  color: #f3f6fb;
   letter-spacing: 0.03em;
+  background: rgba(10, 10, 30, 0.8);
+  padding: 8px 16px;
+  border-radius: 6px;
+  border: 1px solid rgba(255,255,255,0.08);
+  text-shadow: 0 1px 2px rgba(0,0,0,0.6);
 }
 
 .anim-skip-btn {
@@ -2328,6 +2333,36 @@ body.dragging * { cursor: grabbing !important; user-select: none !important; }
 
 /* ── PROMPT 5: Journey Mode, Audio, Tap-to-Transform, Polish ─────────────── */
 
+/* ── Journey Mode: hide unrelated stage elements ─────────────────────────── */
+/* Journey mode owns the center stage. Hide process zones, the history strip,
+   and the right panel so the journey container has the full area to itself. */
+body.journey-mode .process-zone,
+body.journey-mode .history-strip,
+body.journey-mode .right-panel,
+body.journey-mode .right-panel-handle {
+  display: none !important;
+}
+
+/* Collapse the grid column the right-panel used to occupy (desktop/tablet only;
+   the ≤768px stacked layout owns its own single-column rule) */
+@media (min-width: 769px) {
+  body.journey-mode .app-main {
+    grid-template-columns: var(--left-panel-w) 1fr;
+  }
+}
+
+/* Let the specimen-display fill the center column (zones are gone) so the
+   rock is visible through the journey-playback's transparent middle band. */
+body.journey-mode .stage-layout {
+  grid-template-columns: 1fr;
+  grid-template-rows: 1fr;
+  padding: 0;
+}
+body.journey-mode .specimen-display {
+  grid-column: 1;
+  grid-row: 1;
+}
+
 /* ── Journey Overlay ─────────────────────────────────────────────────────── */
 .journey-overlay {
   position: absolute;
@@ -2340,6 +2375,16 @@ body.dragging * { cursor: grabbing !important; user-select: none !important; }
   align-items: center;
   justify-content: center;
   padding: var(--space-lg);
+}
+
+/* Playback mode: let the specimen show through with a subtle dim */
+.journey-overlay.journey-playback-active {
+  background: rgba(10,14,26,0.30);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  padding: 0;
+  align-items: stretch;
+  justify-content: stretch;
 }
 
 /* ── Journey Setup ───────────────────────────────────────────────────────── */
@@ -2428,6 +2473,9 @@ body.dragging * { cursor: grabbing !important; user-select: none !important; }
 .journey-back-link:hover { color: var(--text-primary); }
 
 /* ── Journey Playback ────────────────────────────────────────────────────── */
+/* Three-band layout (top/middle/bottom) sized to fit 1366×768 Chromebook
+   viewports without scrolling. Middle band is transparent so the underlying
+   process zones + specimen-display remain visible for flash/animation cues. */
 .journey-playback {
   position: absolute;
   inset: 0;
@@ -2439,33 +2487,56 @@ body.dragging * { cursor: grabbing !important; user-select: none !important; }
 
 .journey-narration {
   pointer-events: auto;
+  flex: 0 0 auto;
+  min-height: 70px;
+  max-height: 100px;
+  overflow-y: auto;
   text-align: center;
-  padding: var(--space-sm) var(--space-md);
-  background: rgba(10,14,26,0.80);
-  border-bottom: 1px solid var(--border-subtle);
+  padding: 12px 20px;
+  margin: 8px;
+  background: rgba(10, 10, 30, 0.95);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.5);
+  position: relative;
+  z-index: 20;
 }
 
 .journey-time-badge {
   display: inline-block;
   font-family: var(--font-mono);
-  font-size: 0.62rem;
-  font-weight: 600;
+  font-size: 0.64rem;
+  font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--accent-sedimentary);
-  background: rgba(212,168,67,0.12);
-  padding: 2px 8px;
+  color: #f5e2a8;
+  background: rgba(212,168,67,0.22);
+  border: 1px solid rgba(212,168,67,0.35);
+  padding: 2px 10px;
   border-radius: var(--radius-pill);
   margin-bottom: 4px;
 }
 
 .journey-narration p,
 #journey-narration-text {
-  font-size: 0.82rem;
-  color: var(--text-secondary);
-  line-height: 1.6;
+  margin: 0;
+  font-size: 0.88rem;
+  color: #f3f6fb;
+  line-height: 1.5;
   font-style: italic;
-  transition: opacity 0.15s ease;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.6);
+}
+
+/* Middle band: transparent, holds the depth indicator on the right.
+   Process zones + specimen-display render through from behind. */
+.journey-stage {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  max-height: 360px;
+  pointer-events: none;
 }
 
 /* ── Journey Depth Indicator ─────────────────────────────────────────────── */
@@ -2473,13 +2544,12 @@ body.dragging * { cursor: grabbing !important; user-select: none !important; }
   pointer-events: none;
   position: absolute;
   right: 8px;
-  top: 80px;
-  bottom: 60px;
-  width: 64px;
+  top: 8px;
+  bottom: 8px;
+  width: 96px;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  z-index: 3;
+  z-index: 11;
 }
 
 .depth-scale {
@@ -2488,37 +2558,55 @@ body.dragging * { cursor: grabbing !important; user-select: none !important; }
   justify-content: space-between;
   height: 100%;
   position: relative;
+  align-items: flex-end;
 }
 
 .depth-level {
   font-family: var(--font-mono);
-  font-size: 0.52rem;
-  color: var(--text-muted);
+  font-size: 0.62rem;
+  color: #e8e0d4;
   text-align: right;
-  padding-right: 12px;
-  transition: color 0.3s ease;
+  padding: 4px 10px;
+  background: rgba(10, 10, 30, 0.90);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 4px;
+  transition: color 0.3s ease, background 0.3s ease, border-color 0.3s ease;
   white-space: nowrap;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.6);
 }
-.depth-level.active { color: var(--text-primary); font-weight: 600; }
+.depth-level.active {
+  color: #fff;
+  font-weight: 700;
+  background: rgba(92,171,125,0.35);
+  border-color: rgba(92,171,125,0.6);
+}
 
 .depth-marker {
   position: absolute;
   right: 2px;
-  width: 6px;
-  height: 6px;
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
   background: var(--process-weather);
-  box-shadow: 0 0 6px rgba(92,171,125,0.6);
+  box-shadow: 0 0 8px rgba(92,171,125,0.8);
   transition: top 0.8s ease;
+}
+
+/* Footer band: timeline + controls, dark panel so they're always readable. */
+.journey-footer {
+  pointer-events: auto;
+  flex: 0 0 auto;
+  background: rgba(10, 10, 30, 0.85);
+  border-top: 1px solid rgba(255,255,255,0.08);
+  box-shadow: 0 -2px 10px rgba(0,0,0,0.35);
+  position: relative;
+  z-index: 10;
 }
 
 /* ── Journey Timeline ────────────────────────────────────────────────────── */
 .journey-timeline {
   pointer-events: auto;
-  padding: var(--space-sm) var(--space-md);
-  margin-top: auto;
-  background: rgba(10,14,26,0.80);
-  border-top: 1px solid var(--border-subtle);
+  padding: 6px 16px 4px;
 }
 
 .timeline-bar {
@@ -2558,8 +2646,9 @@ body.dragging * { cursor: grabbing !important; user-select: none !important; }
 
 .tl-label {
   font-family: var(--font-mono);
-  font-size: 0.52rem;
-  color: var(--text-muted);
+  font-size: 0.55rem;
+  color: #c8d3e2;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.6);
 }
 
 /* ── Journey Controls ────────────────────────────────────────────────────── */
@@ -2567,10 +2656,10 @@ body.dragging * { cursor: grabbing !important; user-select: none !important; }
   pointer-events: auto;
   display: flex;
   align-items: center;
-  gap: var(--space-sm);
-  padding: var(--space-xs) var(--space-md) var(--space-sm);
-  background: rgba(10,14,26,0.80);
-  flex-wrap: wrap;
+  gap: 6px;
+  padding: 4px 16px 8px;
+  flex-wrap: nowrap;
+  background: transparent;
 }
 
 .jc-btn {

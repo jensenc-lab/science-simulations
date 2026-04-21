@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Science Summative Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 20px; background-color: #f4f7f6; color: #333; }
+        h1 { text-align: center; color: #2c3e50; }
+        .controls { display: flex; justify-content: center; gap: 20px; margin-bottom: 20px; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .control-group { display: flex; flex-direction: column; }
+        select, input[type="file"] { padding: 10px; border-radius: 5px; border: 1px solid #ccc; font-size: 16px; }
+        .chart-container { background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); max-width: 1000px; margin: 0 auto; }
+        canvas { width: 100% !important; height: 500px !important; }
+    </style>
+</head>
+<body>
+
+    <h1>Science Summative Performance Dashboard</h1>
+
+    <div class="controls">
+        <div class="control-group">
+            <label for="csvUpload"><strong>1. Upload Data (Optional):</strong></label>
+            <input type="file" id="csvUpload" accept=".csv">
+        </div>
+        <div class="control-group">
+            <label for="schoolSelect"><strong>2. Select School:</strong></label>
+            <select id="schoolSelect">
+                <option value="ALL">Compare All Schools</option>
+            </select>
+        </div>
+        <div class="control-group">
+            <label for="standardSelect"><strong>3. Select Standard:</strong></label>
+            <select id="standardSelect">
+                <option value="OVERALL">Overall Performance (Levels 1-4)</option>
+                <option value="4.1.4">Standard 4.1.4</option>
+                <option value="4.2.4">Standard 4.2.4</option>
+                <option value="4.4.2">Standard 4.4.2</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="chart-container">
+        <canvas id="performanceChart"></canvas>
+    </div>
+
+    <script>
+        // Embedded 2024-2025 Grade 4 Data for demonstration
+        let rawData = [
+            {"School":"State","Overall_1":"24","Overall_2":"26","Overall_3":"24","Overall_4":"26","S414_Below":"19","S414_Near":"63","S414_Above":"19","S424_Below":"20","S424_Near":"61","S424_Above":"19","S442_Below":"21","S442_Near":"62","S442_Above":"17"},
+            {"School":"District","Overall_1":"41","Overall_2":"26","Overall_3":"17","Overall_4":"16","S414_Below":"32","S414_Near":"56","S414_Above":"12","S424_Below":"33","S424_Near":"55","S424_Above":"12","S442_Below":"35","S442_Near":"54","S442_Above":"11"},
+            {"School":"BONNEVILLE SCHOOL","Overall_1":"58","Overall_2":"19","Overall_3":"15","Overall_4":"8","S414_Below":"37","S414_Near":"58","S414_Above":"5","S424_Below":"52","S424_Near":"44","S424_Above":"5","S442_Below":"50","S442_Near":"44","S442_Above":"6"},
+            {"School":"East Ridge Elementary","Overall_1":"35","Overall_2":"25","Overall_3":"19","Overall_4":"22","S414_Below":"28","S414_Near":"57","S414_Above":"15","S424_Below":"26","S424_Near":"57","S424_Above":"17","S442_Below":"32","S442_Near":"51","S442_Above":"17"},
+            {"School":"HERITAGE SCHOOL","Overall_1":"59","Overall_2":"25","Overall_3":"12","Overall_4":"4","S414_Below":"43","S414_Near":"54","S414_Above":"3","S424_Below":"44","S424_Near":"52","S424_Above":"4","S442_Below":"48","S442_Near":"49","S442_Above":"2"},
+            {"School":"Liberty Elementary","Overall_1":"40","Overall_2":"29","Overall_3":"12","Overall_4":"19","S414_Below":"29","S414_Near":"57","S414_Above":"13","S424_Below":"35","S424_Near":"54","S424_Above":"10","S442_Below":"34","S442_Near":"53","S442_Above":"13"},
+            {"School":"LINCOLN SCHOOL","Overall_1":"43","Overall_2":"31","Overall_3":"21","Overall_4":"6","S414_Below":"34","S414_Near":"62","S414_Above":"4","S424_Below":"38","S424_Near":"53","S424_Above":"9","S442_Below":"40","S442_Near":"56","S442_Above":"4"},
+            {"School":"NEW BRIDGE SCHOOL","Overall_1":"55","Overall_2":"31","Overall_3":"7","Overall_4":"6","S414_Below":"46","S414_Near":"51","S414_Above":"4","S424_Below":"47","S424_Near":"46","S424_Above":"7","S442_Below":"46","S442_Near":"48","S442_Above":"6"},
+            {"School":"ODYSSEY SCHOOL","Overall_1":"46","Overall_2":"38","Overall_3":"14","Overall_4":"3","S414_Below":"38","S414_Near":"58","S414_Above":"4","S424_Below":"26","S424_Near":"71","S424_Above":"3","S442_Below":"40","S442_Near":"58","S442_Above":"1"},
+            {"School":"POLK SCHOOL","Overall_1":"23","Overall_2":"18","Overall_3":"31","Overall_4":"28","S414_Below":"20","S414_Near":"66","S414_Above":"14","S424_Below":"15","S424_Near":"66","S424_Above":"18","S442_Below":"15","S442_Near":"69","S442_Above":"15"},
+            {"School":"SHADOW VALLEY SCHOOL","Overall_1":"11","Overall_2":"14","Overall_3":"21","Overall_4":"55","S414_Below":"7","S414_Near":"43","S414_Above":"50","S424_Below":"11","S424_Near":"57","S424_Above":"32","S442_Below":"7","S442_Near":"53","S442_Above":"40"},
+            {"School":"WASATCH SCHOOL","Overall_1":"40","Overall_2":"34","Overall_3":"17","Overall_4":"9","S414_Below":"36","S414_Near":"57","S414_Above":"6","S424_Below":"32","S424_Near":"55","S424_Above":"13","S442_Below":"36","S442_Near":"62","S442_Above":"2"}
+        ];
+
+        let myChart = null;
+
+        function populateSchoolDropdown() {
+            const schoolSelect = document.getElementById('schoolSelect');
+            // Keep the ALL option, remove the rest
+            schoolSelect.innerHTML = '<option value="ALL">Compare All Schools</option>';
+            rawData.forEach(row => {
+                if(row.School) {
+                    let option = document.createElement('option');
+                    option.value = row.School;
+                    option.textContent = row.School;
+                    schoolSelect.appendChild(option);
+                }
+            });
+        }
+
+        function updateChart() {
+            const school = document.getElementById('schoolSelect').value;
+            const standard = document.getElementById('standardSelect').value;
+            const ctx = document.getElementById('performanceChart').getContext('2d');
+
+            let labels = [];
+            let datasets = [];
+
+            if (myChart) myChart.destroy();
+
+            // Setup colors
+            const colors = {
+                below: 'rgba(231, 76, 60, 0.7)',
+                near: 'rgba(241, 196, 15, 0.7)',
+                prof: 'rgba(46, 204, 113, 0.7)',
+                high: 'rgba(52, 152, 219, 0.7)'
+            };
+
+            if (school === "ALL") {
+                // Comparing all schools
+                labels = rawData.map(d => d.School);
+                
+                if (standard === "OVERALL") {
+                    datasets = [
+                        { label: '% Below Proficient', data: rawData.map(d => parseFloat(d.Overall_1)), backgroundColor: colors.below },
+                        { label: '% Approaching Proficient', data: rawData.map(d => parseFloat(d.Overall_2)), backgroundColor: colors.near },
+                        { label: '% Proficient', data: rawData.map(d => parseFloat(d.Overall_3)), backgroundColor: colors.prof },
+                        { label: '% Highly Proficient', data: rawData.map(d => parseFloat(d.Overall_4)), backgroundColor: colors.high }
+                    ];
+                } else {
+                    let prefix = "S" + standard.replace(/\./g, "");
+                    datasets = [
+                        { label: '% Below Standard', data: rawData.map(d => parseFloat(d[`${prefix}_Below`])), backgroundColor: colors.below },
+                        { label: '% At/Near Standard', data: rawData.map(d => parseFloat(d[`${prefix}_Near`])), backgroundColor: colors.near },
+                        { label: '% Above Standard', data: rawData.map(d => parseFloat(d[`${prefix}_Above`])), backgroundColor: colors.high }
+                    ];
+                }
+
+                myChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: { labels: labels, datasets: datasets },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { title: { display: true, text: `Comparison of All Schools - ${standard}` } },
+                        scales: {
+                            x: { stacked: true },
+                            y: { stacked: true, max: 100, title: { display: true, text: 'Percentage (%)' } }
+                        }
+                    }
+                });
+
+            } else {
+                // Viewing a single school
+                const schoolData = rawData.find(d => d.School === school);
+                
+                if (standard === "OVERALL") {
+                    labels = ['Below Proficient', 'Approaching', 'Proficient', 'Highly Proficient'];
+                    datasets = [{
+                        label: 'Percentage (%)',
+                        data: [schoolData.Overall_1, schoolData.Overall_2, schoolData.Overall_3, schoolData.Overall_4],
+                        backgroundColor: [colors.below, colors.near, colors.prof, colors.high]
+                    }];
+                } else {
+                    let prefix = "S" + standard.replace(/\./g, "");
+                    labels = ['Below Standard', 'At/Near Standard', 'Above Standard'];
+                    datasets = [{
+                        label: 'Percentage (%)',
+                        data: [schoolData[`${prefix}_Below`], schoolData[`${prefix}_Near`], schoolData[`${prefix}_Above`]],
+                        backgroundColor: [colors.below, colors.near, colors.high]
+                    }];
+                }
+
+                myChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: { labels: labels, datasets: datasets },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { title: { display: true, text: `${school} - ${standard} Performance` }, legend: {display: false} },
+                        scales: { y: { max: 100, title: { display: true, text: 'Percentage (%)' } } }
+                    }
+                });
+            }
+        }
