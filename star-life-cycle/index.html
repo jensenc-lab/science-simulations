@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title data-i18n="pageTitle">Star Life Cycle — Utah SEEd</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+  <h1 data-i18n="headerTitle">🌟 Star Life Cycle: A Star's Story</h1>
+  <div class="badge-wrap">
+    <button class="std-badge" type="button" aria-describedby="stdPopup">ESS.1.3</button>
+    <div class="std-popup" id="stdPopup" role="tooltip">
+      <strong data-i18n="badgePopupTitle">Utah SEEd — ESS.1.3</strong>
+      <p data-i18n="badgePopupText">Develop a model to illustrate the changes in matter occurring in a star's life cycle.</p>
+    </div>
+  </div>
+  <button id="langBtn" class="lang-btn" type="button"
+          aria-label="Switch to Spanish"
+          data-i18n-aria="ariaLangSwitch"
+          data-i18n-tooltip="tipLangBtn"
+          data-tooltip="Switch to Spanish">EN | ES</button>
+</header>
+
+<div class="content-wrapper">
+
+  <main class="sim-grid">
+
+    <!-- ── Left: Controls ─────────────────────────────────────── -->
+    <section class="panel controls-panel" aria-label="Controls">
+      <h2 class="panel-title" data-i18n="panelControls">Controls</h2>
+
+      <div class="control-group">
+        <label class="control-label" for="massSlider" data-i18n="labelStellarMass">Stellar Mass</label>
+        <div class="mass-slider">
+          <input type="range" id="massSlider" min="0.1" max="30" step="0.1" value="1.0"
+                 aria-label="Star starting mass in solar masses"
+                 aria-valuetext="1.0 solar masses"
+                 data-i18n-aria="ariaSlider"
+                 data-i18n-tooltip="tipMassSlider"
+                 data-tooltip="Drag to set the star's starting mass. A star's mass — more than anything else — determines how it will live and die.">
+          <div class="mass-value" id="massValue">Mass: 1.0 M☉</div>
+          <div class="mass-categories">
+            <div class="mass-cat" data-cat="red-dwarf" tabindex="0"
+                 data-i18n-tooltip="tipCatRedDwarf"
+                 data-tooltip="Tiny, cool, and incredibly long-lived — they fuse hydrogen for trillions of years.">
+              <span class="cat-range">0.1–0.5 M☉</span>
+              <span class="cat-name" data-i18n="catRedDwarf">Red Dwarf</span>
+            </div>
+            <div class="mass-cat" data-cat="sun-like" tabindex="0"
+                 data-i18n-tooltip="tipCatSunLike"
+                 data-tooltip="Stars from about half the Sun's mass to eight times its mass. End their lives as white dwarfs.">
+              <span class="cat-range">0.5–8 M☉</span>
+              <span class="cat-name" data-i18n="catSunLike">Sun-like</span>
+            </div>
+            <div class="mass-cat" data-cat="high-mass" tabindex="0"
+                 data-i18n-tooltip="tipCatHighMass"
+                 data-tooltip="Massive stars that end in supernova explosions, leaving behind neutron stars.">
+              <span class="cat-range">8–25 M☉</span>
+              <span class="cat-name" data-i18n="catHighMass">High Mass</span>
+            </div>
+            <div class="mass-cat" data-cat="very-high-mass" tabindex="0"
+                 data-i18n-tooltip="tipCatVeryHighMass"
+                 data-tooltip="The most massive stars — they collapse into black holes after their supernovae.">
+              <span class="cat-range">&gt;25 M☉</span>
+              <span class="cat-name" data-i18n="catVeryHighMass">Very High Mass</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="control-group">
+        <span class="control-label" data-i18n="labelTimeControls">Time Controls</span>
+        <div class="time-controls">
+          <div class="tc-row">
+            <button class="tc-btn tc-play" id="btnPlay" type="button"
+                    aria-label="Play simulation"
+                    data-i18n-aria="ariaPlay"
+                    data-i18n-tooltip="tipPlay"
+                    data-i18n="btnPlay"
+                    data-tooltip="Start the simulation, or resume from a pause.">▶ Play</button>
+            <button class="tc-btn" id="btnReset" type="button"
+                    aria-label="Reset simulation to nebula"
+                    data-i18n-aria="ariaReset"
+                    data-i18n-tooltip="tipReset"
+                    data-i18n="btnReset"
+                    data-tooltip="Return to the start with the current mass.">⏮ Reset</button>
+            <button class="tc-btn" id="btnStep" type="button"
+                    aria-label="Skip to next life cycle stage"
+                    data-i18n-aria="ariaStep"
+                    data-i18n-tooltip="tipStep"
+                    data-i18n="btnStep"
+                    data-tooltip="Skip ahead to the next stage.">⏭ Step</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="control-group">
+        <span class="control-label" data-i18n="labelCurrentLifeStage">Current Life Stage</span>
+        <div class="stage-pill preview" id="stagePill"
+             role="status" aria-live="polite" aria-atomic="true"
+             tabindex="0"
+             data-i18n-tooltip="tipStagePill"
+             data-tooltip="The star's current life stage. The full pathway depends on its starting mass.">Ready</div>
+        <div class="pathway-dots" id="pathwayDots"
+             aria-label="Life cycle progress"
+             data-i18n-aria="ariaPathwayDots"></div>
+        <div class="end-banner" id="endBanner" hidden data-i18n="endBanner">End State Reached</div>
+      </div>
+    </section>
+
+    <!-- ── Center: Stage / Visualization ──────────────────────── -->
+    <section class="panel stage-panel" aria-label="Star visualization">
+      <h2 class="panel-title stage-title" data-i18n="panelStarVis">Star Visualization</h2>
+
+      <div class="stage-canvas" data-slot="star-visual">
+        <svg class="star-svg" viewBox="0 0 400 320" preserveAspectRatio="xMidYMid meet"
+             role="img" aria-labelledby="starSvgTitle" aria-describedby="starSvgDesc">
+          <title id="starSvgTitle" data-i18n="starSvgTitle">Star visualization</title>
+          <desc id="starSvgDesc">Adjust the mass slider to preview a star, then press Play to watch its full life cycle.</desc>
+          <defs>
+            <radialGradient id="starHaloGrad" cx="50%" cy="50%" r="50%">
+              <stop id="haloStopIn"  offset="0%"   stop-color="#fff4c2" stop-opacity="0.5"/>
+              <stop id="haloStopMid" offset="55%"  stop-color="#fff4c2" stop-opacity="0.14"/>
+              <stop                  offset="100%" stop-color="#fff4c2" stop-opacity="0"/>
+            </radialGradient>
+            <radialGradient id="starCoreGrad" cx="40%" cy="38%" r="65%">
+              <stop id="coreStopIn"  offset="0%"   stop-color="#ffffff"/>
+              <stop id="coreStopMid" offset="60%"  stop-color="#fff4c2"/>
+              <stop id="coreStopOut" offset="100%" stop-color="#c87f0a"/>
+            </radialGradient>
+
+            <radialGradient id="nebPink"    cx="50%" cy="50%" r="50%">
+              <stop offset="0%"  stop-color="#d68bc4" stop-opacity="0.85"/>
+              <stop offset="100%" stop-color="#d68bc4" stop-opacity="0"/>
+            </radialGradient>
+            <radialGradient id="nebViolet"  cx="50%" cy="50%" r="50%">
+              <stop offset="0%"  stop-color="#9c7bd1" stop-opacity="0.85"/>
+              <stop offset="100%" stop-color="#9c7bd1" stop-opacity="0"/>
+            </radialGradient>
+            <radialGradient id="nebMagenta" cx="50%" cy="50%" r="50%">
+              <stop offset="0%"  stop-color="#c46aa6" stop-opacity="0.8"/>
+              <stop offset="100%" stop-color="#c46aa6" stop-opacity="0"/>
+            </radialGradient>
+            <radialGradient id="nebTeal"    cx="50%" cy="50%" r="50%">
+              <stop offset="0%"  stop-color="#7bb6d1" stop-opacity="0.7"/>
+              <stop offset="100%" stop-color="#7bb6d1" stop-opacity="0"/>
+            </radialGradient>
+
+            <filter id="nebBlur" x="-30%" y="-30%" width="160%" height="160%">
+              <feGaussianBlur stdDeviation="14"/>
+            </filter>
+
+            <!-- Clip the accretion ring into back (upper) and front (lower) halves
+                 in world space, so the rotating ring threads correctly through
+                 the black-hole sphere at every angle. -->
+            <clipPath id="accBackClip"  clipPathUnits="userSpaceOnUse">
+              <rect x="0" y="0"   width="400" height="160"/>
+            </clipPath>
+            <clipPath id="accFrontClip" clipPathUnits="userSpaceOnUse">
+              <rect x="0" y="160" width="400" height="160"/>
+            </clipPath>
+          </defs>
+
+          <!-- Nebula cloud (Stage: Nebula) -->
+          <g id="nebulaGroup" class="nebula-group" filter="url(#nebBlur)" style="opacity:0">
+            <circle cx="120" cy="100" r="90"  fill="url(#nebPink)"/>
+            <circle cx="240" cy="180" r="115" fill="url(#nebViolet)"/>
+            <circle cx="290" cy="115" r="68"  fill="url(#nebMagenta)"/>
+            <circle cx="170" cy="220" r="82"  fill="url(#nebTeal)"/>
+            <circle cx="200" cy="150" r="55"  fill="url(#nebMagenta)"/>
+          </g>
+
+          <!-- Planetary nebula expanding shell -->
+          <g id="shellGroup" style="opacity:0">
+            <circle id="shellOuter" cx="200" cy="160" r="60" fill="none" stroke="#7be8ff" stroke-width="6"/>
+            <circle id="shellInner" cx="200" cy="160" r="40" fill="none" stroke="#ff7be8" stroke-width="3"/>
+          </g>
+
+          <!-- Black hole accretion ring — BACK half (drawn behind the sphere) -->
+          <g id="accretionBack" clip-path="url(#accBackClip)" style="opacity:0">
+            <g class="accretion-spin">
+              <ellipse id="accRingOuter" cx="200" cy="160" rx="115" ry="26" fill="none" stroke="#ffae5a" stroke-width="2" opacity="0.4"/>
+              <ellipse id="accRing"      cx="200" cy="160" rx="100" ry="22" fill="none" stroke="#ffae5a" stroke-width="6"/>
+            </g>
+          </g>
+
+          <!-- Main star (default visualization) -->
+          <g id="starGroup" class="star-group">
+            <circle id="haloCircle" cx="200" cy="160" r="160" fill="url(#starHaloGrad)"/>
+            <circle id="coreCircle" cx="200" cy="160" r="55"  fill="url(#starCoreGrad)"/>
+          </g>
+
+          <!-- Black hole accretion ring — FRONT half (drawn in front of the sphere) -->
+          <g id="accretionFront" clip-path="url(#accFrontClip)" style="opacity:0">
+            <g class="accretion-spin">
+              <ellipse id="accRingOuterFront" cx="200" cy="160" rx="115" ry="26" fill="none" stroke="#ffae5a" stroke-width="2" opacity="0.4"/>
+              <ellipse id="accRingFront"      cx="200" cy="160" rx="100" ry="22" fill="none" stroke="#ffae5a" stroke-width="6"/>
+            </g>
+          </g>
+
+          <!-- Supernova debris (drawn on top of fading star) -->
+          <g id="debrisGroup" style="opacity:0">
+            <circle id="debrisOuter" cx="200" cy="160" r="80" fill="none" stroke="#ffaa44" stroke-width="6"/>
+            <circle id="debrisInner" cx="200" cy="160" r="60" fill="none" stroke="#ffe680" stroke-width="4"/>
+          </g>
+        </svg>
+      </div>
+
+      <div class="hr-diagram" data-slot="hr-diagram">
+        <svg class="hr-svg" viewBox="0 0 600 240" preserveAspectRatio="xMidYMid meet"
+             role="img" aria-labelledby="hrSvgTitle" aria-describedby="hrSvgDesc">
+          <title id="hrSvgTitle" data-i18n="hrSvgTitle">Hertzsprung-Russell diagram</title>
+          <desc  id="hrSvgDesc"  data-i18n="hrSvgDesc">A plot of stars by surface temperature (horizontal, hotter on the left) and luminosity (vertical). The simulated star's marker traces a path through the diagram as it ages.</desc>
+          <g id="hrRegions"></g>
+          <g id="hrGrid"></g>
+          <g id="hrAxes"></g>
+          <g id="hrTickLines"></g>
+          <g id="hrAxisLabels"></g>
+          <g id="hrAxisTitles"></g>
+          <g id="hrRegionLabels"></g>
+          <g id="hrSun"></g>
+          <polyline id="hrTrail" class="hr-trail" fill="none" points=""/>
+          <g id="hrMarker" class="hr-marker" style="opacity:0">
+            <circle id="hrMarkerHalo" cx="0" cy="0" r="11" opacity="0.4"/>
+            <circle id="hrMarkerCore" cx="0" cy="0" r="6" stroke="#fff" stroke-width="1.2"/>
+          </g>
+          <text id="hrEdgeNote" class="hr-edge-note" text-anchor="start" style="opacity:0"></text>
+        </svg>
+      </div>
+    </section>
+
+    <!-- ── Right: Info ────────────────────────────────────────── -->
+    <section class="panel info-panel" aria-label="Information">
+      <h2 class="panel-title" data-i18n="panelStarProps">Star Properties</h2>
+
+      <dl class="properties">
+        <div class="prop-row">
+          <dt tabindex="0" data-i18n="propStage" data-i18n-tooltip="tipPropStage"
+              data-tooltip="The star's current life-cycle phase.">Stage</dt>
+          <dd><span class="prop-stage preview" id="propStage">Ready to Begin</span></dd>
+        </div>
+        <div class="prop-row prop-row-progress">
+          <dt tabindex="0" data-i18n="propProgress" data-i18n-tooltip="tipPropProgress"
+              data-tooltip="How far the simulation has advanced through the current life-cycle stage (0–100%).">Progress</dt>
+          <dd>
+            <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+          </dd>
+        </div>
+        <div class="prop-row">
+          <dt tabindex="0" data-i18n="propAge" data-i18n-tooltip="tipPropAge"
+              data-tooltip="How much simulated time has passed since the star formed.">Age</dt>
+          <dd id="propAge">0 years</dd>
+        </div>
+        <div class="prop-row">
+          <dt tabindex="0" data-i18n="propMass" data-i18n-tooltip="tipPropMass"
+              data-tooltip="Total amount of matter in the star, measured in solar masses.">Mass</dt>
+          <dd><span id="propMass">1.0</span> M☉</dd>
+        </div>
+        <div class="prop-row">
+          <dt tabindex="0" data-i18n-tooltip="tipPropRadius"
+              data-tooltip="How big the star is, measured in units of the Sun's radius."><span data-i18n="propRadius">Radius</span><sup class="ms-mark" aria-hidden="true">MS</sup></dt>
+          <dd><span id="propRadius">1.00</span> R☉</dd>
+        </div>
+        <div class="prop-row">
+          <dt tabindex="0" data-i18n-tooltip="tipPropTemp"
+              data-tooltip="How hot the star's outer surface is, measured in Kelvin."><span data-i18n="propTemp">Surface Temp</span><sup class="ms-mark" aria-hidden="true">MS</sup></dt>
+          <dd><span id="propTemp">5,778</span> K</dd>
+        </div>
+        <div class="prop-row">
+          <dt tabindex="0" data-i18n-tooltip="tipPropLum"
+              data-tooltip="Total energy a star emits per second, measured in units of the Sun's output."><span data-i18n="propLum">Luminosity</span><sup class="ms-mark" aria-hidden="true">MS</sup></dt>
+          <dd><span id="propLum">1.00</span> L☉</dd>
+        </div>
+        <div class="prop-row">
+          <dt tabindex="0" data-i18n="propLifetime" data-i18n-tooltip="tipPropLifetime"
+              data-tooltip="Estimated time the star will spend fusing hydrogen in its core.">Main Sequence Lifetime</dt>
+          <dd id="propLifetime">10.0 billion years</dd>
+        </div>
+      </dl>
+      <p class="props-footnote"><sup>MS</sup><span data-i18n="propsFootnote"> Radius, temperature, and luminosity stay at main-sequence values throughout the run; matter composition (below) is what changes.</span></p>
+
+      <div class="info-group">
+        <span class="control-label" data-i18n="labelStageDescription">Stage Description</span>
+        <p class="prop-description" id="propDescription">Adjust the mass slider, then press ▶ Play to watch this star's life cycle, beginning with a stellar nebula.</p>
+      </div>
+
+      <div class="info-group">
+        <span class="control-label" data-i18n="labelMatterElements">Matter &amp; Elements</span>
+        <div class="matter-section">
+
+          <div class="matter-legend" aria-label="Element category legend" data-i18n-aria="ariaElementLegend">
+            <div class="legend-item" tabindex="0"
+                 data-i18n-tooltip="tipElemH"
+                 data-tooltip="Hydrogen — the most abundant element, the main fuel for fusion in stars.">
+              <span class="legend-swatch h"></span><span data-i18n="elemH">H</span>
+            </div>
+            <div class="legend-item" tabindex="0"
+                 data-i18n-tooltip="tipElemHe"
+                 data-tooltip="Helium — the first product of stellar fusion.">
+              <span class="legend-swatch he"></span><span data-i18n="elemHe">He</span>
+            </div>
+            <div class="legend-item" tabindex="0"
+                 data-i18n-tooltip="tipElemCO"
+                 data-tooltip="Carbon and oxygen — formed in red giants and supergiants.">
+              <span class="legend-swatch co"></span><span data-i18n="elemCO">C, O</span>
+            </div>
+            <div class="legend-item" tabindex="0"
+                 data-i18n-tooltip="tipElemHeavy"
+                 data-tooltip="Heavier elements up to iron — forged in massive stars.">
+              <span class="legend-swatch heavy"></span><span data-i18n="elemHeavy">up to Fe</span>
+            </div>
+            <div class="legend-item" tabindex="0"
+                 data-i18n-tooltip="tipElemFe"
+                 data-tooltip="Gold, silver, platinum, uranium — created only in supernova explosions and neutron-star collisions.">
+              <span class="legend-swatch fe"></span><span data-i18n="elemFe">beyond Fe</span>
+            </div>
+          </div>
+
+          <div class="matter-bar-row">
+            <div class="matter-bar-label">
+              <span data-i18n="labelInStar">In the Star</span>
+              <span class="pct" id="inStarPct">H 75% · He 25%</span>
+            </div>
+            <div class="matter-bar in-star-bar">
+              <div class="matter-segment" data-cat="h"     id="inStarH"></div>
+              <div class="matter-segment" data-cat="he"    id="inStarHe"></div>
+              <div class="matter-segment" data-cat="co"    id="inStarCO"></div>
+              <div class="matter-segment" data-cat="heavy" id="inStarHeavy"></div>
+              <div class="matter-segment" data-cat="fe"    id="inStarFe"></div>
+              <div class="matter-special" id="inStarSpecial" hidden></div>
+            </div>
+          </div>
+
+          <div class="matter-bar-row">
+            <div class="matter-bar-label">
+              <span data-i18n="labelReleased">Released to Space</span>
+              <span class="pct" id="releasedPct">Released: 0%</span>
+            </div>
+            <div class="matter-bar released-bar">
+              <div class="matter-segment" data-cat="h"     id="releasedH"></div>
+              <div class="matter-segment" data-cat="he"    id="releasedHe"></div>
+              <div class="matter-segment" data-cat="co"    id="releasedCO"></div>
+              <div class="matter-segment" data-cat="heavy" id="releasedHeavy"></div>
+              <div class="matter-segment" data-cat="fe"    id="releasedFe"></div>
+            </div>
+          </div>
+
+          <div class="matter-caption" id="matterCaption">
+            <span class="caption-icon">✦</span>
+            <span class="caption-text" id="captionText">Press ▶ Play to begin from a stellar nebula and watch matter transform through fusion, ejection, and explosive endings.</span>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ── Vocabulary ───────────────────────────────────────────── -->
+  <details class="vocab-section" open>
+    <summary data-i18n="vocabHeading">Vocabulary</summary>
+    <dl class="vocab-list">
+      <div class="vocab-item">
+        <dt data-i18n="vocabNebulaTerm">Nebula</dt>
+        <dd data-i18n="vocabNebulaDef">A vast cloud of gas and dust in space, often the birthplace of new stars. Some nebulae are also formed from the remains of dying stars.</dd>
+      </div>
+      <div class="vocab-item">
+        <dt data-i18n="vocabProtostarTerm">Protostar</dt>
+        <dd data-i18n="vocabProtostarDef">A young, contracting clump of gas and dust that has not yet begun nuclear fusion. Once its core gets hot enough, it will become a true star.</dd>
+      </div>
+      <div class="vocab-item">
+        <dt data-i18n="vocabMSTerm">Main Sequence</dt>
+        <dd data-i18n="vocabMSDef">The longest, most stable stage of a star's life, when it fuses hydrogen into helium in its core. About 90% of stars in the universe are in this stage.</dd>
+      </div>
+      <div class="vocab-item">
+        <dt data-i18n="vocabFusionTerm">Nuclear Fusion</dt>
+        <dd data-i18n="vocabFusionDef">The process in which lighter atomic nuclei combine to form heavier ones, releasing enormous amounts of energy. Fusion in a star's core is what makes it shine.</dd>
+      </div>
+      <div class="vocab-item">
+        <dt data-i18n="vocabRedGiantTerm">Red Giant</dt>
+        <dd data-i18n="vocabRedGiantDef">A late-life stage of a low- to medium-mass star, when its core contracts and its outer layers expand and cool. The star becomes much larger and redder than it was on the main sequence.</dd>
+      </div>
+      <div class="vocab-item">
+        <dt data-i18n="vocabSupergiantTerm">Supergiant</dt>
+        <dd data-i18n="vocabSupergiantDef">A very large, luminous late-life stage of a high-mass star — often hundreds of times the diameter of the Sun. Inside, increasingly heavy elements are forged through fusion.</dd>
+      </div>
+      <div class="vocab-item">
+        <dt data-i18n="vocabPlanetaryNebTerm">Planetary Nebula</dt>
+        <dd data-i18n="vocabPlanetaryNebDef">A glowing shell of gas shed by a dying low- to medium-mass star. The name is misleading: these have nothing to do with planets — early astronomers just thought they looked planet-like through their telescopes.</dd>
+      </div>
+      <div class="vocab-item">
+        <dt data-i18n="vocabSupernovaTerm">Supernova</dt>
+        <dd data-i18n="vocabSupernovaDef">The violent explosion that ends the life of a high-mass star. It scatters newly-forged heavy elements into space and can briefly outshine an entire galaxy.</dd>
+      </div>
+      <div class="vocab-item">
+        <dt data-i18n="vocabWhiteDwarfTerm">White Dwarf</dt>
+        <dd data-i18n="vocabWhiteDwarfDef">The hot, dense remnant core left behind after a low- to medium-mass star sheds its outer layers. About the size of Earth, but with the mass of the Sun.</dd>
+      </div>
+      <div class="vocab-item">
+        <dt data-i18n="vocabNeutronStarTerm">Neutron Star</dt>
+        <dd data-i18n="vocabNeutronStarDef">An extremely dense remnant left after a supernova, made almost entirely of neutrons. A single teaspoon of neutron-star material would weigh about a billion tons on Earth.</dd>
+      </div>
+      <div class="vocab-item">
+        <dt data-i18n="vocabBlackHoleTerm">Black Hole</dt>
+        <dd data-i18n="vocabBlackHoleDef">A region of space where gravity is so strong that not even light can escape. Black holes can form when the most massive stars die in supernova explosions.</dd>
+      </div>
+      <div class="vocab-item">
+        <dt data-i18n="vocabHRDiagramTerm">Hertzsprung-Russell Diagram</dt>
+        <dd data-i18n="vocabHRDiagramDef">A scatter plot that shows the relationship between stars' surface temperatures and their luminosities. Different types of stars cluster in different regions of the diagram.</dd>
+      </div>
+      <div class="vocab-item">
+        <dt data-i18n="vocabStellarMassTerm">Stellar Mass</dt>
+        <dd data-i18n="vocabStellarMassDef">The amount of matter in a star, usually measured in solar masses (M☉, where 1 M☉ = the mass of our Sun). Mass is the single most important factor in determining how a star lives and how it dies.</dd>
+      </div>
+    </dl>
+  </details>
+
+</div>
+
+<footer class="site-footer">
+  <span data-i18n="footer">Utah SEEd — ESS.1.3 · Star Life Cycle Interactive</span>
+</footer>
+
+<div id="tooltip" class="tooltip" role="tooltip" aria-hidden="true"></div>
+
+<script src="translations.js"></script>
+<script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,6 @@
+# Claude Code project-local metadata
+.claude/
+
+# OS junk
+.DS_Store
+Thumbs.db
