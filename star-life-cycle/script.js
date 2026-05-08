@@ -144,6 +144,8 @@ function emptyVisual() {
     nebula:    { opacity: 0 },
     shell:     { rInner: 0, rOuter: 0, opacity: 0, color: [123,232,255], colorInner: [255,123,232] },
     accretion: { rx: 0, ry: 0, opacity: 0, color: [255,174,90] },
+    photon:    { r: 0, opacity: 0, color: [255,208,120] },
+    lensed:    { upperPath: 'M 0 0', lowerPath: 'M 0 0', opacity: 0, color: [255,174,90] },
     debris:    { rInner: 0, rOuter: 0, opacity: 0, colorInner: [255,230,128], colorOuter: [255,170,68] },
   };
 }
@@ -234,13 +236,33 @@ function computeVisual(stageId, progress, mass) {
       return v;
 
     case 'blackHole': {
-      const discR = safeR(msR * 0.4);
+      const discR  = safeR(msR * 0.4);
+      const ringRx = safeR(msR * 1.5);
+      const ringRy = ringRx * 0.25;
+
       v.star = makeStar(discR, [10, 10, 15], {
         haloMult: 1.05, haloColor: [10, 10, 15], pulse: 'none', flatFill: true,
       });
-      v.accretion.rx = safeR(msR * 1.5);
-      v.accretion.ry = safeR(msR * 1.5) * 0.25;
+
+      v.accretion.rx = ringRx;
+      v.accretion.ry = ringRy;
       v.accretion.opacity = 0.9;
+
+      // Photon ring — bright thin rim right at the event-horizon edge
+      v.photon.r = discR * 1.08;
+      v.photon.opacity = 1;
+
+      // Lensed halo arcs — back of the disk's light bent over (upper, dramatic)
+      // and under (lower, subtler) the sphere. Endpoints anchor at the disk's
+      // left/right edges so the structure reads as one continuous wrapping band.
+      const cx = 200, cy = 160;
+      const left  = (cx - ringRx).toFixed(1);
+      const right = (cx + ringRx).toFixed(1);
+      const upperRy = Math.min(140, ringRy * 4.5);
+      const lowerRy = Math.min(70,  ringRy * 1.7);
+      v.lensed.upperPath = `M ${left} ${cy} A ${ringRx.toFixed(1)} ${upperRy.toFixed(1)} 0 0 0 ${right} ${cy}`;
+      v.lensed.lowerPath = `M ${left} ${cy} A ${ringRx.toFixed(1)} ${lowerRy.toFixed(1)} 0 0 1 ${right} ${cy}`;
+      v.lensed.opacity = 1;
       return v;
     }
   }
@@ -271,6 +293,18 @@ function lerpVisual(a, b, t) {
       ry:      lerp(a.accretion.ry,      b.accretion.ry,      t),
       opacity: lerp(a.accretion.opacity, b.accretion.opacity, t),
       color:   lerpColor(a.accretion.color, b.accretion.color, t),
+    },
+    photon: {
+      r:       lerp(a.photon.r,       b.photon.r,       t),
+      opacity: lerp(a.photon.opacity, b.photon.opacity, t),
+      color:   lerpColor(a.photon.color, b.photon.color, t),
+    },
+    lensed: {
+      // Path strings can't be numerically lerped — snap halfway through
+      upperPath: t < 0.5 ? a.lensed.upperPath : b.lensed.upperPath,
+      lowerPath: t < 0.5 ? a.lensed.lowerPath : b.lensed.lowerPath,
+      opacity:   lerp(a.lensed.opacity, b.lensed.opacity, t),
+      color:     lerpColor(a.lensed.color, b.lensed.color, t),
     },
     debris: {
       rInner:     lerp(a.debris.rInner,  b.debris.rInner,  t),
@@ -318,12 +352,25 @@ const state = {
 const fmt1     = n => n.toFixed(1);
 const fmtComma = n => Math.round(n).toLocaleString('en-US');
 
-function formatRadius(R)      { return R >= 10 ? R.toFixed(1) : R.toFixed(2); }
-function formatLuminosity(L)  {
-  if (L >= 1000) return fmtComma(L);
-  if (L >= 10)   return L.toFixed(1);
-  if (L >= 1)    return L.toFixed(2);
-  if (L >= 0.01) return L.toFixed(3);
+// Radius spans from neutron-star (~1.4×10⁻⁵ R☉) to supernova-debris (~10⁵ R☉).
+function formatRadius(R) {
+  if (R == null || isNaN(R))    return '—';
+  if (R >= 1e5)                 return R.toExponential(1);
+  if (R >= 1000)                return (Math.round(R / 100) * 100).toLocaleString('en-US');
+  if (R >= 10)                  return R.toFixed(1);
+  if (R >= 1)                   return R.toFixed(2);
+  if (R >= 0.001)               return R.toFixed(4);
+  if (R >= 1e-5)                return R.toFixed(6);
+  return R.toExponential(1);
+}
+// Luminosity spans from white-dwarf (~10⁻³) to supernova peak (~10⁹).
+function formatLuminosity(L) {
+  if (L == null || isNaN(L)) return '—';
+  if (L >= 1e6)              return L.toExponential(1);
+  if (L >= 1000)             return fmtComma(L);
+  if (L >= 10)               return L.toFixed(1);
+  if (L >= 1)                return L.toFixed(2);
+  if (L >= 0.001)            return L.toFixed(4);
   return L.toExponential(2);
 }
 // Lifetime formatter — `bn` is lifetime in billions of years. Unit terms come
@@ -384,6 +431,10 @@ const accRing             = $('accRing');
 const accRingOuter        = $('accRingOuter');
 const accRingFront        = $('accRingFront');
 const accRingOuterFront   = $('accRingOuterFront');
+const photonRing          = $('photonRing');
+const lensedArcsGroup     = $('lensedArcsGroup');
+const lensedUpper         = $('lensedUpper');
+const lensedLower         = $('lensedLower');
 const debrisGroup     = $('debrisGroup');
 const debrisInner     = $('debrisInner');
 const debrisOuter     = $('debrisOuter');
@@ -450,6 +501,19 @@ function applyVisual(v) {
     el.setAttribute('ry', v.accretion.ry * 1.18);
     el.setAttribute('stroke', accStroke);
   });
+
+  // Photon ring (event-horizon rim)
+  photonRing.style.opacity = v.photon.opacity;
+  photonRing.setAttribute('r', v.photon.r);
+  photonRing.setAttribute('stroke', rgb(v.photon.color));
+
+  // Lensed halo arcs (gravitationally bent disk light)
+  lensedArcsGroup.style.opacity = v.lensed.opacity;
+  lensedUpper.setAttribute('d', v.lensed.upperPath || 'M 0 0');
+  lensedLower.setAttribute('d', v.lensed.lowerPath || 'M 0 0');
+  const lensedStroke = rgb(v.lensed.color);
+  lensedUpper.setAttribute('stroke', lensedStroke);
+  lensedLower.setAttribute('stroke', lensedStroke);
 
   // Supernova debris
   debrisGroup.style.opacity = v.debris.opacity;
@@ -813,43 +877,78 @@ function initHRDiagram() {
     t('hrSun')));
 }
 
-/* ── Stage → (T, L) mapping ──────────────────────────────────── */
+/* ── Stage properties (R, T, L) — single source of truth ────────────────
+   The H-R diagram and the right-panel readout both derive from these.
+   Real (un-clamped) physical values; the H-R wrapper below applies the
+   diagram-specific clamping for off-scale stages (neutron star). */
 
-function getHRPositionForStage(stageId, progress, mass) {
+function getStageProperties(stageId, progress, mass) {
   switch (stageId) {
-    case 'nebula':           return { visible: false };
-    case 'protostar':        return { T: 3500, L: 10, visible: true };
+    case 'nebula':
+      return { visible: false };
+
+    case 'protostar':
+      return { R: 2 * radiusFromMass(mass), T: 3500, L: 10, visible: true };
 
     case 'msRedDwarf':
     case 'msSunLike':
     case 'msMassive':
     case 'msVeryMassive':
-      return { T: tempFromMass(mass), L: luminosityFromMass(mass), visible: true };
+      return {
+        R: radiusFromMass(mass),
+        T: tempFromMass(mass),
+        L: luminosityFromMass(mass),
+        visible: true,
+      };
 
-    case 'redGiant':         return { T: 3800, L: 200,    visible: true };
-    case 'redSupergiant':    return { T: 3500, L: 50000,  visible: true };
-    case 'supergiant':       return { T: 4500, L: 200000, visible: true };
-    case 'planetaryNebula':  return { T: 50000, L: 100,   visible: true };
+    case 'redGiant':         return { R: 100, T: 3800, L: 200,    visible: true };
+    case 'redSupergiant':    return { R: 500, T: 3500, L: 50000,  visible: true };
+    case 'supergiant':       return { R: 800, T: 4500, L: 200000, visible: true };
+    case 'planetaryNebula':  return { R: 0.5, T: 50000, L: 100,   visible: true };
 
     case 'supernova': {
-      // 0–30%: flash from L=1 to L=10⁶  |  30–100%: fade to L=10²
+      // T constant; L peaks ~10⁹ briefly at ~30% then fades to ~10⁵.
+      // R expands from ~1 to 10⁴ during the flash, then to ~10⁵ as debris flies out.
       const T = 6000;
-      const L = progress < 0.3
-        ? Math.pow(10, lerp(0, 6, progress / 0.3))
-        : Math.pow(10, lerp(6, 2, (progress - 0.3) / 0.7));
-      return { T, L, visible: true };
+      let L, R;
+      if (progress < 0.3) {
+        const t = progress / 0.3;
+        L = Math.pow(10, lerp(0, 9, t));
+        R = Math.pow(10, lerp(0, 4, t));
+      } else {
+        const t = (progress - 0.3) / 0.7;
+        L = Math.pow(10, lerp(9, 5, t));
+        R = Math.pow(10, lerp(4, 5, t));
+      }
+      return { R, T, L, visible: true };
     }
 
-    case 'whiteDwarf':       return { T: 25000, L: 0.01,   visible: true };
-    case 'heliumWhiteDwarf': return { T: 10000, L: 0.001,  visible: true };
+    case 'whiteDwarf':       return { R: 0.01,    T: 25000,  L: 0.01,  visible: true };
+    case 'heliumWhiteDwarf': return { R: 0.012,   T: 10000,  L: 0.001, visible: true };
 
     case 'neutronStar':
-      // Real T ≈ 10⁶ K (off-scale to the left), L low — clamp to bottom-left edge.
-      return { T: HR.T_LEFT, L: HR.L_BOT, visible: true, neutronClamp: true };
+      // Real values: T ≈ 6×10⁵ K, R ≈ 1.4×10⁻⁵ R☉, L ≈ 10⁻³ L☉.
+      // The H-R wrapper below clamps these onto the diagram edge.
+      return { R: 0.000014, T: 600000, L: 0.001, visible: true, neutronStar: true };
 
-    case 'blackHole':        return { visible: false, blackHole: true };
+    case 'blackHole':
+      return { visible: false, blackHole: true };
   }
   return { visible: false };
+}
+
+/* H-R diagram wrapper: derives the diagram coordinate from the canonical
+   stage properties and applies off-scale clamping for the neutron star. */
+function getHRPositionForStage(stageId, progress, mass) {
+  const p = getStageProperties(stageId, progress, mass);
+  if (!p.visible) {
+    if (p.blackHole) return { visible: false, blackHole: true };
+    return { visible: false };
+  }
+  if (p.neutronStar) {
+    return { T: HR.T_LEFT, L: HR.L_BOT, visible: true, neutronClamp: true };
+  }
+  return { T: p.T, L: p.L, visible: true };
 }
 
 function lerpHRLog(a, b, t) {
@@ -883,6 +982,42 @@ function getCurrentHRPosition() {
     if (nxt.opacity == null) nxt.opacity = 1;
     const t      = easeInOut((progress - 0.75) / 0.25);
     return lerpHRLog(cur, nxt, t);
+  }
+  return cur;
+}
+
+/* ── Properties cross-stage tween (R, T, L) ──────────────────────
+   R and L spread many orders of magnitude → log-space lerp.
+   T can stay linear in K. */
+
+function lerpProps(a, b, t) {
+  if (!a.visible && !b.visible) return { visible: false };
+  if (!a.visible) return { ...b };  // snap into next-stage values
+  if (!b.visible) return { ...a };  // hold last visible values
+  return {
+    R: Math.pow(10, lerp(Math.log10(a.R), Math.log10(b.R), t)),
+    T: lerp(a.T, b.T, t),
+    L: Math.pow(10, lerp(Math.log10(a.L), Math.log10(b.L), t)),
+    visible: true,
+  };
+}
+
+function getCurrentProperties() {
+  if (!state.runStarted) {
+    // Preview: show main-sequence values for the current mass
+    return getStageProperties(getMSStageId(state.pathwayId), 0, state.initialMass);
+  }
+  const path     = PATHWAYS[state.pathwayId];
+  const stageId  = path[state.stageIndex];
+  const progress = state.stageProgress;
+  const cur      = getStageProperties(stageId, progress, state.initialMass);
+
+  if (!reducedMotion.matches &&
+      progress > 0.75 && state.stageIndex < path.length - 1 && !state.atEnd) {
+    const nextId = path[state.stageIndex + 1];
+    const nxt    = getStageProperties(nextId, 0, state.initialMass);
+    const t      = easeInOut((progress - 0.75) / 0.25);
+    return lerpProps(cur, nxt, t);
   }
   return cur;
 }
@@ -1012,11 +1147,19 @@ function render() {
   const cat = categoryFromMass(M);
   categoryEls.forEach(el => el.classList.toggle('active', el.dataset.cat === cat));
 
-  // Properties
-  propMass    .textContent = fmt1(M);
-  propRadius  .textContent = formatRadius(radiusFromMass(M));
-  propTemp    .textContent = fmtComma(tempFromMass(M));
-  propLum     .textContent = formatLuminosity(luminosityFromMass(M));
+  // Properties — radius / temp / luminosity now evolve with the current stage.
+  // Mass and Main-Sequence lifetime stay derived from the initial mass.
+  const props = getCurrentProperties();
+  propMass.textContent = fmt1(M);
+  if (props.visible) {
+    propRadius.textContent = formatRadius(props.R);
+    propTemp  .textContent = fmtComma(Math.round(props.T));
+    propLum   .textContent = formatLuminosity(props.L);
+  } else {
+    propRadius.textContent = '—';
+    propTemp  .textContent = '—';
+    propLum   .textContent = '—';
+  }
   propLifetime.textContent = formatLifetime(lifetimeFromMass(M));
   propAge     .textContent = formatAge(state.realAge);
 

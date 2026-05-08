@@ -153,6 +153,22 @@
               <feGaussianBlur stdDeviation="14"/>
             </filter>
 
+            <!-- Black-hole photon-ring + lensed-arc glows (Interstellar-style halo) -->
+            <filter id="photonGlow" x="-50%" y="-50%" width="200%" height="200%">
+              <feGaussianBlur stdDeviation="2"/>
+              <feMerge>
+                <feMergeNode/>
+                <feMergeNode in="SourceGraphic"/>
+              </feMerge>
+            </filter>
+            <filter id="lensedGlow" x="-30%" y="-30%" width="160%" height="160%">
+              <feGaussianBlur stdDeviation="2.5"/>
+              <feMerge>
+                <feMergeNode/>
+                <feMergeNode in="SourceGraphic"/>
+              </feMerge>
+            </filter>
+
             <!-- Clip the accretion ring into back (upper) and front (lower) halves
                  in world space, so the rotating ring threads correctly through
                  the black-hole sphere at every angle. -->
@@ -199,6 +215,19 @@
               <ellipse id="accRingOuterFront" cx="200" cy="160" rx="115" ry="26" fill="none" stroke="#ffae5a" stroke-width="2" opacity="0.4"/>
               <ellipse id="accRingFront"      cx="200" cy="160" rx="100" ry="22" fill="none" stroke="#ffae5a" stroke-width="6"/>
             </g>
+          </g>
+
+          <!-- Photon ring — bright thin rim right at the event horizon -->
+          <circle id="photonRing" cx="200" cy="160" r="0" fill="none"
+                  stroke="#ffd078" stroke-width="2.5"
+                  filter="url(#photonGlow)" style="opacity:0"/>
+
+          <!-- Gravitationally-lensed halo arcs — back of disk bent over (upper)
+               and under (lower) the black hole. Connect to the disk's left/right
+               edges so the whole structure reads as one wrapping band. -->
+          <g id="lensedArcsGroup" filter="url(#lensedGlow)" style="opacity:0">
+            <path id="lensedUpper" d="M 0 0" fill="none" stroke="#ffae5a" stroke-width="6"   stroke-linecap="round"/>
+            <path id="lensedLower" d="M 0 0" fill="none" stroke="#ffae5a" stroke-width="3.5" stroke-linecap="round"/>
           </g>
 
           <!-- Supernova debris (drawn on top of fading star) -->
@@ -260,18 +289,18 @@
           <dd><span id="propMass">1.0</span> M☉</dd>
         </div>
         <div class="prop-row">
-          <dt tabindex="0" data-i18n-tooltip="tipPropRadius"
-              data-tooltip="How big the star is, measured in units of the Sun's radius."><span data-i18n="propRadius">Radius</span><sup class="ms-mark" aria-hidden="true">MS</sup></dt>
+          <dt tabindex="0" data-i18n="propRadius" data-i18n-tooltip="tipPropRadius"
+              data-tooltip="How big the star is, measured in units of the Sun's radius.">Radius</dt>
           <dd><span id="propRadius">1.00</span> R☉</dd>
         </div>
         <div class="prop-row">
-          <dt tabindex="0" data-i18n-tooltip="tipPropTemp"
-              data-tooltip="How hot the star's outer surface is, measured in Kelvin."><span data-i18n="propTemp">Surface Temp</span><sup class="ms-mark" aria-hidden="true">MS</sup></dt>
+          <dt tabindex="0" data-i18n="propTemp" data-i18n-tooltip="tipPropTemp"
+              data-tooltip="How hot the star's outer surface is, measured in Kelvin.">Surface Temp</dt>
           <dd><span id="propTemp">5,778</span> K</dd>
         </div>
         <div class="prop-row">
-          <dt tabindex="0" data-i18n-tooltip="tipPropLum"
-              data-tooltip="Total energy a star emits per second, measured in units of the Sun's output."><span data-i18n="propLum">Luminosity</span><sup class="ms-mark" aria-hidden="true">MS</sup></dt>
+          <dt tabindex="0" data-i18n="propLum" data-i18n-tooltip="tipPropLum"
+              data-tooltip="Total energy a star emits per second, measured in units of the Sun's output.">Luminosity</dt>
           <dd><span id="propLum">1.00</span> L☉</dd>
         </div>
         <div class="prop-row">
@@ -280,7 +309,6 @@
           <dd id="propLifetime">10.0 billion years</dd>
         </div>
       </dl>
-      <p class="props-footnote"><sup>MS</sup><span data-i18n="propsFootnote"> Radius, temperature, and luminosity stay at main-sequence values throughout the run; matter composition (below) is what changes.</span></p>
 
       <div class="info-group">
         <span class="control-label" data-i18n="labelStageDescription">Stage Description</span>
