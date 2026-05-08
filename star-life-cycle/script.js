@@ -1382,6 +1382,50 @@ function initTooltips() {
 }
 
 /* ────────────────────────────────────────────────────────────────
+   FULLSCREEN — toggle between page view and true browser fullscreen.
+   Works inside iframes only when the parent grants `allow="fullscreen"`;
+   if denied, requestFullscreen() rejects silently — no user-visible error.
+──────────────────────────────────────────────────────────────── */
+
+const fullscreenBtn = $('fullscreenBtn');
+
+function isFullscreen() {
+  return !!(document.fullscreenElement
+        ||  document.webkitFullscreenElement
+        ||  document.mozFullScreenElement
+        ||  document.msFullscreenElement);
+}
+
+function toggleFullscreen() {
+  if (!isFullscreen()) {
+    const el  = document.documentElement;
+    const req = el.requestFullscreen
+            ||  el.webkitRequestFullscreen
+            ||  el.mozRequestFullScreen
+            ||  el.msRequestFullscreen;
+    if (req) {
+      const p = req.call(el);
+      if (p && typeof p.catch === 'function') p.catch(() => { /* iframe may forbid — silent */ });
+    }
+  } else {
+    const exit = document.exitFullscreen
+             ||  document.webkitExitFullscreen
+             ||  document.mozCancelFullScreen
+             ||  document.msExitFullscreen;
+    if (exit) exit.call(document);
+  }
+}
+
+function updateFullscreenButton() {
+  const fs = isFullscreen();
+  fullscreenBtn.classList.toggle('is-fullscreen', fs);
+  const labelKey = fs ? 'ariaExitFullscreen' : 'ariaEnterFullscreen';
+  const tipKey   = fs ? 'tipExitFullscreen'  : 'tipEnterFullscreen';
+  fullscreenBtn.setAttribute('aria-label',  t(labelKey));
+  fullscreenBtn.setAttribute('data-tooltip', t(tipKey));
+}
+
+/* ────────────────────────────────────────────────────────────────
    I18N — apply translations + toggle language
 ──────────────────────────────────────────────────────────────── */
 
@@ -1414,6 +1458,9 @@ function applyTranslations() {
 
   // Lang button: data-lang attribute drives CSS (green pill in ES)
   langBtn.dataset.lang = state.language;
+
+  // Fullscreen button — aria-label + tooltip depend on BOTH state and language
+  updateFullscreenButton();
 }
 
 function switchLanguage() {
@@ -1433,6 +1480,14 @@ btnPlay.addEventListener('click', handlePlay);
 btnReset.addEventListener('click', handleReset);
 btnStep.addEventListener('click', handleStep);
 langBtn.addEventListener('click', switchLanguage);
+fullscreenBtn.addEventListener('click', toggleFullscreen);
+
+// Sync the icon/aria-label if the user exits fullscreen via ESC, or the
+// browser drops out of fullscreen for any reason.
+document.addEventListener('fullscreenchange',       updateFullscreenButton);
+document.addEventListener('webkitfullscreenchange', updateFullscreenButton);
+document.addEventListener('mozfullscreenchange',    updateFullscreenButton);
+document.addEventListener('MSFullscreenChange',     updateFullscreenButton);
 
 state.pathwayId = getPathway(state.initialMass);
 initHRDiagram();

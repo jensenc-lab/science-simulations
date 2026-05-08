@@ -210,8 +210,10 @@ const TRANSLATIONS = {
     tipElemCO:        "Carbon and oxygen — formed in red giants and supergiants.",
     tipElemHeavy:     "Heavier elements up to iron — forged in massive stars.",
     tipElemFe:        "Gold, silver, platinum, uranium — created only in supernova explosions and neutron-star collisions.",
-    tipStagePill:     "The star's current life stage. The full pathway depends on its starting mass.",
-    tipLangBtn:       "Switch to Spanish",
+    tipStagePill:        "The star's current life stage. The full pathway depends on its starting mass.",
+    tipLangBtn:          "Switch to Spanish",
+    tipEnterFullscreen:  "Enter fullscreen",
+    tipExitFullscreen:   "Exit fullscreen",
 
     /* ── ARIA labels ─────────────────────────────────────────── */
     ariaLangSwitch:        "Switch to Spanish",
@@ -223,6 +225,8 @@ const TRANSLATIONS = {
     ariaSliderValueSuffix: "solar masses",
     ariaPathwayDots:       "Life cycle progress",
     ariaElementLegend:     "Element category legend",
+    ariaEnterFullscreen:   "Enter fullscreen",
+    ariaExitFullscreen:    "Exit fullscreen",
   },
 
   es: {
@@ -415,8 +419,10 @@ const TRANSLATIONS = {
     tipElemCO:        "Carbono y oxígeno — formados en gigantes rojas y supergigantes.",
     tipElemHeavy:     "Elementos más pesados hasta el hierro — forjados en estrellas masivas.",
     tipElemFe:        "Oro, plata, platino, uranio — creados solo en explosiones de supernova y colisiones de estrellas de neutrones.",
-    tipStagePill:     "La etapa actual de la vida de la estrella. La trayectoria completa depende de su masa inicial.",
-    tipLangBtn:       "Cambiar a inglés",
+    tipStagePill:        "La etapa actual de la vida de la estrella. La trayectoria completa depende de su masa inicial.",
+    tipLangBtn:          "Cambiar a inglés",
+    tipEnterFullscreen:  "Pantalla completa",
+    tipExitFullscreen:   "Salir de pantalla completa",
 
     /* ── ARIA labels ─────────────────────────────────────────── */
     ariaLangSwitch:        "Cambiar a inglés",
@@ -428,5 +434,7 @@ const TRANSLATIONS = {
     ariaSliderValueSuffix: "masas solares",
     ariaPathwayDots:       "Progreso del ciclo de vida",
     ariaElementLegend:     "Leyenda de categorías de elementos",
+    ariaEnterFullscreen:   "Pantalla completa",
+    ariaExitFullscreen:    "Salir de pantalla completa",
   },
 };
