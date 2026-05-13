@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nuclear Fusion &amp; Stellar Nucleosynthesis — CHEM.1.4</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header>
+  <h1>⚛️ Nuclear Fusion &amp; Stellar Nucleosynthesis</h1>
+  <div class="badge-wrap">
+    <button class="std-badge" type="button" aria-describedby="stdPopup">CHEM.1.4</button>
+    <div class="std-popup" id="stdPopup" role="tooltip">
+      <strong>Utah SEEd — CHEM.1.4</strong>
+      <p>Construct an explanation about how fusion can form new elements with greater or lesser nuclear stability, emphasizing nuclear binding energy.</p>
+    </div>
+  </div>
+  <p class="header-tagline">Build up the universe — from hydrogen to uranium — one fusion reaction at a time.</p>
+  <a class="lang-btn" href="../nuclear-fusion-es/" aria-label="Cambiar a español">EN | ES</a>
+  <a class="all-sims-link" href="../index.html" aria-label="Back to all simulations">← All simulations</a>
+  <button id="fullscreen-toggle" class="fs-toggle" type="button" aria-label="Enter fullscreen" title="Enter fullscreen">
+    <svg class="fs-toggle__icon fs-toggle__icon--enter" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M3 9V3h6M21 9V3h-6M3 15v6h6M21 15v6h-6"/>
+    </svg>
+    <svg class="fs-toggle__icon fs-toggle__icon--exit" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M9 3v6H3M15 3v6h6M9 21v-6H3M15 21v-6h6"/>
+    </svg>
+  </button>
+</header>
+
+<main class="sim-grid">
+
+  <section class="panel" id="fusion-bench-panel" aria-labelledby="fusion-bench-title">
+    <h2 class="panel-title" id="fusion-bench-title">Fusion Bench</h2>
+    <div id="fusion-bench" class="fusion-bench">
+      <!-- fusion-bench.js injects the panel UI here -->
+    </div>
+  </section>
+
+  <section class="panel" id="binding-curve-panel" aria-labelledby="binding-curve-title">
+    <h2 class="panel-title" id="binding-curve-title">Binding Energy per Nucleon</h2>
+    <div id="binding-curve" class="binding-curve">
+      <div class="binding-curve__chart" id="binding-curve-chart">
+        <!-- binding-curve.js injects the SVG here -->
+      </div>
+      <div class="binding-curve__info" id="binding-curve-info" aria-live="polite">
+        <h3>Selected Nuclide</h3>
+        <p class="binding-curve__info-empty">Hover or tap any point on the curve to see details.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel panel-full" id="stellar-tracker-panel" aria-labelledby="stellar-tracker-title">
+    <h2 class="panel-title" id="stellar-tracker-title">Stellar Nucleosynthesis</h2>
+    <div id="stellar-tracker" class="stellar-tracker">
+      <!-- stellar-tracker.js injects the panel UI here -->
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  Aligned to Utah SEEd CHEM.1.4 ·
+  <a href="../index.html">Back to all simulations</a>
+</footer>
+
+<script src="js/nuclides.js"></script>
+<script src="js/stellar-stages.js"></script>
+<script src="js/reactions.js"></script>
+<script src="js/q-value.js"></script>
+<script src="js/binding-curve.js"></script>
+<script src="js/fusion-bench.js"></script>
+<script src="js/stellar-tracker.js"></script>
+<script src="js/fullscreen.js"></script>
+</body>
+</html>
