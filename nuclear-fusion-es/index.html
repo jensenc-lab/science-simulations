@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fusión Nuclear y Nucleosíntesis Estelar — CHEM.1.4</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header>
+  <h1>⚛️ Fusión Nuclear y Nucleosíntesis Estelar</h1>
+  <div class="badge-wrap">
+    <button class="std-badge" type="button" aria-describedby="stdPopup">CHEM.1.4</button>
+    <div class="std-popup" id="stdPopup" role="tooltip">
+      <strong>Utah SEEd — CHEM.1.4</strong>
+      <p>Construir una explicación sobre cómo la fusión puede formar nuevos elementos con mayor o menor estabilidad nuclear, enfatizando la energía de enlace nuclear.</p>
+    </div>
+  </div>
+  <p class="header-tagline">Construye el universo — del hidrógeno al uranio — una reacción de fusión a la vez.</p>
+  <a class="lang-btn" href="../nuclear-fusion/" aria-label="Switch to English">English</a>
+  <button id="fullscreen-toggle" class="fs-toggle" type="button" aria-label="Entrar a pantalla completa" title="Entrar a pantalla completa">
+    <svg class="fs-toggle__icon fs-toggle__icon--enter" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M3 9V3h6M21 9V3h-6M3 15v6h6M21 15v6h-6"/>
+    </svg>
+    <svg class="fs-toggle__icon fs-toggle__icon--exit" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M9 3v6H3M15 3v6h6M9 21v-6H3M15 21v-6h6"/>
+    </svg>
+  </button>
+</header>
+
+<main class="sim-grid">
+
+  <section class="panel" id="fusion-bench-panel" aria-labelledby="fusion-bench-title">
+    <h2 class="panel-title" id="fusion-bench-title">Banco de Fusión</h2>
+    <div id="fusion-bench" class="fusion-bench">
+      <!-- fusion-bench.js injects the panel UI here -->
+    </div>
+  </section>
+
+  <section class="panel" id="binding-curve-panel" aria-labelledby="binding-curve-title">
+    <h2 class="panel-title" id="binding-curve-title">Energía de Enlace por Nucleón</h2>
+    <div id="binding-curve" class="binding-curve">
+      <div class="binding-curve__chart" id="binding-curve-chart">
+        <!-- binding-curve.js injects the SVG here -->
+      </div>
+      <div class="binding-curve__info" id="binding-curve-info" aria-live="polite">
+        <h3>Núclido seleccionado</h3>
+        <p class="binding-curve__info-empty">Pasa el cursor o toca cualquier punto de la curva para ver detalles.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel panel-full" id="stellar-tracker-panel" aria-labelledby="stellar-tracker-title">
+    <h2 class="panel-title" id="stellar-tracker-title">Nucleosíntesis Estelar</h2>
+    <div id="stellar-tracker" class="stellar-tracker">
+      <!-- stellar-tracker.js injects the panel UI here -->
+    </div>
+  </section>
+
+  <section id="investigation" class="panel panel-full investigation" aria-labelledby="investigation-heading">
+    <h2 class="panel-title" id="investigation-heading">Investigación: Construye una Explicación</h2>
+    <p class="investigation__intro">
+      El estándar Utah SEEd <strong>CHEM.1.4</strong> te pide construir una explicación
+      sobre cómo la fusión forma nuevos elementos con mayor o menor estabilidad nuclear, con énfasis en
+      la energía de enlace nuclear. Usa los tres paneles de arriba para investigar cada una de las actividades a continuación, después
+      escribe tu explicación en el cuadro final.
+    </p>
+
+    <ol class="investigation__activities">
+      <li class="investigation__activity">
+        <h3>Actividad 1 — Encuentra el patrón</h3>
+        <p>En el <strong>Banco de Fusión</strong>, intenta estas cinco reacciones. Para cada una, registra si la energía fue
+        <em>liberada</em> o <em>requerida</em>, y el valor en MeV por nucleón:</p>
+        <ul>
+          <li>H-2 + H-3</li>
+          <li>He-4 + C-12</li>
+          <li>C-12 + C-12</li>
+          <li>Si-28 + Si-28</li>
+          <li>Fe-56 + He-4</li>
+        </ul>
+        <p><strong>¿Qué patrón notas?</strong> Observa dónde se ubica cada reacción en la Curva de Energía de
+        Enlace. ¿Qué lado del Fe-56 libera energía, y qué lado la requiere?</p>
+      </li>
+
+      <li class="investigation__activity">
+        <h3>Actividad 2 — El enigma del berilio</h3>
+        <p>Intenta fusionar <strong>He-4 + He-4</strong> en el Banco de Fusión. El resultado es sorprendente —
+        el Be-8 es en realidad ligeramente <em>menos</em> estable por nucleón que el He-4, así que esta reacción
+        <em>requiere</em> un poco de energía. Y sin embargo, las estrellas están llenas de carbono. ¿Cómo?</p>
+        <p>Intenta el siguiente paso: fusiona <strong>Be-8 + He-4</strong>. ¿Qué ocurre? Esta ruta de tres pasos se llama
+        el <strong>proceso triple alfa</strong>. ¿Por qué las estrellas lo necesitan para producir carbono?</p>
+      </li>
+
+      <li class="investigation__activity">
+        <h3>Actividad 3 — Por qué el hierro detiene todo</h3>
+        <p>En el rastreador de <strong>Nucleosíntesis Estelar</strong>, recorre las etapas de combustión
+        hasta llegar al núcleo de hierro en el centro. Después vuelve al Banco de Fusión y prueba
+        <strong>Fe-56 + He-4</strong>. ¿Qué te dice el resultado sobre por qué las estrellas masivas no pueden
+        seguir fusionando más allá del hierro — y por qué el núcleo de hierro eventualmente colapsa?</p>
+      </li>
+
+      <li class="investigation__activity">
+        <h3>Actividad 4 — ¿De dónde vino tu oro?</h3>
+        <p>En el rastreador de Nucleosíntesis Estelar, haz clic en <strong>⚡ Desencadenar supernova</strong> después
+        de llegar al núcleo de hierro. Fíjate en los elementos pesados que se forjan en la explosión. El oro en las joyas,
+        el yodo en tu tiroides y el uranio en los reactores nucleares tienen algo en común: <strong>ninguno
+        de ellos se formó dentro de una estrella normal</strong>. ¿De dónde vinieron en realidad?</p>
+      </li>
+
+      <li class="investigation__activity investigation__activity--explanation">
+        <h3><span class="investigation__activity-icon" aria-hidden="true">✍️</span> Actividad 5 — Construye tu explicación</h3>
+        <p>Combina lo que has observado en un párrafo que explique los cuatro puntos siguientes:</p>
+        <ol class="investigation__checklist">
+          <li>¿Cómo forma la fusión nuevos elementos?</li>
+          <li>¿Por qué la fusión libera energía en algunos casos y la requiere en otros?</li>
+          <li>¿Qué papel juega la <strong>energía de enlace nuclear</strong> al determinar cuál es cuál?</li>
+          <li>¿Por qué deben ocurrir las <strong>supernovas</strong> para crear elementos más pesados que el hierro?</li>
+        </ol>
+        <p class="investigation__note">Tu maestro o maestra tendrá una hoja de trabajo o un documento donde escribirás
+        tu respuesta. Usa los paneles de la simulación de arriba como evidencia.</p>
+      </li>
+    </ol>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  Alineado al estándar Utah SEEd CHEM.1.4
+</footer>
+
+<script src="js/nuclides.js"></script>
+<script src="js/stellar-stages.js"></script>
+<script src="js/reactions.js"></script>
+<script src="js/q-value.js"></script>
+<script src="js/binding-curve.js"></script>
+<script src="js/fusion-bench.js"></script>
+<script src="js/stellar-tracker.js"></script>
+<script src="js/fullscreen.js"></script>
+</body>
+</html>

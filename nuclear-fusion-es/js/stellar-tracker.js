@@ -22,12 +22,12 @@
 
   // Per-stage display info for progress bar.
   const STAGE_DISPLAY = [
-    { step: '1', label: 'H burning' },
-    { step: '2', label: 'He burning' },
-    { step: '3', label: 'C burning' },
-    { step: '4', label: 'Ne burning' },
-    { step: '5', label: 'O burning' },
-    { step: '6', label: 'Si burning' },
+    { step: '1', label: 'Comb. H' },
+    { step: '2', label: 'Comb. He' },
+    { step: '3', label: 'Comb. C' },
+    { step: '4', label: 'Comb. Ne' },
+    { step: '5', label: 'Comb. O' },
+    { step: '6', label: 'Comb. Si' },
     { step: '⚡', label: 'Supernova' },
   ];
 
@@ -123,15 +123,15 @@
     containerEl.classList.remove('placeholder');
     containerEl.innerHTML =
       '<div class="st">' +
-        '<ol class="st__progress" role="tablist" aria-label="Stellar burning stages"></ol>' +
+        '<ol class="st__progress" role="tablist" aria-label="Etapas de combustión estelar"></ol>' +
         '<div class="st__main">' +
           '<div class="st__star" id="st-star">' + buildStarSvg() + '</div>' +
           '<div class="st__details" id="st-details" aria-live="polite"></div>' +
         '</div>' +
         '<div class="st__controls">' +
-          '<button class="st__btn" type="button" id="st-prev">← Previous Stage</button>' +
-          '<button class="st__btn" type="button" id="st-reset">Reset Star</button>' +
-          '<button class="st__btn st__btn--primary" type="button" id="st-next">Next Stage →</button>' +
+          '<button class="st__btn" type="button" id="st-prev">← Etapa anterior</button>' +
+          '<button class="st__btn" type="button" id="st-reset">Reiniciar estrella</button>' +
+          '<button class="st__btn st__btn--primary" type="button" id="st-next">Siguiente etapa →</button>' +
         '</div>' +
       '</div>';
 
@@ -201,7 +201,7 @@
 
     return (
       '<svg class="st__star-svg" viewBox="0 0 300 300" preserveAspectRatio="xMidYMid meet" ' +
-      'role="img" aria-label="Cross-section of a massive star showing concentric burning shells">' +
+      'role="img" aria-label="Sección transversal de una estrella masiva mostrando capas de combustión concéntricas">' +
         '<defs>' +
           '<radialGradient id="st-remnant-grad" cx="50%" cy="50%" r="50%">' +
             '<stop offset="0%" stop-color="#5dade2" stop-opacity="0.55"/>' +
@@ -230,7 +230,7 @@
       if (i === POST_SUPERNOVA_INDEX) btn.classList.add('st__progress-node--supernova');
       btn.setAttribute('role', 'tab');
       btn.setAttribute('aria-selected', i === 0 ? 'true' : 'false');
-      btn.setAttribute('aria-label', stage.name + ', stage ' + (i + 1) + ' of ' + STAGE_COUNT);
+      btn.setAttribute('aria-label', stage.name + ', etapa ' + (i + 1) + ' de ' + STAGE_COUNT);
       btn.dataset.stage = String(i);
       btn.innerHTML =
         '<span class="st__progress-step" aria-hidden="true">' + disp.step + '</span>' +
@@ -643,11 +643,11 @@
     if (onSilicon) {
       nextBtn.classList.add('st__btn--supernova');
       nextBtn.classList.remove('st__btn--primary');
-      nextBtn.textContent = '⚡ Trigger Supernova';
+      nextBtn.textContent = '⚡ Desencadenar supernova';
     } else {
       nextBtn.classList.remove('st__btn--supernova');
       nextBtn.classList.add('st__btn--primary');
-      nextBtn.textContent = 'Next Stage →';
+      nextBtn.textContent = 'Siguiente etapa →';
     }
   }
 
@@ -670,13 +670,13 @@
     detailsEl.innerHTML =
       '<h3 class="st__stage-name">' + escapeHtml(stage.name) + '</h3>' +
       '<dl class="st__stats">' +
-        '<dt>Temperature</dt><dd>' + formatTemp(stage.tempMK) + '</dd>' +
-        '<dt>Fuel</dt><dd>' + escapeHtml(fuel) + '</dd>' +
-        '<dt>Product</dt><dd>' + escapeHtml(product) + '</dd>' +
+        '<dt>Temperatura</dt><dd>' + formatTemp(stage.tempMK) + '</dd>' +
+        '<dt>Combustible</dt><dd>' + escapeHtml(fuel) + '</dd>' +
+        '<dt>Producto</dt><dd>' + escapeHtml(product) + '</dd>' +
       '</dl>' +
       '<p class="st__desc">' + escapeHtml(stage.description) + '</p>' +
       '<p class="st__energy st__energy--released">' +
-        '<span class="st__energy-icon" aria-hidden="true">⚡</span> This stage releases energy.' +
+        '<span class="st__energy-icon" aria-hidden="true">⚡</span> Esta etapa libera energía.' +
       '</p>';
   }
 
@@ -688,18 +688,18 @@
     let html =
       '<h3 class="st__stage-name">' + escapeHtml(stage.name) + '</h3>' +
       '<dl class="st__stats">' +
-        '<dt>Temperature</dt><dd>Billions of K (during collapse and shockwave)</dd>' +
-        '<dt>Trigger</dt><dd>Iron-core collapse</dd>' +
-        '<dt>Products</dt><dd>Heavy elements (mass &gt; 56)</dd>' +
+        '<dt>Temperatura</dt><dd>Miles de millones de K (durante el colapso y la onda de choque)</dd>' +
+        '<dt>Desencadenante</dt><dd>Colapso del núcleo de hierro</dd>' +
+        '<dt>Productos</dt><dd>Elementos pesados (masa &gt; 56)</dd>' +
       '</dl>' +
       '<p class="st__desc">' + escapeHtml(stage.description) + '</p>' +
       '<p class="st__energy st__energy--required">' +
-        '<span class="st__energy-icon" aria-hidden="true">🥶</span> This requires energy input from the gravitational collapse and shockwave.' +
+        '<span class="st__energy-icon" aria-hidden="true">🥶</span> Esto requiere aporte de energía desde el colapso gravitacional y la onda de choque.' +
       '</p>';
     if (includeCards) {
       const cards = stage.productMass.map(buildElementCard).join('');
       html +=
-        '<h4 class="st__elements-heading">Heavy elements forged</h4>' +
+        '<h4 class="st__elements-heading">Elementos pesados forjados</h4>' +
         '<div class="st__elements">' + cards + '</div>';
     }
     detailsEl.innerHTML = html;
@@ -708,7 +708,7 @@
   function buildElementCard(mass) {
     const n = nuclideByMass(mass);
     if (!n) {
-      return '<div class="st__element-card"><div class="st__element-name">mass ' + mass + '</div></div>';
+      return '<div class="st__element-card"><div class="st__element-name">masa ' + mass + '</div></div>';
     }
     const notes = n.notes
       ? '<div class="st__element-notes">' + escapeHtml(n.notes) + '</div>'
@@ -730,11 +730,11 @@
   }
   function massToName(mass) {
     const n = nuclideByMass(mass);
-    return n ? stripParen(n.name) : 'mass ' + mass;
+    return n ? stripParen(n.name) : 'masa ' + mass;
   }
   function formatTemp(mK) {
     if (typeof mK !== 'number') return String(mK);
-    return mK + ' million K';
+    return mK + ' millones de K';
   }
   function stripParen(s) {
     return String(s).replace(/\s*\(.*?\)\s*$/, '').trim();
