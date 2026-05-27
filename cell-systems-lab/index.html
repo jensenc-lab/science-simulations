@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cell Systems Lab — Ogden School District</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="site-header__inner">
+      <div class="site-header__titles">
+        <p class="site-header__district" data-i18n="app.district">Ogden School District</p>
+        <h1 class="site-header__title"><span aria-hidden="true">🔬</span> <span data-i18n="app.title">Cell Systems Lab</span></h1>
+        <p class="site-header__subtitle" data-i18n="app.subtitle">Utah SEEd Standard 7.3.2 — The Cell as a System</p>
+      </div>
+      <button id="lang-toggle" class="lang-toggle" type="button" aria-label="Switch language" data-i18n="lang.toggle">Español</button>
+    </div>
+  </header>
+
+  <main class="site-main">
+
+    <nav class="cell-toggle" aria-label="Cell type">
+      <button id="cell-animal" class="cell-toggle__btn active" type="button" aria-pressed="true" data-i18n="cell.animal">Animal Cell</button>
+      <button id="cell-plant" class="cell-toggle__btn" type="button" aria-pressed="false" data-i18n="cell.plant">Plant Cell</button>
+    </nav>
+
+    <nav class="mode-tabs" aria-label="Simulation mode" role="tablist">
+      <button id="mode-explore" class="mode-tab active" type="button" role="tab" aria-selected="true" aria-controls="panel-explore" data-i18n="mode.explore">Explore</button>
+      <button id="mode-system" class="mode-tab" type="button" role="tab" aria-selected="false" aria-controls="panel-system" data-i18n="mode.system">System View</button>
+      <button id="mode-challenge" class="mode-tab" type="button" role="tab" aria-selected="false" aria-controls="panel-challenge" data-i18n="mode.challenge">Challenge</button>
+    </nav>
+
+    <section id="panel-explore" class="panel" role="tabpanel" aria-labelledby="mode-explore">
+      <div class="explore-layout">
+        <div id="cell-display" class="cell-display" aria-label="Interactive cell diagram"></div>
+        <aside id="organelle-info" class="organelle-info">
+          <p class="hint" data-i18n="explore.hint">Click an organelle to learn about it.</p>
+        </aside>
+      </div>
+    </section>
+
+    <section id="panel-system" class="panel hidden" role="tabpanel" aria-labelledby="mode-system">
+      <div class="system-layout">
+        <div id="cell-display-system" class="cell-display" aria-label="Cell system animation"></div>
+        <aside class="system-controls">
+          <div class="system-status" id="sys-status">
+            <h3 data-i18n="system.status">Cell Status</h3>
+            <p class="status-label status-healthy" data-i18n="status.healthy">✓ Healthy</p>
+            <p class="status-detail" data-i18n="status.detail.allActive">All flows active</p>
+          </div>
+          <div class="system-buttons">
+            <button id="sys-pause" type="button" data-i18n="button.pause">⏸ Pause</button>
+            <button id="sys-reset" type="button" data-i18n="button.reset">↻ Reset</button>
+          </div>
+          <div class="system-help">
+            <p data-i18n="system.help">Click any organelle to disable it. Watch which flows stop and which other organelles fail as a result.</p>
+          </div>
+          <div class="system-disabled">
+            <h4 data-i18n="system.disabled.heading">Disabled</h4>
+            <ul id="disabled-list"><li class="empty" data-i18n="system.disabled.empty">None — all organelles working.</li></ul>
+          </div>
+          <div class="system-legend">
+            <h4 data-i18n="system.legend.heading">Legend</h4>
+            <ul id="legend-list"></ul>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <section id="panel-challenge" class="panel hidden" role="tabpanel" aria-labelledby="mode-challenge">
+      <div class="challenge-layout">
+        <div id="cell-display-challenge" class="cell-display" aria-label="Diagnostic cell view"></div>
+        <aside class="challenge-controls">
+          <div class="challenge-progress">
+            <div class="progress-line">
+              <strong>
+                <span data-i18n="challenge.progressLabel">Challenge</span>
+                <span id="challenge-num">1</span>
+                <span data-i18n="challenge.of">of</span>
+                <span id="challenge-total">6</span>
+              </strong>
+              <span class="score-pill">
+                <span data-i18n="challenge.score">Score:</span>
+                <span id="challenge-score">0</span>
+              </span>
+            </div>
+            <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+          </div>
+          <div class="challenge-content">
+            <h3 id="challenge-title">Loading…</h3>
+            <p id="challenge-scenario" class="scenario"></p>
+            <p class="instruction"><strong data-i18n="challenge.instruction">🔎 Click the organelle in the cell that you think is broken.</strong></p>
+          </div>
+          <div id="challenge-feedback" class="challenge-feedback hidden"></div>
+          <div class="challenge-buttons">
+            <button id="challenge-hint" type="button" data-i18n="challenge.button.hint">Show Hint</button>
+            <button id="challenge-reveal" type="button" data-i18n="challenge.button.reveal">Reveal Answer</button>
+            <button id="challenge-next" type="button" disabled data-i18n="challenge.button.next">Next →</button>
+          </div>
+          <div id="challenge-summary" class="challenge-summary hidden"></div>
+        </aside>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="site-footer">
+    <p data-i18n="app.footer">Built for Ogden School District | Aligned to Utah SEEd Standard 7.3.2</p>
+  </footer>
+
+  <script src="i18n.js"></script>
+  <script src="data.js"></script>
+  <script src="cell-renderer.js"></script>
+  <script src="system-sim.js"></script>
+  <script src="challenges.js"></script>
+  <script src="main.js"></script>
+</body>
+</html>
